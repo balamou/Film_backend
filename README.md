@@ -14,17 +14,17 @@
 
 <details>
     <summary>GET /shows/:start/:quantity/:language</summary>
-    **start**: starting index of the show
-    **quantity**: amount of shows to fetch
-    **language**: language
+    <b>start</b>: starting index of the show<br/>
+    <b>quantity</b>: amount of shows to fetch<br/>
+    <b>language</b>: language<br/>
 
     returns {shows: [{id: INT, posterURL?: STRING}], isLast: BOOL}
 </details>
 <details>
     <summary>GET /movies/:start/:quantity/:language</summary>
-    **start**: starting index of the movie
-    **quantity**: amount of movies to fetch
-    **language**: language
+    <b>start</b>: starting index of the movie<br/>
+    <b>quantity</b> amount of movies to fetch<br/>
+    <b>language</b> language<br/>
 
     returns {shows: [{id: INT, posterURL?: STRING}], isLast: BOOL}
 </details>
