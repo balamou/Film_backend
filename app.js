@@ -9,14 +9,16 @@ const watched = require("./routes/watched");
 
 const PORT_NUMBER = 3000;
 
-app.get("/", (req, res, next) => {
-    res.send("<p>REST API</p>");
-});
+app.use(express.static("./public"));
 
 app.use(login);
 app.use(signup);
 app.use(shows);
 app.use(movies);
 app.use(watched);
+
+app.get("/", (req, res, next) => {
+    res.send("<p>REST API</p>");
+});
 
 app.listen(PORT_NUMBER);
