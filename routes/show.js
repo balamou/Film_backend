@@ -9,7 +9,7 @@ router.get("/show/:showId/:userId", (req, res, next) => {
     // 2. Fetch last viewed episode
     // 3. Fetch all episodes from the same season as last viewed
     // 4. if last viewed is nil then fetch season 1
-    // or whichever is the lowest available season
+    //    or whichever is the lowest available season
 
     const series = {
         title: "Rick and Morty",
@@ -19,7 +19,7 @@ router.get("/show/:showId/:userId", (req, res, next) => {
         posterURL: "",
     };
 
-    const episodes = generateEpisodes(10);
+    const episodes = generateEpisodes(numberBetween(5, 10));
     
     res.json({ series: series, episodes: episodes});
 });
@@ -51,7 +51,6 @@ const generateEpisodes = (number) => {
 const numberBetween = (start, end) => {
     return Math.floor((Math.random() * end) + start);
 };
-
 
 module.exports = router;
 

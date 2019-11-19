@@ -7,6 +7,7 @@ const shows = require("./routes/shows");
 const movies = require("./routes/movies");
 const watched = require("./routes/watched");
 const show = require("./routes/show");
+const episodes = require("./routes/episodes");
 
 const PORT_NUMBER = 3000;
 
@@ -20,6 +21,7 @@ app.use(movies);
 app.use(watched);
 
 app.use(show);
+app.use(episodes);
 
 app.get("/", (req, res, next) => {
     res.send("<p>REST API</p>");
