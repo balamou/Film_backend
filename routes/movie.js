@@ -8,6 +8,7 @@ router.get("/movie/:movieId/:userId", (req, res, next) => {
         id: 3,
         title: "lemeo",
         duration: 100,
+        videoURL: "/en/shows/E03.mkv",
         
         description: "Some random description",
         poster: "https://cdn-www.bluestacks.com/bs-images/com.my_.ffs_.simulator.americandad_topbanner.jpg",

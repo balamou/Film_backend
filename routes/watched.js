@@ -9,8 +9,8 @@ router.get("/watched/:userid", (req, res, next) => {
     "https://m.media-amazon.com/images/M/MV5BMjIxMjgxNTk0MF5BMl5BanBnXkFtZTgwNjIyOTg2MDE@._V1_.jpg"];
         
     const watched = [
-        { id: 3, posterURL: posters[0], stoppedAt: 0.8, label: "1h 3min", movieURL: "/en/shows/E03.mkv", type: TYPE_MOVIE},
-        { id: 2, posterURL: posters[1], stoppedAt: 0.5, label: "S3:E4", movieURL: "/en/shows/E03.mkv", type: TYPE_SHOW}
+        { id: 3, duration: 100, stoppedAt: 80, label: "1h 3min", movieURL: "/en/shows/E03.mkv", type: TYPE_MOVIE, posterURL: posters[0]},
+        { id: 2, duration: 100, stoppedAt: 80, label: "S3:E4", movieURL: "/en/shows/E03.mkv", type: TYPE_SHOW, posterURL: posters[1]}
     ];
 
     res.json(watched);
