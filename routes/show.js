@@ -31,11 +31,13 @@ const generateEpisodes = (number) => {
     for (let i = 0; i < number; i++) {
         const duration = numberBetween(1, 2) * 1000 + numberBetween(0, 9) * 100 + numberBetween(0, 9) * 10;
 
+        const basePath = "http://192.168.72.59:3000";
+
         result.push({
             id: i,
             episodeNumber: i + 1,
             seasonNumber: SEASON_NUM,
-            videoURL: "/en/shows/E03.mkv",
+            videoURL: basePath + ((i % 2 == 0) ? "/en/shows/E03.mkv" : "/en/shows/E02.mp4"),
             duration: duration,
             
             thumbnailURL: "",
