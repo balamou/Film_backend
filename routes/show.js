@@ -11,6 +11,8 @@ router.get("/show/:showId/:userId", (req, res, next) => {
     // 4. if last viewed is nil then fetch season 1
     //    or whichever is the lowest available season
 
+    const episodes = generateEpisodes(numberBetween(5, 10));
+
     const series = {
         id: 1,
         title: "Rick and Morty",
@@ -18,10 +20,9 @@ router.get("/show/:showId/:userId", (req, res, next) => {
         totalSeasons: 3,
         description: "Hehe",
         posterURL: "",
+        lastWatchedEpisode: episodes[1]
     };
 
-    const episodes = generateEpisodes(numberBetween(5, 10));
-    
     res.json({ series: series, episodes: episodes});
 });
 

@@ -14,6 +14,8 @@ const generateEpisodes = () => {
     const result = [];
     const SEASON_NUM = 14;
 
+    const basePath = "http://192.168.72.59:3000";
+
     for (let i = 0; i < number; i++) {
         const duration = numberBetween(1, 2) * 1000 + numberBetween(0, 9) * 100 + numberBetween(0, 9) * 10;
         const thumbnailURL = (Math.random() > 0.9) ? "https://cdn.flickeringmyth.com/wp-content/uploads/2019/02/vice.jpg" : "";
@@ -22,7 +24,7 @@ const generateEpisodes = () => {
             id: i,
             episodeNumber: i + 1,
             seasonNumber: SEASON_NUM,
-            videoURL: "/en/shows/E03.mkv",
+            videoURL: basePath + "/en/shows/E03.mkv",
             duration: duration,
 
             thumbnailURL: thumbnailURL,
