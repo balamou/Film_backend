@@ -12,6 +12,7 @@ router.get("/show/:showId/:userId", (req, res, next) => {
     //    or whichever is the lowest available season
 
     const series = {
+        id: 1,
         title: "Rick and Morty",
         seasonSelected: 2,
         totalSeasons: 3,
@@ -33,6 +34,9 @@ const generateEpisodes = (number) => {
 
         const basePath = "http://192.168.72.59:3000";
 
+        const evenImage = "https://images-na.ssl-images-amazon.com/images/I/71dXHCpZAXL._SL1051_.jpg";
+        const oddImage = "https://images-na.ssl-images-amazon.com/images/I/81e36u8GzsL._SL1500_.jpg";
+
         result.push({
             id: i,
             episodeNumber: i + 1,
@@ -40,7 +44,7 @@ const generateEpisodes = (number) => {
             videoURL: basePath + ((i % 2 == 0) ? "/en/shows/E03.mkv" : "/en/shows/E02.mp4"),
             duration: duration,
             
-            thumbnailURL: "",
+            thumbnailURL: ((i % 2 == 0) ? evenImage : oddImage),
             title: "",
             plot: "This is some interesting description. ".repeat(numberBetween(0, 6)),
             stoppedAt: numberBetween(0, duration)
