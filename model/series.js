@@ -10,7 +10,10 @@ const Series = sequelize.define('series', {
     language: {
         type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: 'en'
+        defaultValue: 'en',
+        validate: {
+            isIn: [['en', 'ru']]
+        }
     },
     // the location of the top level series folder in public.
     // example: /en/shows/rick_and_morty/
