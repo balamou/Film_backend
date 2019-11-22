@@ -10,6 +10,10 @@ const show = require("./routes/show");
 const movie = require("./routes/movie");
 const episodes = require("./routes/episodes");
 
+const series = require('./model/series');
+
+const sequelize = require('./util/database');
+
 const PORT_NUMBER = 3000;
 
 app.use(express.static("./public"));
@@ -30,4 +34,9 @@ app.get("/", (req, res, next) => {
     res.send("<p>REST API</p>");
 });
 
-app.listen(PORT_NUMBER);
+sequelize.sync({ force: true }).then(res => {
+    // console.log(res);
+    app.listen(PORT_NUMBER);
+}).catch(err => { 
+    console.log(err);
+});
