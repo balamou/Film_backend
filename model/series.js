@@ -19,7 +19,7 @@ const Series = sequelize.define('series', {
     // example: /en/shows/rick_and_morty/
     folder: notNullString,
     title: notNullString,
-    seasons: {
+    seasons: { // total seasons as parsed from imdb
         type: Sequelize.INTEGER,
         allowNull: false
     },
