@@ -41,5 +41,5 @@ sequelize.sync({ force: true, logging: false }).then(res => {
     // console.log(err);
 });
 
-// PARSER    
-const parser = require("./parser/parser");
+// Folder watcher    
+const watcher = require("./parser/watcher");

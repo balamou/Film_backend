@@ -7,38 +7,41 @@ const folderOrginizer = (change, path) => {
     if (!pathData) return;
     
     if (pathData.type === 'shows') {
-        parseSeries(pathData.name);
+        parseSeries(pathData.name, pathData);
     } else if (pathData.type === 'movies') {
         parseMovie(pathData.name);
     }
 };
 
-const parseSeries = seriesName => {
-    omdb.fetchSeries(seriesName)
-        .then(data => {
-            const series = JSON.parse(data);
-            if (series.Error != null) { // TODO: handle not found series
-                console.log(`Did not find a show named ${seriesName}`);
-                // ask if user wants to abort => move to rejected folder
-                // ask if user wants to rename
-                // ask if user wants to add stale data (i.e. no information about a series, but still added)
-                return;
-            }
+const parseSeries = async (seriesName, pathData) => {
+    const data = await omdb.fetchSeries(seriesName);
+    const series = JSON.parse(data);
 
-            console.log(series);
-            const seriesData = {
-                language: pathData.language,
-                folder: path,
-                title: series.Title,
-                desc: series.Plot.substring(0, 250),
-                poster: series.Poster,
-                seasons: series.totalSeasons
-            };
+    if (series.Error != null) { // TODO: handle not found series
+        console.log(`Did not find a show named ${seriesName}`);
+        // ask if user wants to abort => move to rejected folder
+        // ask if user wants to rename
+        // ask if user wants to add stale data (i.e. no information about a series, but still added)
+        return;
+    }
 
-            SeriesModel.create(seriesData);
-        }).catch(err => {
-            console.log(err);
-        });
+    console.log(series);
+    const seriesData = {
+        language: pathData.language,
+        folder: pathData.path,
+        title: series.Title,
+        desc: series.Plot.substring(0, 250),
+        poster: series.Poster,
+        seasons: series.totalSeasons
+    };
+
+    SeriesModel.create(seriesData);
+
+    for (let season = 1; season <= series.totalSeasons; season++) {
+        const data = await omdb.fetchSeason(seriesName, season);
+        const episode = JSON.parse(data);
+        console.log(episode);
+    }
 };
 
 const parseMovie = movieName => {
@@ -57,6 +60,7 @@ const parsePath = path => {
     if (!(type === 'shows' || type === 'movies')) { console.log('Has to be in a `shows` or `movies` directory'); return false; }
 
     return {
+        path: path,
         rootDirectory: pathComponents[0],
         language: pathComponents[1],
         type: pathComponents[2],

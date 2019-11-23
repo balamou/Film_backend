@@ -25,5 +25,5 @@ watcher.on('ready', () => {
         .on('unlink', path => folderOrginizer('delete', path))
         .on('addDir', path => folderOrginizer('addDir', path))
         .on('unlinkDir', path => folderOrginizer('unlinkDir', path))
-        .on('error', error => log(`Watcher error: ${error}`))
+        .on('error', error => log(`Watcher error: ${error}`));
 });
