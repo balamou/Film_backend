@@ -33,7 +33,7 @@ app.get("/", (req, res, next) => {
     res.send("<p>REST API</p>");
 });
 
-sequelize.sync({ force: true }).then(res => {
+sequelize.sync({ force: true, logging: false }).then(res => {
     // console.log(res);
     app.listen(PORT_NUMBER);
 

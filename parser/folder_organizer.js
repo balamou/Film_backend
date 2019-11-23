@@ -2,17 +2,10 @@ const omdb = require('./omdb');
 
 const folderOrginizer = (change, path) => {
     console.log(`${change} happened to ${path}`);
-    const pathComponents = path.split('/'); // example: [ 'public', 'en', 'shows', 'rick_and_morty' ]
-    console.log(pathComponents);
+    const pathData = parsePath(path);
+    if (!pathData) return;
     
-    if (!validatePath(pathComponents)) return;
-
-    const rootDirectory = pathComponents[0];
-    const language = pathComponents[1];
-    const type = pathComponents[2];
-    const name = pathComponents[3];
-
-    omdb.fetchSeries(name)
+    omdb.fetchSeries(pathData.name)
     .then( data => {
         const series = JSON.parse(data);
         if (series.Error != null) { // TODO: handle not found series
@@ -33,7 +26,10 @@ const folderOrginizer = (change, path) => {
     });
 };
 
-const validatePath = pathComponents => {
+const parsePath = path => {
+    const pathComponents = path.split('/'); // example: [ 'public', 'en', 'shows', 'rick_and_morty' ]
+    console.log(pathComponents);
+
     const language = pathComponents[1];
     const type = pathComponents[2];
 
@@ -41,7 +37,12 @@ const validatePath = pathComponents => {
     if (!(language === 'en' || language === 'ru')) { console.log('No language directory found'); return false; }
     if (!(type === 'shows' || type === 'movies')) { console.log('Has to be in a `shows` or `movies` directory'); return false; }
 
-    return true;
+    return {
+        rootDirectory: pathComponents[0],
+        language: pathComponents[1],
+        type: pathComponents[2],
+        name: pathComponents[3]
+    };
 };
 
 module.exports = folderOrginizer;
