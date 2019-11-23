@@ -33,13 +33,10 @@ app.get("/", (req, res, next) => {
     res.send("<p>REST API</p>");
 });
 
-sequelize.sync({ force: true, logging: false }).then(res => {
-    // console.log(res);
-    app.listen(PORT_NUMBER);
+const main = async () => {
+    await sequelize.sync({ force: true, logging: false });
+    await app.listen(PORT_NUMBER);
+    const watcher = require("./parser/watcher");
+};
 
-}).catch(err => { 
-    // console.log(err);
-});
-
-// Folder watcher    
-const watcher = require("./parser/watcher");
+main();

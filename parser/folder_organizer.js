@@ -5,7 +5,7 @@ const folderOrginizer = (change, path) => {
     console.log(`${change} happened to ${path}`);
     const pathData = parsePath(path);
     if (!pathData) return;
-    
+
     if (pathData.type === 'shows') {
         parseSeries(pathData.name, pathData);
     } else if (pathData.type === 'movies') {
@@ -37,8 +37,25 @@ const parseSeries = async (seriesName, pathData) => {
     SeriesModel.create(seriesData);
 
     for (let season = 1; season <= series.totalSeasons; season++) {
-        const seasonData = await omdb.fetchSeason(seriesName, season);
-        console.log(seasonData);
+        try {
+            const seasonData = await omdb.fetchSeason(seriesName, season);
+            console.log(`SEASON ${season}`);
+
+            console.log(typeof seasonData.Episodes);
+            const episodeList = seasonData.Episodes.map(element => parseInt(element.Episode));
+            episodeList.sort(function (a, b) { return a - b });
+            console.log(episodeList);
+
+            await episodeList.map(async episodeNumber => {
+                const episodeData = await omdb.fetchEpisode(seriesName, season, episodeNumber);
+
+                console.log(`S${season} E${episodeNumber} ${episodeData.Plot}`);
+                console.log();
+            });
+        } catch (err) {
+            console.log(err);
+        }
+        // console.log(seasonData);
     }
 };
 
