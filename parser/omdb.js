@@ -15,7 +15,10 @@ const httpGet = url => {
             res.setEncoding('utf8');
             let body = '';
             res.on('data', chunk => body += chunk);
-            res.on('end', () => resolve(body));
+            res.on('end', () => { 
+                const bodyInJSONFormat = JSON.parse(body);
+                resolve(bodyInJSONFormat);
+            });
         }).on('error', reject);
     });
 };

@@ -14,8 +14,7 @@ const folderOrginizer = (change, path) => {
 };
 
 const parseSeries = async (seriesName, pathData) => {
-    const data = await omdb.fetchSeries(seriesName);
-    const series = JSON.parse(data);
+    const series = await omdb.fetchSeries(seriesName);
 
     if (series.Error != null) { // TODO: handle not found series
         console.log(`Did not find a show named ${seriesName}`);
@@ -38,9 +37,8 @@ const parseSeries = async (seriesName, pathData) => {
     SeriesModel.create(seriesData);
 
     for (let season = 1; season <= series.totalSeasons; season++) {
-        const data = await omdb.fetchSeason(seriesName, season);
-        const episode = JSON.parse(data);
-        console.log(episode);
+        const seasonData = await omdb.fetchSeason(seriesName, season);
+        console.log(seasonData);
     }
 };
 
