@@ -1,29 +1,48 @@
 const omdb = require('./omdb');
+const SeriesModel = require('../model/series');
 
 const folderOrginizer = (change, path) => {
     console.log(`${change} happened to ${path}`);
     const pathData = parsePath(path);
     if (!pathData) return;
     
-    omdb.fetchSeries(pathData.name)
-    .then( data => {
-        const series = JSON.parse(data);
-        if (series.Error != null) { // TODO: handle not found series
-            console.log(`Did not find a show named ${name}`); 
-            // ask if user wants to abort => move to rejected folder
-            // ask if user wants to rename 
-            // ask if user wants to add stale data (i.e. no information about a series, but still added)
-            return; 
-        }
+    if (pathData.type === 'shows') {
+        parseSeries(pathData.name);
+    } else if (pathData.type === 'movies') {
+        parseMovie(pathData.name);
+    }
+};
 
-        console.log(series);
-        console.log(series.Title);
-        console.log(series.Plot);
-        console.log(series.Poster);
+const parseSeries = seriesName => {
+    omdb.fetchSeries(seriesName)
+        .then(data => {
+            const series = JSON.parse(data);
+            if (series.Error != null) { // TODO: handle not found series
+                console.log(`Did not find a show named ${seriesName}`);
+                // ask if user wants to abort => move to rejected folder
+                // ask if user wants to rename
+                // ask if user wants to add stale data (i.e. no information about a series, but still added)
+                return;
+            }
 
-    }).catch(err => {
-        console.log(err);
-    });
+            console.log(series);
+            const seriesData = {
+                language: pathData.language,
+                folder: path,
+                title: series.Title,
+                desc: series.Plot.substring(0, 250),
+                poster: series.Poster,
+                seasons: series.totalSeasons
+            };
+
+            SeriesModel.create(seriesData);
+        }).catch(err => {
+            console.log(err);
+        });
+};
+
+const parseMovie = movieName => {
+    console.log('parse movie');
 };
 
 const parsePath = path => {

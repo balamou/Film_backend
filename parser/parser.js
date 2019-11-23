@@ -10,7 +10,11 @@ const folderOrginizer = require('./folder_organizer');
 const watcher = chokidar.watch('./public/', {
     ignored: /(^|[\/\\])\../, // ignore dotfiles
     persistent: false,
-    usePolling: true
+    usePolling: true,
+    // only 2 levels deep: i.e. 
+    //    0      1     2   
+    // public / en / shows / 
+    depth: 2
 });
 
 watcher.on('ready', () => {
