@@ -17,7 +17,7 @@ const folderOrginizer = async (change, path) => {
 };
 
 const orginizeSeriesFolder = pathData => {
-    const directoryTree = dirTree(pathData.path);
+    const directoryTree = dirTree(pathData.path, { exclude: /.DS_Store/ });
     if (!directoryTree) return;
     console.log(directoryTree);
 
@@ -35,10 +35,18 @@ const orginizeSeriesFolder = pathData => {
     levelOrderTraversal(directoryTree, (node, level) => {
         if (level == 2 && (node.type == 'directory' || !isVideoFormat(node.extension)))
             purge.push(node.path);
+        
+        if (level == 1 && node.type == 'file' && !isVideoFormat(node.extension))
+            purge.push(node.path);
     });
 
-    moveUp(move_up); // Move video files UP
-    console.log(purge);
+    moveUp(move_up).then(() => {
+        makeDirectory(`${pathData.path}/purge`); // create file purge
+        console.log(purge);
+        for (let i = 0; i < purge.length; i++) {
+            moveFile(purge[i], `${pathData.path}/purge`);
+        }
+    });
 };
 
 const moveUp = async files => {
@@ -49,6 +57,14 @@ const moveUp = async files => {
         await moveFile(files[i], finalPath);
     }
 };
+
+const makeDirectory = dir => {
+    var fs = require('fs');
+
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+}
 
 const levelOrderTraversal = (treeNode, onEach) => {
     const queue = [treeNode];
