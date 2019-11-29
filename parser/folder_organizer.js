@@ -21,6 +21,8 @@ const orginizeSeriesFolder = pathData => {
     if (!directoryTree) return;
     console.log(directoryTree);
 
+    if (directoryTree.type != 'directory') return ;
+
     // Level order tree traversal
     const queue = [directoryTree];
     const move_up = [];
@@ -45,13 +47,38 @@ const orginizeSeriesFolder = pathData => {
         level++;
     }
 
-    // Move video files UP ^
+    moveUp(move_up); // Move video files UP
+};
+
+const moveUp = async files => {
+    for (let i = 0; i < files.length; i++) {
+        const components = files[i].split('/');
+        const finalPath = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
+
+        await moveFile(files[i], finalPath);
+    }
 };
 
 const isVideoFormat = extension => {
     const supportedExtensions = ['.ASX', '.DTS', '.GXF', '.M2V', '.M3U', '.M4V', '.MPEG1', '.MPEG2', '.MTS', '.MXF', '.OGM', '.PLS', '.BUP', '.A52', '.AAC', '.B4S', '.CUE', '.DIVX', '.DV', '.FLV', '.M1V', '.M2TS', '.MKV', '.MOV', '.MPEG4', '.OMA', '.SPX', '.TS', '.VLC', '.VOB', '.XSPF', '.DAT', '.BIN', '.IFO', '.PART', '.3G2', '.AVI', '.MPEG', '.MPG', '.FLAC', '.M4A', '.MP1', '.OGG', '.WAV', '.XM', '.3GP', '.SRT', '.WMV', '.AC3', '.ASF', '.MOD', '.MP3', '.MP4', '.WMA', '.MKA', '.M4P'];
     return supportedExtensions.includes(extension.toUpperCase());
 }
+
+const moveFile = (file, dir2) => {
+    const fs = require('fs');
+    const path = require('path');
+
+    //gets file name and adds it to dir2
+    const basename = path.basename(file);
+    const dest = path.resolve(dir2, basename);
+
+    return new Promise((resolve, reject) => {
+        fs.rename(file, dest, (err) => {
+            if (err) reject(err);
+            else resolve(dest);
+        });
+    });
+};
 
 const parseMovie = movieName => {
     console.log('parse movie');
@@ -73,7 +100,10 @@ const parsePath = path => {
         rootDirectory: pathComponents[0],
         language: pathComponents[1],
         type: pathComponents[2],
-        name: pathComponents[3]
+        name: pathComponents[3],
+        root: () => {
+            return `${pathComponents[0]}/${pathComponents[1]}/${pathComponents[2]}`;
+        }
     };
 };
 
