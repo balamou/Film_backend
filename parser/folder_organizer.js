@@ -33,22 +33,24 @@ const orginizeSeriesFolder = pathData => {
             const currNode = queue.shift();
             const children = currNode.children;
 
-            console.log(currNode.path);
+            if (level >= 3 && currNode.type != 'directory' && isVideoFormat(currNode.extension)) {
+                move_up.push(currNode.path);
+            }
 
             if (!children) continue; 
 
             children.forEach(item => queue.push(item));
-
-            if (level >= 3) move_up.push(currNode.path);
         }
 
         level++;
     }
+
+    // Move video files UP ^
 };
 
 const isVideoFormat = extension => {
     const supportedExtensions = ['.ASX', '.DTS', '.GXF', '.M2V', '.M3U', '.M4V', '.MPEG1', '.MPEG2', '.MTS', '.MXF', '.OGM', '.PLS', '.BUP', '.A52', '.AAC', '.B4S', '.CUE', '.DIVX', '.DV', '.FLV', '.M1V', '.M2TS', '.MKV', '.MOV', '.MPEG4', '.OMA', '.SPX', '.TS', '.VLC', '.VOB', '.XSPF', '.DAT', '.BIN', '.IFO', '.PART', '.3G2', '.AVI', '.MPEG', '.MPG', '.FLAC', '.M4A', '.MP1', '.OGG', '.WAV', '.XM', '.3GP', '.SRT', '.WMV', '.AC3', '.ASF', '.MOD', '.MP3', '.MP4', '.WMA', '.MKA', '.M4P'];
-    return supportedExtensions.includes(extension);
+    return supportedExtensions.includes(extension.toUpperCase());
 }
 
 const parseMovie = movieName => {
