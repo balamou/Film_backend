@@ -24,30 +24,21 @@ const orginizeSeriesFolder = pathData => {
     if (directoryTree.type != 'directory') return ;
 
     // Level order tree traversal
-    const queue = [directoryTree];
     const move_up = [];
-    let level = 0;
-    while (queue.length > 0) {
-        const size = queue.length; 
-        console.log(`Level ${level}`);
+    levelOrderTraversal(directoryTree, (node, level) => {
+        if (node.type == 'directory') return;
+        if (level >= 3 && isVideoFormat(node.extension))
+            move_up.push(node.path);
+    });
 
-        for (let i = 0; i < size; i++) {
-            const currNode = queue.shift();
-            const children = currNode.children;
-
-            if (level >= 3 && currNode.type != 'directory' && isVideoFormat(currNode.extension)) {
-                move_up.push(currNode.path);
-            }
-
-            if (!children) continue; 
-
-            children.forEach(item => queue.push(item));
-        }
-
-        level++;
-    }
+    const purge = [];
+    levelOrderTraversal(directoryTree, (node, level) => {
+        if (level == 2 && (node.type == 'directory' || !isVideoFormat(node.extension)))
+            purge.push(node.path);
+    });
 
     moveUp(move_up); // Move video files UP
+    console.log(purge);
 };
 
 const moveUp = async files => {
@@ -56,6 +47,28 @@ const moveUp = async files => {
         const finalPath = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
 
         await moveFile(files[i], finalPath);
+    }
+};
+
+const levelOrderTraversal = (treeNode, onEach) => {
+    const queue = [treeNode];
+    let level = 0;
+    while (queue.length > 0) {
+        const size = queue.length;
+        console.log(`Level ${level}`);
+
+        for (let i = 0; i < size; i++) {
+            const currNode = queue.shift();
+            const children = currNode.children;
+
+            onEach(currNode, level);
+
+            if (!children) continue;
+
+            children.forEach(item => queue.push(item));
+        }
+
+        level++;
     }
 };
 
