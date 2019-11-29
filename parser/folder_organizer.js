@@ -10,56 +10,65 @@ const folderOrginizer = async (change, path) => {
 
     if (pathData.type === 'shows') {
         await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
-        orginizeSeriesFolder(pathData);
+        await orginizeSeriesFolder(pathData);
     } else if (pathData.type === 'movies') {
         parseMovie(pathData.name);
     }
 };
 
-const orginizeSeriesFolder = pathData => {
+const orginizeSeriesFolder = async pathData => {
+    const result = parseTreeFolder(pathData);
+    console.log(result.moveup);
+    console.log(result.purge);
+    if (!result) return;
+
+    await moveUp(result.moveup);
+    makeDirectory(`${pathData.path}/purge`); // create file purge
+
+    for (let i = 0; i < result.purge.length; i++) {
+        await moveFile(result.purge[i], `${pathData.path}/purge`);
+    }
+};
+
+const parseTreeFolder = pathData => {
     const directoryTree = dirTree(pathData.path, { exclude: /.DS_Store/ });
     if (!directoryTree) return;
-    console.log(directoryTree);
+    // console.log(directoryTree);
 
-    if (directoryTree.type != 'directory') return ;
+    if (directoryTree.type != 'directory') return null;
 
-    // Level order tree traversal
     const move_up = [];
-    levelOrderTraversal(directoryTree, (node, level) => {
-        if (node.type == 'directory') return;
-        if (level >= 3 && isVideoFormat(node.extension))
-            move_up.push(node.path);
-    });
-
     let purge = [];
     const level4folders = [];
+
     levelOrderTraversal(directoryTree, (node, level) => {
-        if (level == 1 && node.type == 'directory') 
+        if (level >= 3 && node.type == 'file' && isVideoFormat(node.extension))
+            move_up.push(node.path);
+
+        if (level == 1 && node.type == 'directory')
             level4folders.push(node);
 
         if (level == 2 && (node.type == 'directory' || !isVideoFormat(node.extension)))
             purge.push(node.path);
-        
+
         if (level == 1 && node.type == 'file' && !isVideoFormat(node.extension))
             purge.push(node.path);
     });
-    
-    const filtered = level4folders.filter( folder => {
+
+    const filtered = level4folders.filter(folder => {
         const doesFolderHaveAVideo = treeContains(folder, node => node.type == 'file' && isVideoFormat(node.extension));
 
         return !doesFolderHaveAVideo;
     });
 
     const filteredPaths = filtered.map(node => node.path);
-    
+
     purge = purge.concat(filteredPaths);
-    moveUp(move_up).then(() => {
-        makeDirectory(`${pathData.path}/purge`); // create file purge
-        console.log(purge);
-        (async () => {for (let i = 0; i < purge.length; i++) {
-            await moveFile(purge[i], `${pathData.path}/purge`);
-        }})()
-    });
+
+    return {
+        moveup: move_up,
+        purge: purge
+    };
 };
 
 const moveUp = async files => {
@@ -84,7 +93,7 @@ const levelOrderTraversal = (treeNode, onEach) => {
     let level = 0;
     while (queue.length > 0) {
         const size = queue.length;
-        console.log(`Level ${level}`);
+        // console.log(`Level ${level}`);
 
         for (let i = 0; i < size; i++) {
             const currNode = queue.shift();
