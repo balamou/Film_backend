@@ -5,6 +5,8 @@ const SeriesModel = require('../model/series');
 const folderOrginizer = async (change, path) => {
 
     console.log(`${change} happened to ${path}`);
+    if (change != 'addDir') return;
+
     const pathData = parsePath(path);
     if (!pathData) return;
 
@@ -28,6 +30,24 @@ const orginizeSeriesFolder = async pathData => {
     for (let i = 0; i < result.purge.length; i++) {
         await moveFile(result.purge[i], `${pathData.path}/purge`);
     }
+
+    // Separate 
+    const directoryTree = dirTree(pathData.path, { exclude: /.DS_Store|purge/ });
+    if (!directoryTree) return;
+
+    const level4folders = [];
+    const level4files = [];
+
+    levelOrderTraversal(directoryTree, (node, level) => {
+        if (level == 1 && node.type == 'directory')
+            level4folders.push(node);
+        
+        if (level == 1 && node.type == 'file')
+            level4files.push(node);
+    });
+
+    console.log(level4folders);
+    console.log(level4files);
 };
 
 const parseTreeFolder = pathData => {
