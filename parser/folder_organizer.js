@@ -31,21 +31,34 @@ const orginizeSeriesFolder = pathData => {
             move_up.push(node.path);
     });
 
-    const purge = [];
+    let purge = [];
+    const level4folders = [];
     levelOrderTraversal(directoryTree, (node, level) => {
+        if (level == 1 && node.type == 'directory') 
+            level4folders.push(node);
+
         if (level == 2 && (node.type == 'directory' || !isVideoFormat(node.extension)))
             purge.push(node.path);
         
         if (level == 1 && node.type == 'file' && !isVideoFormat(node.extension))
             purge.push(node.path);
     });
+    
+    const filtered = level4folders.filter( folder => {
+        const doesFolderHaveAVideo = treeContains(folder, node => node.type == 'file' && isVideoFormat(node.extension));
 
+        return !doesFolderHaveAVideo;
+    });
+
+    const filteredPaths = filtered.map(node => node.path);
+    
+    purge = purge.concat(filteredPaths);
     moveUp(move_up).then(() => {
         makeDirectory(`${pathData.path}/purge`); // create file purge
         console.log(purge);
-        for (let i = 0; i < purge.length; i++) {
-            moveFile(purge[i], `${pathData.path}/purge`);
-        }
+        (async () => {for (let i = 0; i < purge.length; i++) {
+            await moveFile(purge[i], `${pathData.path}/purge`);
+        }})()
     });
 };
 
@@ -85,6 +98,20 @@ const levelOrderTraversal = (treeNode, onEach) => {
         }
 
         level++;
+    }
+};
+
+const treeContains = (node, predicate) => { // BFS
+    const queue = [node];
+
+    while(queue.length > 0) {
+        const currNode = queue.shift();
+        const children = currNode.children;
+
+        if (predicate(currNode)) return true;
+        if (!children) continue;
+
+        children.forEach(item => queue.push(item));
     }
 };
 
