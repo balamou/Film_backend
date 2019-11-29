@@ -1,63 +1,55 @@
+const dirTree = require("directory-tree");
 const omdb = require('./omdb');
 const SeriesModel = require('../model/series');
 
-const folderOrginizer = (change, path) => {
+const folderOrginizer = async (change, path) => {
+
     console.log(`${change} happened to ${path}`);
     const pathData = parsePath(path);
     if (!pathData) return;
 
     if (pathData.type === 'shows') {
-        parseSeries(pathData.name, pathData);
+        await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
+        orginizeSeriesFolder(pathData);
     } else if (pathData.type === 'movies') {
         parseMovie(pathData.name);
     }
 };
 
-const parseSeries = async (seriesName, pathData) => {
-    const series = await omdb.fetchSeries(seriesName);
+const orginizeSeriesFolder = pathData => {
+    const directoryTree = dirTree(pathData.path);
+    if (!directoryTree) return;
+    console.log(directoryTree);
 
-    if (series.Error != null) { // TODO: handle not found series
-        console.log(`Did not find a show named ${seriesName}`);
-        // ask if user wants to abort => move to rejected folder
-        // ask if user wants to rename
-        // ask if user wants to add stale data (i.e. no information about a series, but still added)
-        return;
-    }
+    // Level order tree traversal
+    const queue = [directoryTree];
+    const move_up = [];
+    let level = 0;
+    while (queue.length > 0) {
+        const size = queue.length; 
+        console.log(`Level ${level}`);
 
-    console.log(series);
-    const seriesData = {
-        language: pathData.language,
-        folder: pathData.path,
-        title: series.Title,
-        desc: series.Plot.substring(0, 250),
-        poster: series.Poster,
-        seasons: series.totalSeasons
-    };
+        for (let i = 0; i < size; i++) {
+            const currNode = queue.shift();
+            const children = currNode.children;
 
-    SeriesModel.create(seriesData);
+            console.log(currNode.path);
 
-    for (let season = 1; season <= series.totalSeasons; season++) {
-        try {
-            const seasonData = await omdb.fetchSeason(seriesName, season);
-            console.log(`SEASON ${season}`);
+            if (!children) continue; 
 
-            console.log(typeof seasonData.Episodes);
-            const episodeList = seasonData.Episodes.map(element => parseInt(element.Episode));
-            episodeList.sort(function (a, b) { return a - b });
-            console.log(episodeList);
+            children.forEach(item => queue.push(item));
 
-            await episodeList.map(async episodeNumber => {
-                const episodeData = await omdb.fetchEpisode(seriesName, season, episodeNumber);
-
-                console.log(`S${season} E${episodeNumber} ${episodeData.Plot}`);
-                console.log();
-            });
-        } catch (err) {
-            console.log(err);
+            if (level >= 3) move_up.push(currNode.path);
         }
-        // console.log(seasonData);
+
+        level++;
     }
 };
+
+const isVideoFormat = extension => {
+    const supportedExtensions = ['.ASX', '.DTS', '.GXF', '.M2V', '.M3U', '.M4V', '.MPEG1', '.MPEG2', '.MTS', '.MXF', '.OGM', '.PLS', '.BUP', '.A52', '.AAC', '.B4S', '.CUE', '.DIVX', '.DV', '.FLV', '.M1V', '.M2TS', '.MKV', '.MOV', '.MPEG4', '.OMA', '.SPX', '.TS', '.VLC', '.VOB', '.XSPF', '.DAT', '.BIN', '.IFO', '.PART', '.3G2', '.AVI', '.MPEG', '.MPG', '.FLAC', '.M4A', '.MP1', '.OGG', '.WAV', '.XM', '.3GP', '.SRT', '.WMV', '.AC3', '.ASF', '.MOD', '.MP3', '.MP4', '.WMA', '.MKA', '.M4P'];
+    return supportedExtensions.includes(extension);
+}
 
 const parseMovie = movieName => {
     console.log('parse movie');
