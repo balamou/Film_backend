@@ -11,6 +11,9 @@ const folderOrginizer = async (change, path) => {
     if (!pathData) return;
 
     if (pathData.type === 'shows') {
+        const fs = require('fs');
+        fs.unlinkSync(`${pathData.path}/.DS_Store`);
+
         await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
         await orginizeSeriesFolder(pathData);
     } else if (pathData.type === 'movies') {
@@ -48,7 +51,7 @@ const orginizeSeriesFolder = async pathData => {
 
     console.log(level4folders);
     console.log(level4files);
- 
+//  return;
     // Create virtual tree
     const virtualTree = [];
     const rejected = [];
@@ -71,7 +74,7 @@ const orginizeSeriesFolder = async pathData => {
                 makeDirectory(`${pathData.path}/rejected`);
                 moveFile(level4files[i].path, `${pathData.path}/rejected`);
             } else {
-                season.episodes.push({ episode: currEpisode, path: level4files[i].path });
+                season.episodes.push({ episode: currEpisode, file: level4files[i] });
             }
         } else {
             // move to `rejected`
@@ -100,7 +103,7 @@ const orginizeSeriesFolder = async pathData => {
             const ptt = require("parse-torrent-title");
             const information = ptt.parse(item.name);
             let epNum = information.episode;
-
+            
             if (!epNum) {
                 const match = item.name.match(/\d+/);
                 if (!match) {
@@ -110,10 +113,22 @@ const orginizeSeriesFolder = async pathData => {
                 epNum = parseInt(match[0]);
             }
 
-            season.episodes.push({peisode: epNum, path: item.path});
+            season.episodes.push({episode: epNum, file: item});
         });
     }
     console.log(virtualTree);
+    commit(virtualTree, pathData);
+};
+
+const commit = (virtualTree, pathData) => {
+    virtualTree.forEach( season => {
+        const newFolder = `S${season.season}`;
+        makeDirectory(`${pathData.path}/${newFolder}`);
+
+        season.episodes.forEach( ep => {
+            moveAndRename(ep.file.path, `${pathData.path}/${newFolder}/E${ep.episode}${ep.file.extension}`);
+        });
+    });
 };
 
 const parseTreeFolder = pathData => {
@@ -227,6 +242,17 @@ const moveFile = (file, dir2) => {
         fs.rename(file, dest, (err) => {
             if (err) reject(err);
             else resolve(dest);
+        });
+    });
+};
+
+const moveAndRename = (file, fileNewName) => {
+    return new Promise((resolve, reject) => {
+        const fs = require('fs');
+
+        fs.rename(file, fileNewName, (err) => {
+            if (err) reject(err);
+            else resolve(fileNewName);
         });
     });
 };
