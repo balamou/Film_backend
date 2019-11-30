@@ -48,6 +48,39 @@ const orginizeSeriesFolder = async pathData => {
 
     console.log(level4folders);
     console.log(level4files);
+ 
+    // Create virtual tree
+    const virtualTree = [];
+    for (let i = 0; i < level4files.length; i++) {
+        const ptt = require("parse-torrent-title");
+        const information = ptt.parse(level4files[i].name);
+
+        console.log(information);
+
+        if (information.season && information.episode) {
+            const currSeason = information.season;
+            const currEpisode = information.episode;
+
+            let season = virtualTree.find(item => item.season == currSeason);
+            if (!season) { 
+                season = { season: currSeason, episodes: []};
+                virtualTree.push(season);
+            }
+
+            let episode = season.episodes.find(item => item.episode == currEpisode);
+            if (episode) { // episode already exists => move to rejected
+                makeDirectory(`${pathData.path}/rejected`);
+                moveFile(level4files[i].path, `${pathData.path}/rejected`);
+            } else {
+                season.episodes.push({ episode: currEpisode, path: level4files[i].path });
+            }
+        } else {
+            // move to `rejected`
+            makeDirectory(`${pathData.path}/rejected`);
+            moveFile(level4files[i].path, `${pathData.path}/rejected`);
+        }
+    }
+    console.log(virtualTree);
 };
 
 const parseTreeFolder = pathData => {

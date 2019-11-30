@@ -17,6 +17,7 @@
     "directory-tree": "^2.2.4",
     "express": "^4.17.1",
     "mysql2": "^2.0.1",
+    "parse-torrent-title": "^1.2.0",
     "pg": "^7.14.0",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.21.2"
