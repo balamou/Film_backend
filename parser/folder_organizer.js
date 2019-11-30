@@ -51,11 +51,10 @@ const orginizeSeriesFolder = async pathData => {
  
     // Create virtual tree
     const virtualTree = [];
+    const rejected = [];
     for (let i = 0; i < level4files.length; i++) {
         const ptt = require("parse-torrent-title");
         const information = ptt.parse(level4files[i].name);
-
-        console.log(information);
 
         if (information.season && information.episode) {
             const currSeason = information.season;
@@ -79,6 +78,40 @@ const orginizeSeriesFolder = async pathData => {
             makeDirectory(`${pathData.path}/rejected`);
             moveFile(level4files[i].path, `${pathData.path}/rejected`);
         }
+    }
+
+    // Folders 
+    for (let i = 0; i < level4folders.length; i++) {
+        // Parse out season number from folder name
+        const folder = level4folders[i];
+        const allNubmers = folder.name.replace(/\D+/g, '');
+        const seasonNumber = parseInt(allNubmers);
+        
+        if (!folder.children) continue;
+
+        let season = virtualTree.find(item => item.season == seasonNumber);
+        if (!season) {
+            season = { season: seasonNumber, episodes: [] };
+            virtualTree.push(season);
+        }
+
+        folder.children.forEach( item => {
+            if (item.type != 'file') return;
+            const ptt = require("parse-torrent-title");
+            const information = ptt.parse(item.name);
+            let epNum = information.episode;
+
+            if (!epNum) {
+                const match = item.name.match(/\d+/);
+                if (!match) {
+                    rejected.push(item.path); // move ep to reject
+                    return;
+                }
+                epNum = parseInt(match[0]);
+            }
+
+            season.episodes.push({peisode: epNum, path: item.path});
+        });
     }
     console.log(virtualTree);
 };
@@ -178,7 +211,7 @@ const treeContains = (node, predicate) => { // BFS
 };
 
 const isVideoFormat = extension => {
-    const supportedExtensions = ['.ASX', '.DTS', '.GXF', '.M2V', '.M3U', '.M4V', '.MPEG1', '.MPEG2', '.MTS', '.MXF', '.OGM', '.PLS', '.BUP', '.A52', '.AAC', '.B4S', '.CUE', '.DIVX', '.DV', '.FLV', '.M1V', '.M2TS', '.MKV', '.MOV', '.MPEG4', '.OMA', '.SPX', '.TS', '.VLC', '.VOB', '.XSPF', '.DAT', '.BIN', '.IFO', '.PART', '.3G2', '.AVI', '.MPEG', '.MPG', '.FLAC', '.M4A', '.MP1', '.OGG', '.WAV', '.XM', '.3GP', '.SRT', '.WMV', '.AC3', '.ASF', '.MOD', '.MP3', '.MP4', '.WMA', '.MKA', '.M4P'];
+    const supportedExtensions = ['.ASX', '.DTS', '.GXF', '.M2V', '.M3U', '.M4V', '.MPEG1', '.MPEG2', '.MTS', '.MXF', '.OGM', '.PLS', '.BUP', '.A52', '.AAC', '.B4S', '.CUE', '.DIVX', '.DV', '.FLV', '.M1V', '.M2TS', '.MKV', '.MOV', '.MPEG4', '.OMA', '.SPX', '.TS', '.VLC', '.VOB', '.XSPF', '.DAT', '.BIN', '.IFO', '.PART', '.3G2', '.AVI', '.MPEG', '.MPG', '.FLAC', '.M4A', '.MP1', '.OGG', '.WAV', '.XM', '.3GP', '.SRT', '.WMV', '.AC3', '.ASF', '.MOD', '.MP2', '.MP3', '.MP4', '.WMA', '.MKA', '.M4P'];
     return supportedExtensions.includes(extension.toUpperCase());
 }
 
