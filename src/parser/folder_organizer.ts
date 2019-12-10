@@ -1,25 +1,26 @@
-// import dirTree from 'directory-tree';
+import dirTree from 'directory-tree';
+import PathValidator from './PathValidator';
 // import omdb from './omdb';
 // import SeriesModel from '../model/series';
 
-// const folderOrginizer = async (change: string, path: string) => {
+const folderOrginizer = async (change: string, path: string) => {
+    console.log(`${change} happened to ${path}`);
+    if (change != 'addDir') return;
 
-//     console.log(`${change} happened to ${path}`);
-//     if (change != 'addDir') return;
+    const pathValidator = new PathValidator();
+    const pathData = pathValidator.parsePath(path);
 
-//     const pathData = parsePath(path);
-//     if (!pathData) return;
+    if (pathData.type === 'shows') {
+        const fs = require('fs');
+        fs.unlinkSync(`${pathData.fullPath}/.DS_Store`);
 
-//     if (pathData.type === 'shows') {
-//         const fs = require('fs');
-//         fs.unlinkSync(`${pathData.path}/.DS_Store`);
+        await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
+        // await orginizeSeriesFolder(pathData);
+    } else if (pathData.type === 'movies') {
+    }
+};
 
-//         await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
-//         await orginizeSeriesFolder(pathData);
-//     } else if (pathData.type === 'movies') {
-//         parseMovie(pathData.name);
-//     }
-// };
+export default folderOrginizer;
 
 // const orginizeSeriesFolder = async pathData => {
 //     const result = parseTreeFolder(pathData);

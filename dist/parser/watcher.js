@@ -29,7 +29,7 @@ function runWatcher() {
             .on('addDir', path => folderOrginizer('addDir', path))
             .on('unlinkDir', path => folderOrginizer('unlinkDir', path))
             .on('error', error => console.log(`Watcher error: ${error}`));
-    }).on('error', error => console.log(`Watcher error: ${error}`));
+    });
 }
 function folderOrginizer(a, b) {
     console.log(`${a} -- ${b}`);
