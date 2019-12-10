@@ -6,18 +6,18 @@
 import chokidar from 'chokidar';
 // import folderOrginizer from './folder_organizer';
 
-// Initialize watcher.
-const watcher = chokidar.watch('./public/', {
-    ignored: /(^|[\/\\])\../, // ignore dotfiles
-    persistent: false,
-    usePolling: true,
-    // only 2 levels deep: i.e. 
-    //    0      1     2   
-    // public / en / shows / 
-    depth: 2
-});
-
 function runWatcher() { 
+    // Initialize watcher
+    const watcher = chokidar.watch('./public/', {
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: false,
+        usePolling: true,
+        // only 2 levels deep: i.e. 
+        //    0      1     2   
+        // public / en / shows / 
+        depth: 2
+    });
+    
     watcher.on('ready', () => {
         console.log('Initial scan complete. Ready for changes');
     
@@ -27,7 +27,7 @@ function runWatcher() {
             .on('addDir', path => folderOrginizer('addDir', path))
             .on('unlinkDir', path => folderOrginizer('unlinkDir', path))
             .on('error', error => console.log(`Watcher error: ${error}`));
-    });
+    }).on('error', error => console.log(`Watcher error: ${error}`));
 }
 
 function folderOrginizer(a: string, b: string) {
