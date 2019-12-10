@@ -37,6 +37,7 @@ const main = async () => {
     await sequelize.sync({ force: true, logging: false });
     await app.listen(PORT_NUMBER);
     const watcher = require("./parser/watcher");
+    console.log("LOL");
+    watcher();
 };
-
 main();
