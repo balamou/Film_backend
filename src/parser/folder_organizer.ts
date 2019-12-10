@@ -1,5 +1,6 @@
-import dirTree from 'directory-tree';
-import PathValidator from './PathValidator';
+import { PathValidator, PathData } from './PathValidator';
+import { FlattenFileTree } from './FlattenFileTree';
+
 // import omdb from './omdb';
 // import SeriesModel from '../model/series';
 
@@ -13,8 +14,7 @@ const folderOrginizer = async (change: string, path: string) => {
     if (pathData.type === 'shows') {
         await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
         removeDStoreFrom(pathData.fullPath);
-
-        // await orginizeSeriesFolder(pathData);
+        await orginizeSeriesFolder(pathData);
     } else if (pathData.type === 'movies') {
     }
 };
@@ -24,106 +24,105 @@ function removeDStoreFrom(path: string) {
     fs.unlinkSync(`${path}/.DS_Store`);
 }
 
-export default folderOrginizer;
 
-// const orginizeSeriesFolder = async pathData => {
-//     const result = parseTreeFolder(pathData);
-//     console.log(result.moveup);
-//     console.log(result.purge);
-//     if (!result) return;
+const orginizeSeriesFolder = async (pathData: PathData) => {
+    const result = parseTreeFolder(pathData);
+    console.log(result.moveup);
+    console.log(result.purge);
+    if (!result) return;
 
-//     await moveUp(result.moveup);
-//     makeDirectory(`${pathData.path}/purge`); // create file purge
+    await moveUp(result.moveup);
+    makeDirectory(`${pathData.path}/purge`); // create file purge
 
-//     for (let i = 0; i < result.purge.length; i++) {
-//         await moveFile(result.purge[i], `${pathData.path}/purge`);
-//     }
+    for (let i = 0; i < result.purge.length; i++) {
+        await moveFile(result.purge[i], `${pathData.path}/purge`);
+    }
 
-//     // Separate 
-//     const directoryTree = dirTree(pathData.path, { exclude: /.DS_Store|purge/ });
-//     if (!directoryTree) return;
+    // Separate 
+    const directoryTree = dirTree(pathData.path, { exclude: /.DS_Store|purge/ });
+    if (!directoryTree) return;
 
-//     const level4folders = [];
-//     const level4files = [];
+    const level4folders = [];
+    const level4files = [];
 
-//     levelOrderTraversal(directoryTree, (node, level) => {
-//         if (level == 1 && node.type == 'directory')
-//             level4folders.push(node);
+    levelOrderTraversal(directoryTree, (node, level) => {
+        if (level == 1 && node.type == 'directory')
+            level4folders.push(node);
         
-//         if (level == 1 && node.type == 'file')
-//             level4files.push(node);
-//     });
+        if (level == 1 && node.type == 'file')
+            level4files.push(node);
+    });
 
-//     console.log(level4folders);
-//     console.log(level4files);
-// //  return;
-//     // Create virtual tree
-//     const virtualTree = [];
-//     const rejected = [];
-//     for (let i = 0; i < level4files.length; i++) {
-//         const ptt = require("parse-torrent-title");
-//         const information = ptt.parse(level4files[i].name);
+    console.log(level4folders);
+    console.log(level4files);
+//  return;
+    // Create virtual tree
+    const virtualTree = [];
+    const rejected = [];
+    for (let i = 0; i < level4files.length; i++) {
+        const ptt = require("parse-torrent-title");
+        const information = ptt.parse(level4files[i].name);
 
-//         if (information.season && information.episode) {
-//             const currSeason = information.season;
-//             const currEpisode = information.episode;
+        if (information.season && information.episode) {
+            const currSeason = information.season;
+            const currEpisode = information.episode;
 
-//             let season = virtualTree.find(item => item.season == currSeason);
-//             if (!season) { 
-//                 season = { season: currSeason, episodes: []};
-//                 virtualTree.push(season);
-//             }
+            let season = virtualTree.find(item => item.season == currSeason);
+            if (!season) { 
+                season = { season: currSeason, episodes: []};
+                virtualTree.push(season);
+            }
 
-//             let episode = season.episodes.find(item => item.episode == currEpisode);
-//             if (episode) { // episode already exists => move to rejected
-//                 makeDirectory(`${pathData.path}/rejected`);
-//                 moveFile(level4files[i].path, `${pathData.path}/rejected`);
-//             } else {
-//                 season.episodes.push({ episode: currEpisode, file: level4files[i] });
-//             }
-//         } else {
-//             // move to `rejected`
-//             makeDirectory(`${pathData.path}/rejected`);
-//             moveFile(level4files[i].path, `${pathData.path}/rejected`);
-//         }
-//     }
+            let episode = season.episodes.find(item => item.episode == currEpisode);
+            if (episode) { // episode already exists => move to rejected
+                makeDirectory(`${pathData.path}/rejected`);
+                moveFile(level4files[i].path, `${pathData.path}/rejected`);
+            } else {
+                season.episodes.push({ episode: currEpisode, file: level4files[i] });
+            }
+        } else {
+            // move to `rejected`
+            makeDirectory(`${pathData.path}/rejected`);
+            moveFile(level4files[i].path, `${pathData.path}/rejected`);
+        }
+    }
 
-//     // Folders 
-//     for (let i = 0; i < level4folders.length; i++) {
-//         // Parse out season number from folder name
-//         const folder = level4folders[i];
-//         const allNubmers = folder.name.replace(/\D+/g, '');
-//         const seasonNumber = parseInt(allNubmers);
+    // Folders 
+    for (let i = 0; i < level4folders.length; i++) {
+        // Parse out season number from folder name
+        const folder = level4folders[i];
+        const allNubmers = folder.name.replace(/\D+/g, '');
+        const seasonNumber = parseInt(allNubmers);
         
-//         if (!folder.children) continue;
+        if (!folder.children) continue;
 
-//         let season = virtualTree.find(item => item.season == seasonNumber);
-//         if (!season) {
-//             season = { season: seasonNumber, episodes: [] };
-//             virtualTree.push(season);
-//         }
+        let season = virtualTree.find(item => item.season == seasonNumber);
+        if (!season) {
+            season = { season: seasonNumber, episodes: [] };
+            virtualTree.push(season);
+        }
 
-//         folder.children.forEach( item => {
-//             if (item.type != 'file') return;
-//             const ptt = require("parse-torrent-title");
-//             const information = ptt.parse(item.name);
-//             let epNum = information.episode;
+        folder.children.forEach( item => {
+            if (item.type != 'file') return;
+            const ptt = require("parse-torrent-title");
+            const information = ptt.parse(item.name);
+            let epNum = information.episode;
             
-//             if (!epNum) {
-//                 const match = item.name.match(/\d+/);
-//                 if (!match) {
-//                     rejected.push(item.path); // move ep to reject
-//                     return;
-//                 }
-//                 epNum = parseInt(match[0]);
-//             }
+            if (!epNum) {
+                const match = item.name.match(/\d+/);
+                if (!match) {
+                    rejected.push(item.path); // move ep to reject
+                    return;
+                }
+                epNum = parseInt(match[0]);
+            }
 
-//             season.episodes.push({episode: epNum, file: item});
-//         });
-//     }
-//     console.log(virtualTree);
-//     commit(virtualTree, pathData);
-// };
+            season.episodes.push({episode: epNum, file: item});
+        });
+    }
+    console.log(virtualTree);
+    commit(virtualTree, pathData);
+};
 
 // const commit = (virtualTree, pathData) => {
 //     virtualTree.forEach( season => {
@@ -136,46 +135,6 @@ export default folderOrginizer;
 //     });
 // };
 
-// const parseTreeFolder = pathData => {
-//     const directoryTree = dirTree(pathData.path, { exclude: /.DS_Store/ });
-//     if (!directoryTree) return;
-//     // console.log(directoryTree);
-
-//     if (directoryTree.type != 'directory') return null;
-
-//     const move_up = [];
-//     let purge = [];
-//     const level4folders = [];
-
-//     levelOrderTraversal(directoryTree, (node, level) => {
-//         if (level >= 3 && node.type == 'file' && isVideoFormat(node.extension))
-//             move_up.push(node.path);
-
-//         if (level == 1 && node.type == 'directory')
-//             level4folders.push(node);
-
-//         if (level == 2 && (node.type == 'directory' || !isVideoFormat(node.extension)))
-//             purge.push(node.path);
-
-//         if (level == 1 && node.type == 'file' && !isVideoFormat(node.extension))
-//             purge.push(node.path);
-//     });
-
-//     const filtered = level4folders.filter(folder => {
-//         const doesFolderHaveAVideo = treeContains(folder, node => node.type == 'file' && isVideoFormat(node.extension));
-
-//         return !doesFolderHaveAVideo;
-//     });
-
-//     const filteredPaths = filtered.map(node => node.path);
-
-//     purge = purge.concat(filteredPaths);
-
-//     return {
-//         moveup: move_up,
-//         purge: purge
-//     };
-// };
 
 // const moveUp = async files => {
 //     for (let i = 0; i < files.length; i++) {
@@ -194,46 +153,7 @@ export default folderOrginizer;
 //     }
 // }
 
-// const levelOrderTraversal = (treeNode, onEach) => {
-//     const queue = [treeNode];
-//     let level = 0;
-//     while (queue.length > 0) {
-//         const size = queue.length;
-//         // console.log(`Level ${level}`);
 
-//         for (let i = 0; i < size; i++) {
-//             const currNode = queue.shift();
-//             const children = currNode.children;
-
-//             onEach(currNode, level);
-
-//             if (!children) continue;
-
-//             children.forEach(item => queue.push(item));
-//         }
-
-//         level++;
-//     }
-// };
-
-// const treeContains = (node: any, predicate: any) => { // BFS
-//     const queue = [node];
-
-//     while(queue.length > 0) {
-//         const currNode = queue.shift();
-//         const children = currNode.children;
-
-//         if (predicate(currNode)) return true;
-//         if (!children) continue;
-
-//         children.forEach((item: any) => queue.push(item));
-//     }
-// };
-
-// const isVideoFormat = (extension: string) => {
-//     const supportedExtensions = ['.ASX', '.DTS', '.GXF', '.M2V', '.M3U', '.M4V', '.MPEG1', '.MPEG2', '.MTS', '.MXF', '.OGM', '.PLS', '.BUP', '.A52', '.AAC', '.B4S', '.CUE', '.DIVX', '.DV', '.FLV', '.M1V', '.M2TS', '.MKV', '.MOV', '.MPEG4', '.OMA', '.SPX', '.TS', '.VLC', '.VOB', '.XSPF', '.DAT', '.BIN', '.IFO', '.PART', '.3G2', '.AVI', '.MPEG', '.MPG', '.FLAC', '.M4A', '.MP1', '.OGG', '.WAV', '.XM', '.3GP', '.SRT', '.WMV', '.AC3', '.ASF', '.MOD', '.MP2', '.MP3', '.MP4', '.WMA', '.MKA', '.M4P'];
-//     return supportedExtensions.includes(extension.toUpperCase());
-// }
 
 // const moveFile = (file: string, dir2: string) => {
 //     const fs = require('fs');
@@ -262,10 +182,6 @@ export default folderOrginizer;
 //     });
 // };
 
-// const parseMovie = (movieName: string) => {
-//     console.log('parse movie');
-// };
-
 // const parsePath = (path: string) => {
 //     const pathComponents = path.split('/'); // example: [ 'public', 'en', 'shows', 'rick_and_morty' ]
 //     console.log(pathComponents);
@@ -289,4 +205,4 @@ export default folderOrginizer;
 //     };
 // };
 
-// export default folderOrginizer;
+export default folderOrginizer;

@@ -1,4 +1,4 @@
-class PathData {
+export class PathData {
     constructor(public fullPath: string,
         public rootDirectory: string,
         public language: string,
@@ -8,7 +8,7 @@ class PathData {
     root = () => `${this.rootDirectory}/${this.language}/${this.type}`;
 }
 
-class PathValidator {
+export class PathValidator {
     private WRONG_DIRECTORY = 'Not the right directory';
     private WRONG_LANGUAGE = 'No language directory found';
     private WRONG_TYPE = 'Has to be in a`shows` or`movies` directory';
@@ -26,5 +26,3 @@ class PathValidator {
         return new PathData(path, pathComponents[0], pathComponents[1], pathComponents[2], pathComponents[3]);
     }
 }
-
-export default PathValidator;

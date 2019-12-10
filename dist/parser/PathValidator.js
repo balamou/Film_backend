@@ -10,6 +10,7 @@ class PathData {
         this.root = () => `${this.rootDirectory}/${this.language}/${this.type}`;
     }
 }
+exports.PathData = PathData;
 class PathValidator {
     constructor() {
         this.WRONG_DIRECTORY = 'Not the right directory';
@@ -29,4 +30,4 @@ class PathValidator {
         return new PathData(path, pathComponents[0], pathComponents[1], pathComponents[2], pathComponents[3]);
     }
 }
-exports.default = PathValidator;
+exports.PathValidator = PathValidator;
