@@ -4,7 +4,7 @@
 // imdb-like website to get info about the show/movie.
 // The information is stored in the database.
 import chokidar from 'chokidar';
-// import folderOrginizer from './folder_organizer';
+import folderOrginizer from './folder_organizer';
 
 function runWatcher() { 
     // Initialize watcher
@@ -28,10 +28,6 @@ function runWatcher() {
             .on('unlinkDir', path => folderOrginizer('unlinkDir', path))
             .on('error', error => console.log(`Watcher error: ${error}`));
     });
-}
-
-function folderOrginizer(a: string, b: string) {
-    console.log(`${a} -- ${b}`);
 }
 
 export default runWatcher;

@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // imdb-like website to get info about the show/movie.
 // The information is stored in the database.
 const chokidar_1 = __importDefault(require("chokidar"));
-// import folderOrginizer from './folder_organizer';
+const folder_organizer_1 = __importDefault(require("./folder_organizer"));
 function runWatcher() {
     // Initialize watcher
     const watcher = chokidar_1.default.watch('./public/', {
@@ -23,15 +23,12 @@ function runWatcher() {
     });
     watcher.on('ready', () => {
         console.log('Initial scan complete. Ready for changes');
-        watcher.on('add', path => folderOrginizer('add', path))
-            .on('change', path => folderOrginizer('change', path))
-            .on('unlink', path => folderOrginizer('delete', path))
-            .on('addDir', path => folderOrginizer('addDir', path))
-            .on('unlinkDir', path => folderOrginizer('unlinkDir', path))
+        watcher.on('add', path => folder_organizer_1.default('add', path))
+            .on('change', path => folder_organizer_1.default('change', path))
+            .on('unlink', path => folder_organizer_1.default('delete', path))
+            .on('addDir', path => folder_organizer_1.default('addDir', path))
+            .on('unlinkDir', path => folder_organizer_1.default('unlinkDir', path))
             .on('error', error => console.log(`Watcher error: ${error}`));
     });
-}
-function folderOrginizer(a, b) {
-    console.log(`${a} -- ${b}`);
 }
 exports.default = runWatcher;

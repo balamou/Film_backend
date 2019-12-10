@@ -22,14 +22,17 @@ const folderOrginizer = (change, path) => __awaiter(void 0, void 0, void 0, func
     const pathValidator = new PathValidator_1.default();
     const pathData = pathValidator.parsePath(path);
     if (pathData.type === 'shows') {
-        const fs = require('fs');
-        fs.unlinkSync(`${pathData.fullPath}/.DS_Store`);
         yield new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
+        removeDStoreFrom(pathData.fullPath);
         // await orginizeSeriesFolder(pathData);
     }
     else if (pathData.type === 'movies') {
     }
 });
+function removeDStoreFrom(path) {
+    const fs = require('fs');
+    fs.unlinkSync(`${path}/.DS_Store`);
+}
 exports.default = folderOrginizer;
 // const orginizeSeriesFolder = async pathData => {
 //     const result = parseTreeFolder(pathData);

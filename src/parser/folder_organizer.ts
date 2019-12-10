@@ -11,14 +11,18 @@ const folderOrginizer = async (change: string, path: string) => {
     const pathData = pathValidator.parsePath(path);
 
     if (pathData.type === 'shows') {
-        const fs = require('fs');
-        fs.unlinkSync(`${pathData.fullPath}/.DS_Store`);
-
         await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
+        removeDStoreFrom(pathData.fullPath);
+
         // await orginizeSeriesFolder(pathData);
     } else if (pathData.type === 'movies') {
     }
 };
+
+function removeDStoreFrom(path: string) {
+    const fs = require('fs');
+    fs.unlinkSync(`${path}/.DS_Store`);
+}
 
 export default folderOrginizer;
 
