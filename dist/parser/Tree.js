@@ -60,5 +60,31 @@ class Tree {
         return this.isVideoFormat(this.extension);
     }
     ;
+    hash() {
+        const preoder = this.preorder(this);
+        return this.hashString(preoder);
+    }
+    hashString(str) {
+        let hash = 0, i, chr;
+        if (str.length === 0)
+            return hash;
+        for (i = 0; i < str.length; i++) {
+            chr = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    }
+    preorder(node) {
+        let result = node.path;
+        if (node.children.length == 0)
+            result += ":null:";
+        else {
+            const mapped = node.children.map(child => this.preorder(child));
+            const reduced = mapped.reduce((prev, curr) => prev + curr);
+            result += ":" + reduced;
+        }
+        return result;
+    }
 }
 exports.default = Tree;

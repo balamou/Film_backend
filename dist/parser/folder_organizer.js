@@ -10,8 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const PathValidator_1 = require("./PathValidator");
-const FlattenFileTree_1 = require("./FlattenFileTree");
-const FSEditor_1 = require("./Adapters/FSEditor");
 const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 // import omdb from './omdb';
 // import SeriesModel from '../model/series';
@@ -22,7 +20,7 @@ const folderOrginizer = (change, path) => __awaiter(void 0, void 0, void 0, func
     const pathData = new PathValidator_1.PathValidator().parsePath(path);
     if (pathData.type === 'shows') {
         yield new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
-        removeDStoreFrom(pathData.fullPath);
+        //removeDStoreFrom(pathData.fullPath);
         yield orginizeSeriesFolder(pathData);
     }
     else if (pathData.type === 'movies') {
@@ -33,8 +31,13 @@ function removeDStoreFrom(path) {
     fs.unlinkSync(`${path}/.DS_Store`);
 }
 const orginizeSeriesFolder = (pathData) => __awaiter(void 0, void 0, void 0, function* () {
-    const flatten = new FlattenFileTree_1.FlattenFileTree(new DirTreeCreator_1.DirTree(), new FSEditor_1.FSEditor());
-    flatten.flatten(pathData.fullPath);
+    const directoryTree = new DirTreeCreator_1.DirTree().treeFrom(pathData.fullPath, /.DS_Store|purge/);
+    if (!directoryTree)
+        return;
+    console.log(directoryTree);
+    console.log(directoryTree.hash());
+    //const flatten = new FlattenFileTree(new DirTree(), new FSEditor());
+    //flatten.flatten(pathData.fullPath);
     // // Separate 
     // const directoryTree = new DirTree().treeFrom(pathData.fullPath, /.DS_Store|purge/);
     // if (!directoryTree) return;

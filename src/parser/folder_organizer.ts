@@ -17,7 +17,7 @@ const folderOrginizer = async (change: string, path: string) => {
 
     if (pathData.type === 'shows') {
         await new Promise(resolve => setTimeout(resolve, 3000)); // wait for 3 seconds
-        removeDStoreFrom(pathData.fullPath);
+        //removeDStoreFrom(pathData.fullPath);
         await orginizeSeriesFolder(pathData);
     } else if (pathData.type === 'movies') {
     }
@@ -29,9 +29,14 @@ function removeDStoreFrom(path: string) {
 }
 
 const orginizeSeriesFolder = async (pathData: PathData) => {
-    const flatten = new FlattenFileTree(new DirTree(), new FSEditor());
-    flatten.flatten(pathData.fullPath);
-    
+    const directoryTree = new DirTree().treeFrom(pathData.fullPath, /.DS_Store|purge/);
+    if (!directoryTree) return;
+    console.log(directoryTree);
+    console.log(directoryTree.hash());
+
+    //const flatten = new FlattenFileTree(new DirTree(), new FSEditor());
+    //flatten.flatten(pathData.fullPath);
+
     // // Separate 
     // const directoryTree = new DirTree().treeFrom(pathData.fullPath, /.DS_Store|purge/);
     // if (!directoryTree) return;
