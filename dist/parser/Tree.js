@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Tree {
-    constructor(path, type, extension, children) {
+    constructor(path, name, type, extension, children) {
         this.FILE = 'file';
         this.DIRECTORY = 'directory';
         this.levelOrderTraversal = (onEach) => {
@@ -41,6 +41,7 @@ class Tree {
             return supportedExtensions.includes(extension.toUpperCase());
         };
         this.path = path;
+        this.name = name;
         this.type = type;
         this.extension = extension;
         this.children = children;
@@ -54,6 +55,8 @@ class Tree {
     }
     ;
     get isVideo() {
+        if (!this.extension)
+            return false;
         return this.isVideoFormat(this.extension);
     }
     ;

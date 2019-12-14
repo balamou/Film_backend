@@ -1,32 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Tree_1 = __importDefault(require("./Tree"));
-const directory_tree_1 = __importDefault(require("directory-tree"));
-class DirTree {
-    treeFrom(path, exclude) {
-        const parsedDirectory = directory_tree_1.default(path, { exclude: exclude });
-        return this.buildTree(parsedDirectory);
-    }
-    // post-order traversal
-    // NOTE: this function could endup being in a cycle if a child node is pointing to a parent node
-    buildTree(node) {
-        const children = node.children;
-        let newChildren = [];
-        if (children)
-            newChildren = children.map(child => this.buildTree(child));
-        return new Tree_1.default(node.path, node.type, node.extension, newChildren);
-    }
-}
-exports.DirTree = DirTree;
 class FlattenFileTree {
-    constructor(dirTreeCreator) {
+    constructor(dirTreeCreator, fileSystemEditor) {
         this.exclude = /.DS_Store/;
         this.dirTreeCreator = dirTreeCreator;
+        this.fileSystemEditor = fileSystemEditor;
     }
-    flatten(path) {
+    findMisplacedFiles(path) {
         const directoryTree = this.dirTreeCreator.treeFrom(path, this.exclude);
         if (!(directoryTree && directoryTree.isFolder))
             return;
@@ -43,15 +23,31 @@ class FlattenFileTree {
             if (level == 1 && node.isFile && !node.isVideo)
                 purge.push(node.path);
         });
-        const filtered = level4folders.filter(folder => {
-            const doesFolderHaveAVideo = folder.contains(node => node.isFile && node.isVideo);
-            return !doesFolderHaveAVideo;
-        }).map(node => node.path);
+        const filtered = level4folders.filter(folder => !folder.contains(node => node.isFile && node.isVideo)).map(node => node.path);
         purge = purge.concat(filtered);
+        console.log(purge);
         return {
             moveup: move_up,
             purge: purge
         };
+    }
+    moveUp(files) {
+        files.forEach(file => {
+            const components = file.split('/');
+            const level4folder = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
+            this.fileSystemEditor.moveFileToFolder(file, level4folder);
+        });
+    }
+    flatten(path) {
+        const result = this.findMisplacedFiles(path);
+        const purgeFolder = `${path}/purge`;
+        if (!result)
+            return;
+        this.moveUp(result.moveup);
+        this.fileSystemEditor.makeDirectory(purgeFolder); // create purge folder
+        result.purge.forEach(file => {
+            this.fileSystemEditor.moveFileToFolder(file, purgeFolder);
+        });
     }
 }
 exports.FlattenFileTree = FlattenFileTree;

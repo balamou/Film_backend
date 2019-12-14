@@ -1,3 +1,5 @@
+import Tree from '../Tree';
+
 export class VirtualTree {
     tree: Season[] = [];
 
@@ -33,13 +35,13 @@ export class Season {
     }
 }
 
-export type FileContent = { name: string, path: string, extension: string };
+// export type FileContent = { name: string, path: string, extension: string };
 
 export class Episode {
     readonly episodeNum: number;
-    readonly file: FileContent;
+    readonly file: Tree;
 
-    constructor(episodeNum: number, file: FileContent) {
+    constructor(episodeNum: number, file: Tree) {
         this.episodeNum = episodeNum;
         this.file = file;
     }

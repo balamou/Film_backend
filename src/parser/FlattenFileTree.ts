@@ -1,41 +1,18 @@
+import { DirectoryTreeCreator } from './Adapters/DirTreeCreator';
+import { FileSystemEditor } from './Adapters/FSEditor';
 import Tree from './Tree';
-import dirTree from 'directory-tree';
-
-export interface DirectoryTreeCreator {
-    treeFrom(path: string, exclude?: RegExp): Tree | undefined;
-}
-
-export class DirTree implements DirectoryTreeCreator {
-
-    treeFrom(path: string, exclude?: RegExp | undefined): Tree | undefined {
-        const parsedDirectory = dirTree(path, { exclude: exclude });
-        
-        return this.buildTree(parsedDirectory);
-    }
-    
-    // post-order traversal
-    // NOTE: this function could endup being in a cycle if a child node is pointing to a parent node
-    private buildTree(node: dirTree.DirectoryTree): Tree {
-        const children = node.children;
-        let newChildren: Tree[] = [];
-
-        if (children) 
-            newChildren = children.map(child => this.buildTree(child));
-
-        return new Tree(node.path, node.type, node.extension, newChildren);
-    }
-}
-
 
 export class FlattenFileTree {
-    dirTreeCreator: DirectoryTreeCreator;
-    readonly exclude = /.DS_Store/;
+    private dirTreeCreator: DirectoryTreeCreator;
+    private fileSystemEditor: FileSystemEditor;
+    private readonly exclude = /.DS_Store/;
 
-    constructor(dirTreeCreator: DirectoryTreeCreator) {
+    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor) {
         this.dirTreeCreator = dirTreeCreator;
+        this.fileSystemEditor = fileSystemEditor;
     }
 
-    flatten(path: string) {
+    private findMisplacedFiles(path: string) {
         const directoryTree = this.dirTreeCreator.treeFrom(path, this.exclude);
         if (!(directoryTree && directoryTree.isFolder)) return;
 
@@ -57,16 +34,37 @@ export class FlattenFileTree {
                 purge.push(node.path);
         });
 
-        const filtered = level4folders.filter(folder => {
-            const doesFolderHaveAVideo = folder.contains(node => node.isFile && node.isVideo);
-            return !doesFolderHaveAVideo;
-        }).map(node => node.path);
+        const filtered = level4folders.filter(folder =>
+            !folder.contains(node => node.isFile && node.isVideo)
+        ).map(node => node.path);
 
         purge = purge.concat(filtered);
-
+        console.log(purge);
         return {
             moveup: move_up,
             purge: purge
         };
+    }
+
+    private moveUp(files: string[]) {
+        files.forEach(file => {
+            const components = file.split('/');
+            const level4folder = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
+
+            this.fileSystemEditor.moveFileToFolder(file, level4folder);
+        });
+    }
+
+    flatten(path: string) {
+        const result = this.findMisplacedFiles(path);
+        const purgeFolder = `${path}/purge`;
+        if (!result) return;
+
+        this.moveUp(result.moveup);
+        this.fileSystemEditor.makeDirectory(purgeFolder); // create purge folder
+
+        result.purge.forEach(file => {
+            this.fileSystemEditor.moveFileToFolder(file, purgeFolder);
+        });
     }
 }

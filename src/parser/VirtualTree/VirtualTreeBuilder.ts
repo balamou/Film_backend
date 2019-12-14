@@ -1,22 +1,24 @@
-import { VirtualTree, FileContent, Episode } from './VirtualTree';
+import Tree from '../Tree';
 
-interface TitleParser {
-    parse(fileName: string): {season?: number, episode?: number};
-    parseSeasonFrom(folderName: string): number;
-}
-
-type Folder = { name: string, children: FileContent[] };
+import { VirtualTree, Episode } from './VirtualTree';
+import { TitleParser } from '../Adapters/TitleParser';
+import { FileSystemEditor } from '../Adapters/FSEditor';
 
 export class VirtualTreeBuilder {
+    private readonly path: string;
     private titleParser: TitleParser;
-    readonly rejected: FileContent[] = [];
-    readonly virtualTree: VirtualTree = new VirtualTree();
+    private fileSystemEditor: FileSystemEditor;
 
-    constructor(titleParser: TitleParser) {
+    readonly rejected = new Array<Tree>();
+    readonly virtualTree = new VirtualTree();
+
+    constructor(path: string, titleParser: TitleParser, fileSystemEditor: FileSystemEditor) {
+        this.path = path;
         this.titleParser = titleParser;
+        this.fileSystemEditor = fileSystemEditor;
     }
 
-    buildVirtualTree(files: FileContent[]) {
+    buildVirtualTree(files: Tree[]) {
         files.forEach(file => {
             const info = this.titleParser.parse(file.name);
 
@@ -32,12 +34,12 @@ export class VirtualTreeBuilder {
         });
     }
 
-    buildVirtualTreeFromFolders(folders: Folder[]) {
+    buildVirtualTreeFromFolders(folders: Tree[]) {
         this.traverseFilesIn(folders, (folder, file) => {
             const seasonNumber = this.titleParser.parseSeasonFrom(folder.name);
             const episodeNumber = this.titleParser.parse(file.name).episode;
 
-            if (episodeNumber) {
+            if (episodeNumber && seasonNumber) {
                 try {
                     this.virtualTree.addEpisode(seasonNumber, new Episode(episodeNumber, file));
                 } catch (error) {
@@ -49,9 +51,18 @@ export class VirtualTreeBuilder {
         });
     }
 
-    private traverseFilesIn(folders: Folder[], apply: (folder: Folder, file: FileContent) => void) {
+    private traverseFilesIn(folders: Tree[], apply: (folder: Tree, file: Tree) => void) {
         folders.forEach(folder => {
             folder.children.forEach(file => apply(folder, file));
+        });
+    }
+
+    commit() {
+        this.virtualTree.forEach( (season, episode) => {
+            const newFolder = `S${season.seasonNum}`;
+
+            this.fileSystemEditor.makeDirectory(`${this.path}/${newFolder}`);
+            this.fileSystemEditor.moveAndRename(episode.file.path, `${this.path}/${newFolder}/E${episode.episodeNum}${episode.file.extension}`);
         });
     }
 }

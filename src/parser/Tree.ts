@@ -1,14 +1,16 @@
 export default class Tree {
-    path: string;
-    type: string;
-    extension: string | undefined;
-    children: Tree[];
+    readonly path: string;
+    readonly name: string;
+    readonly type: string;
+    readonly extension: string | undefined;
+    readonly children: Tree[];
 
     private readonly FILE = 'file';
     private readonly DIRECTORY = 'directory';
 
-    constructor(path: string, type: string, extension: string | undefined, children: Tree[]) {
+    constructor(path: string, name: string, type: string, extension: string | undefined, children: Tree[]) {
         this.path = path;
+        this.name = name;
         this.type = type;
         this.extension = extension;
         this.children = children;
@@ -60,6 +62,7 @@ export default class Tree {
     };
 
     get isVideo(): boolean {
+        if (!this.extension) return false;
         return this.isVideoFormat(this.extension);
     };
     
