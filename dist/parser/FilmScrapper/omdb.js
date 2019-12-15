@@ -25,7 +25,7 @@ Omdb.movieEndPoint = (movieName) => `http://www.omdbapi.com/?apikey=${Omdb.API_K
 Omdb.fetchSeries = (seriesName) => HTTPReq_1.httpGet(Omdb.seriesEndPoint(seriesName));
 Omdb.fetchSeason = (seriesName, season) => HTTPReq_1.httpGet(Omdb.seasonEndPoint(seriesName, season));
 Omdb.fetchEpisode = (seriesName, season, episode) => HTTPReq_1.httpGet(Omdb.episodeEndPoint(seriesName, season, episode));
-Omdb.fetchMovie = (seriesName) => HTTPReq_1.httpGet(Omdb.movieEndPoint(seriesName));
+Omdb.fetchMovie = (movieName) => HTTPReq_1.httpGet(Omdb.movieEndPoint(movieName));
 class SeriesFetcher {
     fetchSeries(seriesName) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -49,6 +49,20 @@ class SeriesFetcher {
                 title: episodeInfo.Title,
                 plot: episodeInfo.Plot,
                 imdbRating: episodeInfo.imdbRating
+            };
+        });
+    }
+    fetchMovie(movieName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const movieInfo = yield Omdb.fetchMovie(movieName);
+            if (!movieInfo.Error)
+                throw new Error(movieInfo.Error);
+            return {
+                title: movieInfo.Title,
+                year: movieInfo.Year,
+                plot: movieInfo.Plot,
+                poster: movieInfo.Poster,
+                imdbRating: movieInfo.imdbRating
             };
         });
     }

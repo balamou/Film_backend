@@ -16,7 +16,7 @@ export class Omdb {
     static fetchSeries = (seriesName: string) => httpGet(Omdb.seriesEndPoint(seriesName));
     static fetchSeason = (seriesName: string, season: string) => httpGet(Omdb.seasonEndPoint(seriesName, season));
     static fetchEpisode = (seriesName: string, season: string, episode: string) => httpGet(Omdb.episodeEndPoint(seriesName, season, episode));
-    static fetchMovie = (seriesName: string) => httpGet(Omdb.movieEndPoint(seriesName));
+    static fetchMovie = (movieName: string) => httpGet(Omdb.movieEndPoint(movieName));
 
     // Error respose:
     // {"Response":"False","Error":"Series or episode not found!"}
@@ -48,6 +48,21 @@ export class SeriesFetcher {
             title: episodeInfo.Title as string,
             plot: episodeInfo.Plot as string,
             imdbRating: episodeInfo.imdbRating as string
+        };
+    }
+
+    async fetchMovie(movieName: string) {
+        const movieInfo = await Omdb.fetchMovie(movieName);
+
+        if (!movieInfo.Error)
+            throw new Error(movieInfo.Error);
+
+        return {
+            title: movieInfo.Title as string,
+            year: movieInfo.Year as string,
+            plot: movieInfo.Plot as string,
+            poster: movieInfo.Poster as string,
+            imdbRating: movieInfo.imdbRating as string
         };
     }
 }
