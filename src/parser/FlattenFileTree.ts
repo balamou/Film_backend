@@ -5,7 +5,7 @@ import Tree from './Tree';
 export class FlattenFileTree {
     private dirTreeCreator: DirectoryTreeCreator;
     private fileSystemEditor: FileSystemEditor;
-    private readonly exclude = /.DS_Store|purge/;
+    private readonly exclude = /.DS_Store|purge|rejected/;
 
     constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor) {
         this.dirTreeCreator = dirTreeCreator;

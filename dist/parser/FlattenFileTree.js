@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class FlattenFileTree {
     constructor(dirTreeCreator, fileSystemEditor) {
-        this.exclude = /.DS_Store|purge/;
+        this.exclude = /.DS_Store|purge|rejected/;
         this.dirTreeCreator = dirTreeCreator;
         this.fileSystemEditor = fileSystemEditor;
     }

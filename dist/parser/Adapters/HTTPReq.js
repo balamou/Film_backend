@@ -11,8 +11,13 @@ exports.httpGet = (url) => {
             let body = '';
             res.on('data', chunk => body += chunk);
             res.on('end', () => {
-                const bodyInJSONFormat = JSON.parse(body);
-                resolve(bodyInJSONFormat);
+                try {
+                    const bodyInJSONFormat = JSON.parse(body);
+                    resolve(bodyInJSONFormat);
+                }
+                catch (_a) {
+                    reject('Decoding error');
+                }
             });
         }).on('error', reject);
     });

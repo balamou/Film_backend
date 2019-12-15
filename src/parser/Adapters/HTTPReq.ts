@@ -7,8 +7,12 @@ export const httpGet = (url: string) => {
             let body = '';
             res.on('data', chunk => body += chunk);
             res.on('end', () => {
-                const bodyInJSONFormat = JSON.parse(body);
-                resolve(bodyInJSONFormat);
+                try {
+                    const bodyInJSONFormat = JSON.parse(body);
+                    resolve(bodyInJSONFormat);
+                } catch {
+                    reject('Decoding error');
+                }
             });
         }).on('error', reject);
     });

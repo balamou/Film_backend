@@ -56,16 +56,11 @@ function orginizeSeriesFolder(path: string) {
             level4files.push(node);
     });
 
-    // console.log(level4folders.map(node => node.path));
-    // console.log(level4files.map(node => node.path));
-
     // Virtual tree
     const vtBuilder = factory.createVirtualTreeBuilder(path);
     vtBuilder.buildVirtualTree(level4files);
     vtBuilder.buildVirtualTreeFromFolders(level4folders);
     vtBuilder.commit();
-
-    // console.log(vtBuilder.rejected.map(file => file.path));
 
     removeDSStore(path);
 }

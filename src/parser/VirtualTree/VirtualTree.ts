@@ -24,6 +24,14 @@ export class VirtualTree {
             season.episodes.forEach(episode => apply(season, episode));
         });
     };
+
+    async asyncForEach(apply: (season: Season, episode: Episode) => void) {
+        for (let season of this.tree) {
+            for (let episode of season.episodes) {
+                await apply(season, episode);
+            }
+        }
+    }
 }
 
 export class Season {
