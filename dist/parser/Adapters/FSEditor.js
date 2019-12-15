@@ -6,6 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 class FSEditor {
+    constructor() {
+        this.RENAME_ERROR = 'ENOTEMPTY';
+    }
     makeDirectory(dirName) {
         if (!fs_1.default.existsSync(dirName))
             fs_1.default.mkdirSync(dirName);
@@ -14,9 +17,27 @@ class FSEditor {
         fs_1.default.renameSync(from, to);
     }
     moveFileToFolder(from, to) {
-        const basename = path_1.default.basename(from);
-        const dest = path_1.default.resolve(to, basename);
-        fs_1.default.renameSync(from, dest);
+        try {
+            const basename = path_1.default.basename(from);
+            const dest = path_1.default.resolve(to, basename);
+            fs_1.default.renameSync(from, dest);
+        }
+        catch (error) {
+            if (error.code === this.RENAME_ERROR) {
+                const basename = path_1.default.basename(from);
+                this.handleNameCollision(from, to, basename);
+            }
+        }
+    }
+    handleNameCollision(from, toFolder, basename, index = 1) {
+        try {
+            console.log(`${toFolder}/${basename}_copy${index}`);
+            fs_1.default.renameSync(from, `${toFolder}/${basename}_copy${index}`);
+        }
+        catch (error) {
+            if (error.code === this.RENAME_ERROR)
+                this.handleNameCollision(from, toFolder, basename, ++index);
+        }
     }
     doesFileExist(path) {
         try {
