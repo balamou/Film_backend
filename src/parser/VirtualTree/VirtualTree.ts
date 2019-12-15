@@ -37,6 +37,7 @@ export class VirtualTree {
 export class Season {
     readonly seasonNum: number;
     episodes: Episode[] = [];
+    path: string | undefined;
 
     constructor(seasonNum: number) {
         this.seasonNum = seasonNum;
@@ -46,10 +47,12 @@ export class Season {
 export class Episode {
     readonly episodeNum: number;
     readonly file: Tree;
+    path: string;
 
     constructor(episodeNum: number, file: Tree) {
         this.episodeNum = episodeNum;
         this.file = file;
+        this.path = file.path;
     }
 
     getNewEpisodeName = () => `E${this.episodeNum}${this.file.extension}`;

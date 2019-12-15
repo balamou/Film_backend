@@ -64,6 +64,8 @@ export class VirtualTreeBuilder {
 
             this.fileSystemEditor.makeDirectory(`${this.path}/${newFolder}`);
             this.fileSystemEditor.moveAndRename(episode.file.path, `${this.path}/${newFolder}/${newEpisode}`);
+            episode.path = `${this.path}/${newFolder}/${newEpisode}`;
+            season.path = `${this.path}/${newFolder}`;
         });
 
         this.cleanup();

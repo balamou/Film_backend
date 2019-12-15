@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const FSEditor_1 = require("./Adapters/FSEditor");
 const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 const Factory_1 = __importDefault(require("./Factory"));
+const VirtualTreeParser_1 = __importDefault(require("./VirtualTree/VirtualTreeParser"));
 const factory = new Factory_1.default();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
 function main() {
@@ -53,6 +54,9 @@ function orginizeSeriesFolder(path) {
     vtBuilder.buildVirtualTreeFromFolders(level4folders);
     vtBuilder.commit();
     removeDSStore(path);
+    // Parse Virtual tree
+    const vtParser = new VirtualTreeParser_1.default();
+    vtParser.generateThumbnails(vtBuilder.virtualTree);
 }
 function removeDSStore(path) {
     const fsEditor = new FSEditor_1.FSEditor();

@@ -1,7 +1,10 @@
-import { VirtualTree } from './VirtualTree';
+import { VirtualTree, Episode } from './VirtualTree';
 import { SeriesFetcher } from '../FilmScrapper/omdb';
 
-export default class VirtualTreeOmdb {
+import ffmpeg from '../Adapters/ffmpeg';
+import { FSEditor } from '../Adapters/FSEditor';
+
+export default class VirtualTreeParser {
 
     async findInformation(seriesName: string, virtualTree: VirtualTree) {
         const fetcher = new SeriesFetcher();
@@ -30,5 +33,21 @@ export default class VirtualTreeOmdb {
             seriesInfo: seriesInfo,
             episodeData: episodeData
         };
+    }
+
+    generateThumbnails(virtualTree: VirtualTree) {
+        const videoProcessor = new ffmpeg();
+        const fsEditor = new FSEditor();
+
+        virtualTree.forEach((season, episode) => {
+            const path = season.path;
+            if (!path) return console.log(`Error: season ${season.seasonNum} folder not defined`);
+
+            const thumbnails = `${path}/thumbnails`;
+            const thumbnail = `${path}/thumbnails/${episode.episodeNum}.png`;
+
+            fsEditor.makeDirectory(thumbnails);
+            videoProcessor.generateThumbnail(episode.path, thumbnail);
+        }); 
     }
 }   

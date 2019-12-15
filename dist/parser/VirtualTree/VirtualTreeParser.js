@@ -50,7 +50,7 @@ class VirtualTreeParser {
             if (!path)
                 return console.log(`Error: season ${season.seasonNum} folder not defined`);
             const thumbnails = `${path}/thumbnails`;
-            const thumbnail = `${path}/${episode.episodeNum}.png`;
+            const thumbnail = `${path}/thumbnails/${episode.episodeNum}.png`;
             fsEditor.makeDirectory(thumbnails);
             videoProcessor.generateThumbnail(episode.path, thumbnail);
         });

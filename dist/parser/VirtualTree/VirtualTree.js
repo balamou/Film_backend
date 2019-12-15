@@ -54,6 +54,7 @@ class Episode {
         this.getFullPath = () => this.file.path;
         this.episodeNum = episodeNum;
         this.file = file;
+        this.path = file.path;
     }
 }
 exports.Episode = Episode;

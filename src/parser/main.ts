@@ -3,6 +3,8 @@ import { getDirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
 import Tree from './Tree';
 
+import VirtualTreeParser from './VirtualTree/VirtualTreeParser';
+
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
 
@@ -63,6 +65,10 @@ function orginizeSeriesFolder(path: string) {
     vtBuilder.commit();
 
     removeDSStore(path);
+
+    // Parse Virtual tree
+    const vtParser = new VirtualTreeParser();
+    vtParser.generateThumbnails(vtBuilder.virtualTree);
 }
 
 function removeDSStore(path: string) {
