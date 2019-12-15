@@ -26,14 +26,22 @@ import request from 'request';
 // download('https://www.google.com/images/srpr/logo3w.png', 'google.png');
 
 export const download = (uri: string, filename: string) => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
         request.head(uri, (err, res, body) => {
-            console.log('content-type:', res.headers['content-type']);
-            console.log('content-length:', res.headers['content-length']);
-
             if (err) reject(err);
 
-            request(uri).pipe(fs.createWriteStream(filename)).on('close', () => resolve());
+            // handle content type
+            const contentType = res.headers['content-type'];
+            let finalName = filename;
+            if (contentType) {
+                const split = contentType.split('/');
+                if (split.length >= 2) {
+                    const ext = split[1];
+                    finalName = `${filename}.${ext}`;
+                }
+            }
+
+            request(uri).pipe(fs.createWriteStream(finalName)).on('close', () => resolve(finalName));
         });
     });
 };

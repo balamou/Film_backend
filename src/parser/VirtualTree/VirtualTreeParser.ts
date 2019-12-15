@@ -57,23 +57,34 @@ export class VirtualTreeParser {
         }
     }
 
-    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree) {
+    private async getSeriesInfo(path: string, seriesName: string) {
         const fetcher = new SeriesFetcher();
 
         try {
             const seriesData = await fetcher.fetchSeries(seriesName);
+            let fullPosterName: string | undefined;
+
+            try {
+                fullPosterName = await download(seriesData.poster, `${path}/poster`);
+            } catch {
+                console.log(`Unable to download poster image for ${seriesName}`);
+            }
 
             this.seriesInformation = {
                 title: seriesData.title,
                 plot: seriesData.plot,
-                poster: `${path}/poster.jpg`,
+                poster: fullPosterName,
                 totalSeasons: seriesData.totalSeasons
             };
-
-            await download(seriesData.poster, `${path}/poster.jpg`);
         } catch {
             console.log(`Error parsing series info '${seriesName}'`);
         }
+    }
+
+    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree) {
+        const fetcher = new SeriesFetcher();
+        
+        await this.getSeriesInfo(path, seriesName);
 
         await virtualTree.asyncForEach(async (season, episode) => {
             const seasonNum = season.seasonNum.toString();

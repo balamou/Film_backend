@@ -29,11 +29,19 @@ const request_1 = __importDefault(require("request"));
 exports.download = (uri, filename) => {
     return new Promise((resolve, reject) => {
         request_1.default.head(uri, (err, res, body) => {
-            console.log('content-type:', res.headers['content-type']);
-            console.log('content-length:', res.headers['content-length']);
             if (err)
                 reject(err);
-            request_1.default(uri).pipe(fs_1.default.createWriteStream(filename)).on('close', () => resolve());
+            // handle content type
+            const contentType = res.headers['content-type'];
+            let finalName = filename;
+            if (contentType) {
+                const split = contentType.split('/');
+                if (split.length >= 2) {
+                    const ext = split[1];
+                    finalName = `${filename}.${ext}`;
+                }
+            }
+            request_1.default(uri).pipe(fs_1.default.createWriteStream(finalName)).on('close', () => resolve(finalName));
         });
     });
 };

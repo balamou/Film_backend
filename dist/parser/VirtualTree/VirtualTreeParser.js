@@ -48,22 +48,34 @@ class VirtualTreeParser {
                 match.duration = data.duration;
         }
     }
-    getSeriesInformation(path, seriesName, virtualTree) {
+    getSeriesInfo(path, seriesName) {
         return __awaiter(this, void 0, void 0, function* () {
             const fetcher = new omdb_1.SeriesFetcher();
             try {
                 const seriesData = yield fetcher.fetchSeries(seriesName);
+                let fullPosterName;
+                try {
+                    fullPosterName = yield HTTPReq_1.download(seriesData.poster, `${path}/poster`);
+                }
+                catch (_a) {
+                    console.log(`Unable to download poster image for ${seriesName}`);
+                }
                 this.seriesInformation = {
                     title: seriesData.title,
                     plot: seriesData.plot,
-                    poster: `${path}/poster.jpg`,
+                    poster: fullPosterName,
                     totalSeasons: seriesData.totalSeasons
                 };
-                yield HTTPReq_1.download(seriesData.poster, `${path}/poster.jpg`);
             }
-            catch (_a) {
+            catch (_b) {
                 console.log(`Error parsing series info '${seriesName}'`);
             }
+        });
+    }
+    getSeriesInformation(path, seriesName, virtualTree) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const fetcher = new omdb_1.SeriesFetcher();
+            yield this.getSeriesInfo(path, seriesName);
             yield virtualTree.asyncForEach((season, episode) => __awaiter(this, void 0, void 0, function* () {
                 const seasonNum = season.seasonNum.toString();
                 const episodeNum = episode.episodeNum.toString();
@@ -74,7 +86,7 @@ class VirtualTreeParser {
                         plot: episodeInfo.plot
                     });
                 }
-                catch (_b) {
+                catch (_a) {
                     console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
                 }
             }));
