@@ -47,7 +47,8 @@ class FSEditor {
         }
     }
     deleteFile(path) {
-        fs_1.default.unlinkSync(path);
+        if (this.doesFileExist(path))
+            fs_1.default.unlinkSync(path);
     }
     getBasename(paths) {
         return path_1.default.basename(paths);

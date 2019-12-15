@@ -51,7 +51,6 @@ function orginizeSeriesFolder(path) {
     vtBuilder.buildVirtualTree(level4files);
     vtBuilder.buildVirtualTreeFromFolders(level4folders);
     vtBuilder.commit(path);
-    removeDSStore(path);
     // Parse Virtual tree
     const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
@@ -59,11 +58,5 @@ function orginizeSeriesFolder(path) {
     vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
         console.log(vtParser.videoInfo);
     });
-}
-function removeDSStore(path) {
-    const fsEditor = new FSEditor_1.FSEditor();
-    const ds_store = `${path}/.DS_Store`;
-    if (fsEditor.doesFileExist(ds_store))
-        fsEditor.deleteFile(ds_store);
 }
 main();

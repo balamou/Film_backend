@@ -1,8 +1,8 @@
-import { VirtualTree, Episode, Season } from './VirtualTree';
+import { VirtualTree } from './VirtualTree';
 import { SeriesFetcher } from '../FilmScrapper/omdb';
+import { FileSystemEditor } from '../Adapters/FSEditor';
 
 import ffmpeg from '../Adapters/ffmpeg';
-import { FSEditor, FileSystemEditor } from '../Adapters/FSEditor';
 
 class VideoInfo {
     season: number;

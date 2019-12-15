@@ -67,6 +67,7 @@ class VirtualTreeBuilder {
                 this.rejected.push(child);
         });
         this.cleanRejectFolder(path);
+        this.fileSystemEditor.deleteFile(`${path}/.DS_Store`);
     }
     cleanRejectFolder(path) {
         if (this.rejected.length === 0)

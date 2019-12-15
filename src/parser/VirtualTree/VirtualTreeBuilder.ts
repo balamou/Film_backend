@@ -83,6 +83,8 @@ export class VirtualTreeBuilder {
         });
 
         this.cleanRejectFolder(path);
+
+        this.fileSystemEditor.deleteFile(`${path}/.DS_Store`);
     }
 
     private cleanRejectFolder(path: string) {
