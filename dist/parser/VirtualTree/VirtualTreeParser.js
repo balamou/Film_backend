@@ -60,7 +60,7 @@ class VirtualTreeParser {
                 catch (_a) {
                     console.log(`Unable to download poster image for ${seriesName}`);
                 }
-                this.seriesInformation = {
+                this.seriesInfo = {
                     title: seriesData.title,
                     plot: seriesData.plot,
                     poster: fullPosterName,
@@ -90,7 +90,7 @@ class VirtualTreeParser {
                     console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
                 }
             }));
-            return { seriesInfo: this.seriesInformation, videoInfo: this.videoInfo };
+            return { seriesInfo: this.seriesInfo, videoInfo: this.videoInfo };
         });
     }
     generateThumbnails(virtualTree) {

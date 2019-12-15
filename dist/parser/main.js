@@ -59,7 +59,7 @@ function orginizeSeriesFolder(path) {
     // Parse Virtual tree
     const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
-    const seriesName = new FSEditor_1.FSEditor().getBasename(path);
+    const seriesName = new FSEditor_1.FSEditor().getBasename(path); // get series name from file
     if (NETWORK_ENABLED) {
         vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then(seriesInfo => {
             console.log(seriesInfo);

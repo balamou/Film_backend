@@ -34,7 +34,7 @@ class VideoInfo {
     }
 }
 
-type seriesInfo = {
+type SeriesData = {
     seriesInfo: {
         title?: string | undefined;
         poster?: string | undefined;
@@ -46,7 +46,7 @@ type seriesInfo = {
 
 export class VirtualTreeParser {
     videoInfo: VideoInfo[] = [];
-    seriesInformation?: { title?: string, poster?: string, plot?: string, totalSeasons?: number };
+    seriesInfo?: { title?: string, poster?: string, plot?: string, totalSeasons?: number };
     private fsEditor: FileSystemEditor;
 
     constructor(fsEditor: FileSystemEditor) {
@@ -81,7 +81,7 @@ export class VirtualTreeParser {
                 console.log(`Unable to download poster image for ${seriesName}`);
             }
 
-            this.seriesInformation = {
+            this.seriesInfo = {
                 title: seriesData.title,
                 plot: seriesData.plot,
                 poster: fullPosterName,
@@ -92,7 +92,7 @@ export class VirtualTreeParser {
         }
     }
 
-    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree): Promise<seriesInfo> {
+    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree): Promise<SeriesData> {
         const fetcher = new SeriesFetcher();
 
         await this.getSeriesInfo(path, seriesName);
@@ -113,7 +113,7 @@ export class VirtualTreeParser {
             }
         });
 
-        return { seriesInfo: this.seriesInformation, videoInfo: this.videoInfo };
+        return { seriesInfo: this.seriesInfo, videoInfo: this.videoInfo };
     }
 
     generateThumbnails(virtualTree: VirtualTree) {
