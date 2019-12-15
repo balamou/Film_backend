@@ -1,7 +1,7 @@
 import http from 'http';
 
 export const httpGet = (url: string) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
         http.get(url, res => {
             res.setEncoding('utf8');
             let body = '';
