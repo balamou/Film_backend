@@ -76,6 +76,7 @@ export default class Tree {
         return this.hashString(preoder);
     }
 
+    // idk i got this from stack overflow
     private hashString(str: string) {
         let hash = 0, i, chr;
         if (str.length === 0) return hash;

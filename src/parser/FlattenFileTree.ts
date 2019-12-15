@@ -5,7 +5,7 @@ import Tree from './Tree';
 export class FlattenFileTree {
     private dirTreeCreator: DirectoryTreeCreator;
     private fileSystemEditor: FileSystemEditor;
-    private readonly exclude = /.DS_Store/;
+    private readonly exclude = /.DS_Store|purge/;
 
     constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor) {
         this.dirTreeCreator = dirTreeCreator;
@@ -39,7 +39,7 @@ export class FlattenFileTree {
         ).map(node => node.path);
 
         purge = purge.concat(filtered);
-        console.log(purge);
+        
         return {
             moveup: move_up,
             purge: purge
@@ -62,7 +62,7 @@ export class FlattenFileTree {
         const purgeFolder = `${path}/purge`;
 
         this.moveUp(result.moveup);
-        
+
         this.fileSystemEditor.makeDirectory(purgeFolder); // create purge folder
         result.purge.forEach(file => {
             this.fileSystemEditor.moveFileToFolder(file, purgeFolder);

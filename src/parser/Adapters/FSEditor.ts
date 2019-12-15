@@ -3,6 +3,7 @@ export interface FileSystemEditor {
     moveAndRename(from: string, to: string): void;
     moveFileToFolder(from: string, to: string): void;
     doesFileExist(path: string): boolean;
+    deleteFile(path: string): void;
 }
 
 import fs from 'fs';
@@ -32,5 +33,9 @@ export class FSEditor implements FileSystemEditor {
         } catch (err) {
             return false; // error occured 
         }
+    }
+
+    deleteFile(path: string) {
+        fs.unlinkSync(path);
     }
 }

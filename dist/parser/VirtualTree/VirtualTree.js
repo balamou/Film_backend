@@ -30,7 +30,6 @@ class Season {
     }
 }
 exports.Season = Season;
-// export type FileContent = { name: string, path: string, extension: string };
 class Episode {
     constructor(episodeNum, file) {
         this.getNewEpisodeName = () => `E${this.episodeNum}${this.file.extension}`;

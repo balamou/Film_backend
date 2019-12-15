@@ -64,6 +64,7 @@ class Tree {
         const preoder = this.preorder(this);
         return this.hashString(preoder);
     }
+    // idk i got this from stack overflow
     hashString(str) {
         let hash = 0, i, chr;
         if (str.length === 0)

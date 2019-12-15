@@ -4,6 +4,7 @@ import Factory from './Factory';
 import Tree from './Tree';
 
 const factory = new Factory();
+const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
 
 export default function main() {
     const fs = new FSEditor();
@@ -14,11 +15,10 @@ export default function main() {
 
     } else {
         // orginize folder
-        const tree = getDirTree(path, /.DS_Store/);
-        console.log(tree);
+        const tree = getDirTree(path, GLOBAL_EXCLUDE);
 
-        const folders = new Array<Tree>(); // 
-        const files = new Array<Tree>(); // moves files to new folder purge
+        const folders: Tree[] = [];
+        const files: Tree[] = []; // moves files to new folder purge
 
         tree.levelOrderTraversal((node, level) => {
             if (level == 1 && node.isFolder)
@@ -28,6 +28,12 @@ export default function main() {
                 files.push(node);
         });
 
+        // move files to purge
+        const fsEditor = new FSEditor();
+        const purgeFolder = `${path}/purge`;
+        fsEditor.makeDirectory(purgeFolder);
+        files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+
         folders.forEach(folder => orginizeSeriesFolder(folder.path));
     }
 }
@@ -36,31 +42,40 @@ function orginizeSeriesFolder(path: string) {
     const flatten = factory.createFlattenFileTree();
     flatten.flatten(path);
 
-    // // Separate 
-    // const directoryTree = new DirTree().treeFrom(pathData.fullPath, /.DS_Store|purge/);
-    // if (!directoryTree) return;
+    // Separate
+    const directoryTree = getDirTree(path, GLOBAL_EXCLUDE);
 
-    // const level4folders: Tree[] = [];
-    // const level4files: Tree[] = [];
+    const level4folders: Tree[] = [];
+    const level4files: Tree[] = [];
 
-    // directoryTree.levelOrderTraversal((node, level) => {
-    //     if (level == 1 && node.isFolder)
-    //         level4folders.push(node);
+    directoryTree.levelOrderTraversal((node, level) => {
+        if (level == 1 && node.isFolder)
+            level4folders.push(node);
 
-    //     if (level == 1 && node.isFile)
-    //         level4files.push(node);
-    // });
+        if (level == 1 && node.isFile)
+            level4files.push(node);
+    });
 
-    // console.log(level4folders);
-    // console.log(level4files);
+    // console.log(level4folders.map(node => node.path));
+    // console.log(level4files.map(node => node.path));
 
-    // const vtBuilder = new VirtualTreeBuilder(pathData.fullPath, new TitleParserAdapter(), new FSEditor());
-    // vtBuilder.buildVirtualTree(level4files);
-    // vtBuilder.buildVirtualTree(level4folders);
+    // Virtual tree
+    const vtBuilder = factory.createVirtualTreeBuilder(path);
+    vtBuilder.buildVirtualTree(level4files);
+    vtBuilder.buildVirtualTreeFromFolders(level4folders);
+    vtBuilder.commit();
 
-    // console.log(vtBuilder.virtualTree);
-    // vtBuilder.commit();
+    // console.log(vtBuilder.rejected.map(file => file.path));
+
+    removeDSStore(path);
 }
 
+function removeDSStore(path: string) {
+    const fsEditor = new FSEditor();
+    const ds_store = `${path}/.DS_Store`;
+
+    if (fsEditor.doesFileExist(ds_store))
+        fsEditor.deleteFile(ds_store);
+}
 
 main();

@@ -60,10 +60,21 @@ export class VirtualTreeBuilder {
     commit() {
         this.virtualTree.forEach( (season, episode) => {
             const newFolder = `S${season.seasonNum}`;
+            const newEpisode = episode.getNewEpisodeName();
 
             this.fileSystemEditor.makeDirectory(`${this.path}/${newFolder}`);
-            this.fileSystemEditor.moveAndRename(episode.file.path, `${this.path}/${newFolder}/E${episode.episodeNum}${episode.file.extension}`);
+            this.fileSystemEditor.moveAndRename(episode.file.path, `${this.path}/${newFolder}/${newEpisode}`);
         });
+
+        this.cleanup();
+    }
+
+    private cleanup() {
+        if (this.rejected.length == 0) return;
+
+        const rejected = `${this.path}/rejected`;
+        this.fileSystemEditor.makeDirectory(rejected);
+        this.rejected.forEach(file => this.fileSystemEditor.moveFileToFolder(file.path, rejected));
     }
 }
 

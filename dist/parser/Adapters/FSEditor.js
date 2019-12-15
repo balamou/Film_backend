@@ -26,5 +26,8 @@ class FSEditor {
             return false; // error occured 
         }
     }
+    deleteFile(path) {
+        fs_1.default.unlinkSync(path);
+    }
 }
 exports.FSEditor = FSEditor;

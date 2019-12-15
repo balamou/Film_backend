@@ -35,8 +35,6 @@ export class Season {
     }
 }
 
-// export type FileContent = { name: string, path: string, extension: string };
-
 export class Episode {
     readonly episodeNum: number;
     readonly file: Tree;

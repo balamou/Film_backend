@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class FlattenFileTree {
     constructor(dirTreeCreator, fileSystemEditor) {
-        this.exclude = /.DS_Store/;
+        this.exclude = /.DS_Store|purge/;
         this.dirTreeCreator = dirTreeCreator;
         this.fileSystemEditor = fileSystemEditor;
     }
@@ -24,7 +24,6 @@ class FlattenFileTree {
         });
         const filtered = level4folders.filter(folder => !folder.contains(node => node.isVideo)).map(node => node.path);
         purge = purge.concat(filtered);
-        console.log(purge);
         return {
             moveup: move_up,
             purge: purge
