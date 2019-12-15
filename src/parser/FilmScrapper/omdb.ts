@@ -1,4 +1,4 @@
-import { httpGet } from './Adapters/HTTPReq';
+import { httpGet } from '../Adapters/HTTPReq';
 
 // Example rest calls:
 //

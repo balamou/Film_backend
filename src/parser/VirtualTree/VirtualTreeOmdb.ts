@@ -1,5 +1,5 @@
 import { VirtualTree } from './VirtualTree';
-import { Omdb } from '../omdb';
+import { SeriesFetcher } from '../FilmScrapper/omdb';
 
 export default class VirtualTreeOmdb {
 
