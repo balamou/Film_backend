@@ -1,10 +1,8 @@
 import { VirtualTree } from './VirtualTree';
 import { SeriesFetcher } from '../FilmScrapper/omdb';
 import { FileSystemEditor } from '../Adapters/FSEditor';
-import { download } from '../Adapters/HTTPReq';
 
 import ffmpeg from '../Adapters/ffmpeg';
-import { resolve } from 'bluebird';
 
 class VideoInfo {
     season: number;
@@ -68,18 +66,18 @@ export class VirtualTreeParser {
         }
     }
 
-    private async getSeriesInfo(path: string, seriesName: string) {
+    private getSeriesInfo(path: string, seriesName: string) {
         const fetcher = new SeriesFetcher();
 
         try {
-            const seriesData = await fetcher.fetchSeries(seriesName);
+            const seriesData = fetcher.fetchSeries(seriesName);
             let fullPosterName: string | undefined;
 
-            try {
-                fullPosterName = await download(seriesData.poster, `${path}/poster`);
-            } catch {
-                console.log(`Unable to download poster image for ${seriesName}`);
-            }
+            // try {
+            //     fullPosterName = download(seriesData.poster, `${path}/poster`);
+            // } catch {
+            //     console.log(`Unable to download poster image for ${seriesName}`);
+            // }
 
             this.seriesInfo = {
                 title: seriesData.title,
@@ -92,17 +90,17 @@ export class VirtualTreeParser {
         }
     }
 
-    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree): Promise<SeriesData> {
+    getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree): SeriesData {
         const fetcher = new SeriesFetcher();
 
-        await this.getSeriesInfo(path, seriesName);
+        this.getSeriesInfo(path, seriesName);
 
-        await virtualTree.asyncForEach(async (season, episode) => {
+        virtualTree.forEach((season, episode) => {
             const seasonNum = season.seasonNum.toString();
             const episodeNum = episode.episodeNum.toString();
 
             try {
-                const episodeInfo = await fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
+                const episodeInfo = fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
 
                 this.insert(season.seasonNum, episode.episodeNum, episode.path, {
                     title: episodeInfo.title,

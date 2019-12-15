@@ -24,8 +24,8 @@ export class Omdb {
 
 export class SeriesFetcher {
     
-    async fetchSeries(seriesName: string) {
-        const seriesInfo = await Omdb.fetchSeries(seriesName);
+    fetchSeries(seriesName: string) {
+        const seriesInfo = Omdb.fetchSeries(seriesName);
 
         if (seriesInfo.Error)
             throw new Error(seriesInfo.Error);
@@ -38,8 +38,8 @@ export class SeriesFetcher {
         };
     }
 
-    async fetchEpisode(seriesName: string, season: string, episode: string) {
-        const episodeInfo = await Omdb.fetchEpisode(seriesName, season, episode);
+    fetchEpisode(seriesName: string, season: string, episode: string) {
+        const episodeInfo = Omdb.fetchEpisode(seriesName, season, episode);
 
         if (episodeInfo.Error)
             throw new Error(episodeInfo.Error);
@@ -51,8 +51,8 @@ export class SeriesFetcher {
         };
     }
 
-    async fetchMovie(movieName: string) {
-        const movieInfo = await Omdb.fetchMovie(movieName);
+    fetchMovie(movieName: string) {
+        const movieInfo = Omdb.fetchMovie(movieName);
 
         if (!movieInfo.Error)
             throw new Error(movieInfo.Error);

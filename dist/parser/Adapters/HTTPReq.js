@@ -4,7 +4,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
-exports.httpGet = (url) => {
+const sync_request_1 = __importDefault(require("sync-request"));
+function httpGet(url) {
+    var res = sync_request_1.default('GET', url);
+    const body = res.getBody('utf8');
+    const bodyInJSONFormat = JSON.parse(body);
+    return bodyInJSONFormat;
+}
+exports.httpGet = httpGet;
+exports.httpGetOLD = (url) => {
     return new Promise((resolve, reject) => {
         http_1.default.get(url, res => {
             res.setEncoding('utf8');

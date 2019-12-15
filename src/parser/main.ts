@@ -109,10 +109,8 @@ function orginizeSeriesFolder(path: string) {
     const seriesName = new FSEditor().getBasename(path); // get series name from file
 
     if (NETWORK_ENABLED) {
-        vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then( seriesInfo => {
-            console.log(seriesInfo);
-            // commit to the database
-        });
+        const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
+        console.log(seriesInfo);
     }
 }
 

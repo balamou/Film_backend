@@ -1,6 +1,16 @@
 import http from 'http';
+import syncRequest from 'sync-request';
 
-export const httpGet = (url: string) => {
+export function httpGet(url: string) {
+    var res = syncRequest('GET', url);
+    
+    const body = res.getBody('utf8');
+    const bodyInJSONFormat = JSON.parse(body);
+
+    return bodyInJSONFormat;
+}
+
+export const httpGetOLD = (url: string) => {
     return new Promise<any>((resolve, reject) => {
         http.get(url, res => {
             res.setEncoding('utf8');

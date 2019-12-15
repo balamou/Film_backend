@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const HTTPReq_1 = require("../Adapters/HTTPReq");
 // Example rest calls:
@@ -28,43 +19,37 @@ Omdb.fetchEpisode = (seriesName, season, episode) => HTTPReq_1.httpGet(Omdb.epis
 Omdb.fetchMovie = (movieName) => HTTPReq_1.httpGet(Omdb.movieEndPoint(movieName));
 class SeriesFetcher {
     fetchSeries(seriesName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const seriesInfo = yield Omdb.fetchSeries(seriesName);
-            if (seriesInfo.Error)
-                throw new Error(seriesInfo.Error);
-            return {
-                title: seriesInfo.Title,
-                plot: seriesInfo.Plot,
-                poster: seriesInfo.Poster,
-                totalSeasons: seriesInfo.totalSeasons
-            };
-        });
+        const seriesInfo = Omdb.fetchSeries(seriesName);
+        if (seriesInfo.Error)
+            throw new Error(seriesInfo.Error);
+        return {
+            title: seriesInfo.Title,
+            plot: seriesInfo.Plot,
+            poster: seriesInfo.Poster,
+            totalSeasons: seriesInfo.totalSeasons
+        };
     }
     fetchEpisode(seriesName, season, episode) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const episodeInfo = yield Omdb.fetchEpisode(seriesName, season, episode);
-            if (episodeInfo.Error)
-                throw new Error(episodeInfo.Error);
-            return {
-                title: episodeInfo.Title,
-                plot: episodeInfo.Plot,
-                imdbRating: episodeInfo.imdbRating
-            };
-        });
+        const episodeInfo = Omdb.fetchEpisode(seriesName, season, episode);
+        if (episodeInfo.Error)
+            throw new Error(episodeInfo.Error);
+        return {
+            title: episodeInfo.Title,
+            plot: episodeInfo.Plot,
+            imdbRating: episodeInfo.imdbRating
+        };
     }
     fetchMovie(movieName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const movieInfo = yield Omdb.fetchMovie(movieName);
-            if (!movieInfo.Error)
-                throw new Error(movieInfo.Error);
-            return {
-                title: movieInfo.Title,
-                year: movieInfo.Year,
-                plot: movieInfo.Plot,
-                poster: movieInfo.Poster,
-                imdbRating: movieInfo.imdbRating
-            };
-        });
+        const movieInfo = Omdb.fetchMovie(movieName);
+        if (!movieInfo.Error)
+            throw new Error(movieInfo.Error);
+        return {
+            title: movieInfo.Title,
+            year: movieInfo.Year,
+            plot: movieInfo.Plot,
+            poster: movieInfo.Poster,
+            imdbRating: movieInfo.imdbRating
+        };
     }
 }
 exports.SeriesFetcher = SeriesFetcher;
