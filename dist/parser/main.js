@@ -8,6 +8,7 @@ const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 const Factory_1 = __importDefault(require("./Factory"));
 const factory = new Factory_1.default();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
+const NETWORK_ENABLED = false;
 function main() {
     const fsEditor = new FSEditor_1.FSEditor();
     const path = './public/en/shows';
@@ -15,24 +16,28 @@ function main() {
         // Parse file and create a json Tree
     }
     else {
-        // orginize folder
-        const tree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
-        const folders = [];
-        const files = []; // moves files to new folder purge
-        tree.levelOrderTraversal((node, level) => {
-            if (level == 1 && node.isFolder)
-                folders.push(node);
-            if (level == 1 && node.isFile)
-                files.push(node);
-        });
-        // move files to purge
-        const purgeFolder = `${path}/purge`;
-        fsEditor.makeDirectory(purgeFolder);
-        files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
-        folders.forEach(folder => orginizeSeriesFolder(folder.path));
+        orginizeAllSeries(path);
     }
 }
 exports.default = main;
+function orginizeAllSeries(path) {
+    const fsEditor = new FSEditor_1.FSEditor();
+    // orginize folder
+    const tree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
+    const folders = [];
+    const files = []; // moves files to new folder purge
+    tree.levelOrderTraversal((node, level) => {
+        if (level == 1 && node.isFolder)
+            folders.push(node);
+        if (level == 1 && node.isFile)
+            files.push(node);
+    });
+    // move files to purge
+    const purgeFolder = `${path}/purge`;
+    fsEditor.makeDirectory(purgeFolder);
+    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+    folders.forEach(folder => orginizeSeriesFolder(folder.path));
+}
 function orginizeSeriesFolder(path) {
     const flatten = factory.createFlattenFileTree();
     flatten.flatten(path);
@@ -55,8 +60,10 @@ function orginizeSeriesFolder(path) {
     const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
     const seriesName = new FSEditor_1.FSEditor().getBasename(path);
-    vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
-        console.log(vtParser.videoInfo);
-    });
+    if (NETWORK_ENABLED) {
+        vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
+            console.log(vtParser.videoInfo);
+        });
+    }
 }
 main();

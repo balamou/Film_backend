@@ -5,6 +5,7 @@ import Tree from './Tree';
 
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
+const NETWORK_ENABLED = false;
 
 export default function main() {
     const fsEditor = new FSEditor();
@@ -14,27 +15,33 @@ export default function main() {
         // Parse file and create a json Tree
 
     } else {
-        // orginize folder
-        const tree = getDirTree(path, GLOBAL_EXCLUDE);
-
-        const folders: Tree[] = [];
-        const files: Tree[] = []; // moves files to new folder purge
-
-        tree.levelOrderTraversal((node, level) => {
-            if (level == 1 && node.isFolder)
-                folders.push(node);
-            
-            if (level == 1 && node.isFile) 
-                files.push(node);
-        });
-
-        // move files to purge
-        const purgeFolder = `${path}/purge`;
-        fsEditor.makeDirectory(purgeFolder);
-        files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
-
-        folders.forEach(folder => orginizeSeriesFolder(folder.path));
+        orginizeAllSeries(path);
     }
+}
+
+function orginizeAllSeries(path: string) {
+    const fsEditor = new FSEditor();
+
+    // orginize folder
+    const tree = getDirTree(path, GLOBAL_EXCLUDE);
+
+    const folders: Tree[] = [];
+    const files: Tree[] = []; // moves files to new folder purge
+
+    tree.levelOrderTraversal((node, level) => {
+        if (level == 1 && node.isFolder)
+            folders.push(node);
+
+        if (level == 1 && node.isFile)
+            files.push(node);
+    });
+
+    // move files to purge
+    const purgeFolder = `${path}/purge`;
+    fsEditor.makeDirectory(purgeFolder);
+    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+
+    folders.forEach(folder => orginizeSeriesFolder(folder.path));
 }
 
 function orginizeSeriesFolder(path: string) {
@@ -60,16 +67,18 @@ function orginizeSeriesFolder(path: string) {
     vtBuilder.buildVirtualTree(level4files);
     vtBuilder.buildVirtualTreeFromFolders(level4folders);
     vtBuilder.commit(path);
-    
+
     // Parse Virtual tree
     const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
-    
+
     const seriesName = new FSEditor().getBasename(path);
-    
-    vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
-        console.log(vtParser.videoInfo);
-    });
+
+    if (NETWORK_ENABLED) {
+        vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
+            console.log(vtParser.videoInfo);
+        });
+    }
 }
 
 main();
