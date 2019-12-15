@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const FSEditor_1 = require("./Adapters/FSEditor");
 const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 const Factory_1 = __importDefault(require("./Factory"));
+const Tree_1 = __importDefault(require("./Tree"));
 const factory = new Factory_1.default();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
@@ -13,8 +14,18 @@ function main() {
     const fsEditor = new FSEditor_1.FSEditor();
     const path = './public/en/shows';
     if (fsEditor.doesFileExist(`${path}/film.config`)) {
-        // Parse file and create a json Tree
-        loadDirectoryStateFromFile(path);
+        const tree = loadDirectoryStateFromFile(path);
+        const currTree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
+        if (tree) {
+            console.log(tree);
+            console.log(currTree);
+            if (tree.hash() === currTree.hash()) {
+                console.log("No changes in the file system.");
+            }
+            else {
+                console.log("Changes occured!");
+            }
+        }
     }
     else {
         orginizeAllSeries(path);
@@ -29,9 +40,15 @@ function saveDirectoryStateOnDisk(path) {
 }
 function loadDirectoryStateFromFile(path) {
     const fsEditor = new FSEditor_1.FSEditor();
-    const data = fsEditor.readFile(`${path}/film.config`);
-    const tree = JSON.parse(data);
-    console.log(tree.path);
+    try {
+        const data = fsEditor.readFile(`${path}/film.config`);
+        const tree = JSON.parse(data);
+        return Tree_1.default.instanciateFromJSON(tree);
+    }
+    catch (_a) {
+        console.log("Error loading or decoding 'film.config' file");
+        return undefined;
+    }
 }
 function orginizeAllSeries(path) {
     const fsEditor = new FSEditor_1.FSEditor();

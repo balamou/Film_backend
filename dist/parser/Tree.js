@@ -88,5 +88,14 @@ class Tree {
         }
         return result;
     }
+    static instanciateFromJSON(tree) {
+        const children = tree.children;
+        let newChildren = [];
+        if (children)
+            newChildren = children.map(child => this.instanciateFromJSON(child));
+        return new Tree(tree.path, tree.name, tree.type, tree.extension, newChildren);
+    }
+    static compare(lhs, rhs) {
+    }
 }
 exports.default = Tree;

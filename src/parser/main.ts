@@ -12,8 +12,20 @@ export default function main() {
     const path = './public/en/shows';
 
     if (fsEditor.doesFileExist(`${path}/film.config`)) {
-        // Parse file and create a json Tree
-        loadDirectoryStateFromFile(path);
+        const tree = loadDirectoryStateFromFile(path);
+        const currTree = getDirTree(path, GLOBAL_EXCLUDE);
+
+        if (tree) {
+            console.log(tree);
+            console.log(currTree);
+
+            if (tree.hash() === currTree.hash()) {
+                console.log("No changes in the file system.");
+            } else {
+                console.log("Changes occured!");
+            }
+        }
+        
     } else {
         orginizeAllSeries(path);
         saveDirectoryStateOnDisk(path);
@@ -27,12 +39,18 @@ function saveDirectoryStateOnDisk(path: string) {
     fsEditor.writeToFile(`${path}/film.config`, JSON.stringify(tree));
 }
 
-function loadDirectoryStateFromFile(path: string) {
+function loadDirectoryStateFromFile(path: string): Tree | undefined {
     const fsEditor = new FSEditor();
 
-    const data = fsEditor.readFile(`${path}/film.config`);
-    const tree = JSON.parse(data) as Tree;
-    console.log(tree.path);
+    try {
+        const data = fsEditor.readFile(`${path}/film.config`);
+        const tree = JSON.parse(data) as Tree;
+        
+        return Tree.instanciateFromJSON(tree);
+    } catch {
+        console.log("Error loading or decoding 'film.config' file");
+        return undefined;
+    }
 }
 
 function orginizeAllSeries(path: string) {

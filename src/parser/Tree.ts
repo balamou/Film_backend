@@ -102,4 +102,18 @@ export default class Tree {
 
         return result;
     }
+
+    static instanciateFromJSON(tree: Tree): Tree {
+        const children = tree.children;
+        let newChildren: Tree[] = [];
+
+        if (children)
+            newChildren = children.map(child => this.instanciateFromJSON(child));
+
+        return new Tree(tree.path, tree.name, tree.type, tree.extension, newChildren);
+    }   
+
+    static compare(lhs: Tree, rhs: Tree) {
+        
+    }
 }
