@@ -10,7 +10,7 @@ export default class VirtualTreeParser {
         const fetcher = new SeriesFetcher();
 
         const seriesInfo = await fetcher.fetchSeries(seriesName);
-        const episodeData: {title?: string, plot?: string}[] = [];
+        const episodeData: { title?: string, plot?: string }[] = [];
 
         await virtualTree.asyncForEach(async (season, episode) => {
             const seasonNum = season.seasonNum.toString();
@@ -48,6 +48,13 @@ export default class VirtualTreeParser {
 
             fsEditor.makeDirectory(thumbnails);
             videoProcessor.generateThumbnail(episode.path, thumbnail);
-        }); 
+            const duration = videoProcessor.getDuration(episode.path);
+
+            const episodeData = {
+                videoPath: episode.path,
+                thumbnail: thumbnail,
+                duration: duration
+            };
+        });
     }
 }   

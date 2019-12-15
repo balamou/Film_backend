@@ -53,6 +53,12 @@ class VirtualTreeParser {
             const thumbnail = `${path}/thumbnails/${episode.episodeNum}.png`;
             fsEditor.makeDirectory(thumbnails);
             videoProcessor.generateThumbnail(episode.path, thumbnail);
+            const duration = videoProcessor.getDuration(episode.path);
+            const episodeData = {
+                videoPath: episode.path,
+                thumbnail: thumbnail,
+                duration: duration
+            };
         });
     }
 }

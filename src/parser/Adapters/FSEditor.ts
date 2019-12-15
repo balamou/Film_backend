@@ -37,7 +37,6 @@ export class FSEditor implements FileSystemEditor {
 
     private handleNameCollision(from: string, toFolder: string, basename: string, index: number = 1) {
         try {
-            console.log(`${toFolder}/${basename}_copy${index}`);
             fs.renameSync(from, `${toFolder}/${basename}_copy${index}`);
         } catch (error) {
             if (error.code === this.RENAME_ERROR)

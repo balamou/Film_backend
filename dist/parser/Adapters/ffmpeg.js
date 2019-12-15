@@ -14,8 +14,8 @@ class ffmpeg {
         const args = ['-i', videoPath, '-show_entries', 'format=duration', '-v', 'quiet', '-of', 'csv=p=0'];
         const process = child_process_1.default.spawnSync('ffprobe', args, { encoding: 'utf-8' });
         const duration = process.stdout.toString().replace(/\r?\n|\r/g, '');
-        console.log(process.error);
-        return parseInt(duration);
+        const actualDuration = parseInt(duration);
+        return isNaN(actualDuration) ? undefined : actualDuration;
     }
 }
 exports.default = ffmpeg;

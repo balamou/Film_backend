@@ -31,7 +31,6 @@ class FSEditor {
     }
     handleNameCollision(from, toFolder, basename, index = 1) {
         try {
-            console.log(`${toFolder}/${basename}_copy${index}`);
             fs_1.default.renameSync(from, `${toFolder}/${basename}_copy${index}`);
         }
         catch (error) {
