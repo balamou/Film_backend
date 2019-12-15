@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const omdb_1 = require("../FilmScrapper/omdb");
 const ffmpeg_1 = __importDefault(require("../Adapters/ffmpeg"));
 const HTTPReq_1 = require("../Adapters/HTTPReq");
 class VideoInfo {
@@ -18,9 +17,10 @@ class VideoInfo {
     }
 }
 class VirtualTreeParser {
-    constructor(fsEditor) {
+    constructor(fsEditor, fetcher) {
         this.videoInfo = [];
         this.fsEditor = fsEditor;
+        this.fetcher = fetcher;
     }
     insert(season, episode, videoPath, data) {
         const match = this.videoInfo.find(item => item.episode === episode && item.season === season);
@@ -40,15 +40,16 @@ class VirtualTreeParser {
         }
     }
     getSeriesInfo(path, seriesName) {
-        const fetcher = new omdb_1.SeriesFetcher();
         try {
-            const seriesData = fetcher.fetchSeries(seriesName);
+            const seriesData = this.fetcher.fetchSeries(seriesName);
             let fullPosterName;
-            try {
-                fullPosterName = HTTPReq_1.download(seriesData.poster, `${path}/poster`);
-            }
-            catch (_a) {
-                console.log(`Unable to download poster image for ${seriesName}`);
+            if (seriesData.poster) {
+                try {
+                    fullPosterName = HTTPReq_1.download(seriesData.poster, `${path}/poster`);
+                }
+                catch (_a) {
+                    console.log(`Unable to download poster image for ${seriesName}`);
+                }
             }
             this.seriesInfo = {
                 title: seriesData.title,
@@ -62,13 +63,12 @@ class VirtualTreeParser {
         }
     }
     getSeriesInformation(path, seriesName, virtualTree) {
-        const fetcher = new omdb_1.SeriesFetcher();
         this.getSeriesInfo(path, seriesName);
         virtualTree.forEach((season, episode) => {
             const seasonNum = season.seasonNum.toString();
             const episodeNum = episode.episodeNum.toString();
             try {
-                const episodeInfo = fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
+                const episodeInfo = this.fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
                 this.insert(season.seasonNum, episode.episodeNum, episode.path, {
                     title: episodeInfo.title,
                     plot: episodeInfo.plot

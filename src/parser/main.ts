@@ -112,6 +112,9 @@ function orginizeSeriesFolder(path: string) {
         const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
         console.log(seriesInfo);
     }
+
+    // Add data to database
+    
 }
 
 main();

@@ -17,7 +17,7 @@ Omdb.fetchSeries = (seriesName) => HTTPReq_1.httpGet(Omdb.seriesEndPoint(seriesN
 Omdb.fetchSeason = (seriesName, season) => HTTPReq_1.httpGet(Omdb.seasonEndPoint(seriesName, season));
 Omdb.fetchEpisode = (seriesName, season, episode) => HTTPReq_1.httpGet(Omdb.episodeEndPoint(seriesName, season, episode));
 Omdb.fetchMovie = (movieName) => HTTPReq_1.httpGet(Omdb.movieEndPoint(movieName));
-class SeriesFetcher {
+class EnglishFetcher {
     fetchSeries(seriesName) {
         const seriesInfo = Omdb.fetchSeries(seriesName);
         if (seriesInfo.Error)
@@ -52,4 +52,4 @@ class SeriesFetcher {
         };
     }
 }
-exports.SeriesFetcher = SeriesFetcher;
+exports.EnglishFetcher = EnglishFetcher;

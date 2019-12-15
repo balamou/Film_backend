@@ -1,5 +1,5 @@
 import { VirtualTree } from './VirtualTree';
-import { SeriesFetcher } from '../FilmScrapper/omdb';
+import { Fetcher } from '../FilmScrapper/omdb';
 import { FileSystemEditor } from '../Adapters/FSEditor';
 
 import ffmpeg from '../Adapters/ffmpeg';
@@ -46,10 +46,13 @@ type SeriesData = {
 export class VirtualTreeParser {
     videoInfo: VideoInfo[] = [];
     seriesInfo?: { title?: string, poster?: string, plot?: string, totalSeasons?: number };
-    private fsEditor: FileSystemEditor;
 
-    constructor(fsEditor: FileSystemEditor) {
+    private fsEditor: FileSystemEditor;
+    private fetcher: Fetcher;
+
+    constructor(fsEditor: FileSystemEditor, fetcher: Fetcher) {
         this.fsEditor = fsEditor;
+        this.fetcher = fetcher;
     }
 
     insert(season: number, episode: number, videoPath: string,
@@ -68,16 +71,16 @@ export class VirtualTreeParser {
     }
 
     private getSeriesInfo(path: string, seriesName: string) {
-        const fetcher = new SeriesFetcher();
-
         try {
-            const seriesData = fetcher.fetchSeries(seriesName);
+            const seriesData = this.fetcher.fetchSeries(seriesName);
             let fullPosterName: string | undefined;
 
-            try {
-                fullPosterName = download(seriesData.poster, `${path}/poster`);
-            } catch {
-                console.log(`Unable to download poster image for ${seriesName}`);
+            if (seriesData.poster) {
+                try {
+                    fullPosterName = download(seriesData.poster, `${path}/poster`);
+                } catch {
+                    console.log(`Unable to download poster image for ${seriesName}`);
+                }
             }
 
             this.seriesInfo = {
@@ -92,8 +95,6 @@ export class VirtualTreeParser {
     }
 
     getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree): SeriesData {
-        const fetcher = new SeriesFetcher();
-
         this.getSeriesInfo(path, seriesName);
 
         virtualTree.forEach((season, episode) => {
@@ -101,7 +102,7 @@ export class VirtualTreeParser {
             const episodeNum = episode.episodeNum.toString();
 
             try {
-                const episodeInfo = fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
+                const episodeInfo = this.fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
 
                 this.insert(season.seasonNum, episode.episodeNum, episode.path, {
                     title: episodeInfo.title,

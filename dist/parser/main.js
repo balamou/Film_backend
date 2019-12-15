@@ -94,5 +94,6 @@ function orginizeSeriesFolder(path) {
         const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
         console.log(seriesInfo);
     }
+    // Add data to database
 }
 main();

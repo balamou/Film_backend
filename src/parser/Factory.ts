@@ -6,6 +6,8 @@ import { TitleParserAdapter } from './Adapters/TitleParser';
 import { VirtualTreeBuilder } from './VirtualTree/VirtualTreeBuilder';
 import { VirtualTreeParser } from './VirtualTree/VirtualTreeParser';
 
+import { EnglishFetcher } from './FilmScrapper/omdb';
+
 export default class Factory {
 
     createFlattenFileTree(): FlattenFileTree {
@@ -17,6 +19,6 @@ export default class Factory {
     }
 
     createVirtualTreeParser(): VirtualTreeParser {
-        return new VirtualTreeParser(new FSEditor());
+        return new VirtualTreeParser(new FSEditor(), new EnglishFetcher());
     }
 }

@@ -7,7 +7,7 @@ import { httpGet } from '../Adapters/HTTPReq';
 
 export class Omdb {
     static readonly API_KEY = 'b2141cec';
-    
+
     private static seriesEndPoint = (seriesName: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series`;
     private static seasonEndPoint = (seriesName: string, season: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}`;
     private static episodeEndPoint = (seriesName: string, season: string, episode: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}&Episode=${episode}`;
@@ -22,8 +22,29 @@ export class Omdb {
     // {"Response":"False","Error":"Series or episode not found!"}
 }
 
-export class SeriesFetcher {
-    
+export interface Fetcher {
+    fetchSeries(seriesName: string): {
+        title?: string,
+        plot?: string,
+        poster?: string,
+        totalSeasons?: number
+    };
+    fetchEpisode(seriesName: string, season: string, episode: string): {
+        title?: string,
+        plot?: string,
+        imdbRating?: string
+    };
+    fetchMovie(movieName: string): {
+        title?: string,
+        year?: string,
+        plot?: string,
+        poster?: string,
+        imdbRating?: string
+    };
+}
+
+export class EnglishFetcher implements Fetcher {
+
     fetchSeries(seriesName: string) {
         const seriesInfo = Omdb.fetchSeries(seriesName);
 
@@ -43,7 +64,7 @@ export class SeriesFetcher {
 
         if (episodeInfo.Error)
             throw new Error(episodeInfo.Error);
-        
+
         return {
             title: episodeInfo.Title as string,
             plot: episodeInfo.Plot as string,
