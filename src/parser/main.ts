@@ -1,5 +1,5 @@
 import { FSEditor } from './Adapters/FSEditor';
-import { getDirTree } from './Adapters/DirTreeCreator';
+import { getDirTree, DirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
 import Tree from './Tree';
 
@@ -67,8 +67,9 @@ function orginizeSeriesFolder(path: string) {
     removeDSStore(path);
 
     // Parse Virtual tree
-    const vtParser = new VirtualTreeParser();
+    const vtParser = new VirtualTreeParser(new FSEditor());
     vtParser.generateThumbnails(vtBuilder.virtualTree);
+    console.log(vtParser.videoInfo);
 }
 
 function removeDSStore(path: string) {

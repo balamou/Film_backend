@@ -1,16 +1,63 @@
-import { VirtualTree, Episode } from './VirtualTree';
+import { VirtualTree, Episode, Season } from './VirtualTree';
 import { SeriesFetcher } from '../FilmScrapper/omdb';
 
 import ffmpeg from '../Adapters/ffmpeg';
-import { FSEditor } from '../Adapters/FSEditor';
+import { FSEditor, FileSystemEditor } from '../Adapters/FSEditor';
+
+class VideoInfo {
+    season: number;
+    episode: number;
+    videoPath: string;
+
+    title?: string;
+    plot?: string;
+    thumbnail?: string;
+    duration?: number;
+
+    constructor(season: number,
+        episode: number,
+        videoPath: string,
+        title?: string | undefined,
+        plot?: string | undefined,
+        thumbnail?: string | undefined,
+        duration?: number | undefined) {
+        this.season = season;
+        this.episode = episode;
+        this.videoPath = videoPath;
+
+        this.title = title;
+        this.plot = plot;
+        this.thumbnail = thumbnail;
+        this.duration = duration;
+    }
+}
 
 export default class VirtualTreeParser {
+    videoInfo: VideoInfo[] = [];
+    private fsEditor: FileSystemEditor;
+
+    constructor(fsEditor: FileSystemEditor) {
+        this.fsEditor = fsEditor;
+    }
+
+    insert(season: number, episode: number, videoPath: string,
+        data: { title?: string, plot?: string, thumbnail?: string, duration?: number }) {
+        const match = this.videoInfo.find(item => item.episode === episode && item.season === season);
+
+        if (!match) {
+            const newInfo = new VideoInfo(season, episode, videoPath, data.title, data.plot, data.thumbnail, data.duration);
+            this.videoInfo.push(newInfo);
+        } else {
+            if (data.title) match.title = data.title;
+            if (data.plot) match.plot = data.plot;
+            if (data.thumbnail) match.thumbnail = data.thumbnail;
+            if (data.duration) match.duration = data.duration;
+        }
+    }
 
     async findInformation(seriesName: string, virtualTree: VirtualTree) {
         const fetcher = new SeriesFetcher();
-
         const seriesInfo = await fetcher.fetchSeries(seriesName);
-        const episodeData: { title?: string, plot?: string }[] = [];
 
         await virtualTree.asyncForEach(async (season, episode) => {
             const seasonNum = season.seasonNum.toString();
@@ -19,7 +66,7 @@ export default class VirtualTreeParser {
             try {
                 const episodeInfo = await fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
 
-                episodeData.push({
+                this.insert(season.seasonNum, episode.episodeNum, episode.path, {
                     title: episodeInfo.title,
                     plot: episodeInfo.plot
                 });
@@ -28,16 +75,10 @@ export default class VirtualTreeParser {
                 console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
             }
         });
-
-        return {
-            seriesInfo: seriesInfo,
-            episodeData: episodeData
-        };
     }
 
     generateThumbnails(virtualTree: VirtualTree) {
         const videoProcessor = new ffmpeg();
-        const fsEditor = new FSEditor();
 
         virtualTree.forEach((season, episode) => {
             const path = season.path;
@@ -46,17 +87,14 @@ export default class VirtualTreeParser {
             const thumbnails = `${path}/thumbnails`;
             const thumbnail = `${path}/thumbnails/E${episode.episodeNum}.png`;
 
-            fsEditor.makeDirectory(thumbnails);
+            this.fsEditor.makeDirectory(thumbnails);
             const thumbnailPath = videoProcessor.generateThumbnail(episode.path, thumbnail);
             const duration = videoProcessor.getDuration(episode.path);
 
-            const episodeData = {
-                videoPath: episode.path,
+            this.insert(season.seasonNum, episode.episodeNum, episode.path, {
                 thumbnail: thumbnailPath,
                 duration: duration
-            };
-
-            console.log(episodeData);
+            });
         });
     }
 }   

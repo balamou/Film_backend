@@ -14,19 +14,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const omdb_1 = require("../FilmScrapper/omdb");
 const ffmpeg_1 = __importDefault(require("../Adapters/ffmpeg"));
-const FSEditor_1 = require("../Adapters/FSEditor");
+class VideoInfo {
+    constructor(season, episode, videoPath, title, plot, thumbnail, duration) {
+        this.season = season;
+        this.episode = episode;
+        this.videoPath = videoPath;
+        this.title = title;
+        this.plot = plot;
+        this.thumbnail = thumbnail;
+        this.duration = duration;
+    }
+}
 class VirtualTreeParser {
+    constructor(fsEditor) {
+        this.videoInfo = [];
+        this.fsEditor = fsEditor;
+    }
+    insert(season, episode, videoPath, data) {
+        const match = this.videoInfo.find(item => item.episode === episode && item.season === season);
+        if (!match) {
+            const newInfo = new VideoInfo(season, episode, videoPath, data.title, data.plot, data.thumbnail, data.duration);
+            this.videoInfo.push(newInfo);
+        }
+        else {
+            if (data.title)
+                match.title = data.title;
+            if (data.plot)
+                match.plot = data.plot;
+            if (data.thumbnail)
+                match.thumbnail = data.thumbnail;
+            if (data.duration)
+                match.duration = data.duration;
+        }
+    }
     findInformation(seriesName, virtualTree) {
         return __awaiter(this, void 0, void 0, function* () {
             const fetcher = new omdb_1.SeriesFetcher();
             const seriesInfo = yield fetcher.fetchSeries(seriesName);
-            const episodeData = [];
             yield virtualTree.asyncForEach((season, episode) => __awaiter(this, void 0, void 0, function* () {
                 const seasonNum = season.seasonNum.toString();
                 const episodeNum = episode.episodeNum.toString();
                 try {
                     const episodeInfo = yield fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
-                    episodeData.push({
+                    this.insert(season.seasonNum, episode.episodeNum, episode.path, {
                         title: episodeInfo.title,
                         plot: episodeInfo.plot
                     });
@@ -36,30 +66,23 @@ class VirtualTreeParser {
                     console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
                 }
             }));
-            return {
-                seriesInfo: seriesInfo,
-                episodeData: episodeData
-            };
         });
     }
     generateThumbnails(virtualTree) {
         const videoProcessor = new ffmpeg_1.default();
-        const fsEditor = new FSEditor_1.FSEditor();
         virtualTree.forEach((season, episode) => {
             const path = season.path;
             if (!path)
                 return console.log(`Error: season ${season.seasonNum} folder not defined`);
             const thumbnails = `${path}/thumbnails`;
             const thumbnail = `${path}/thumbnails/E${episode.episodeNum}.png`;
-            fsEditor.makeDirectory(thumbnails);
+            this.fsEditor.makeDirectory(thumbnails);
             const thumbnailPath = videoProcessor.generateThumbnail(episode.path, thumbnail);
             const duration = videoProcessor.getDuration(episode.path);
-            const episodeData = {
-                videoPath: episode.path,
+            this.insert(season.seasonNum, episode.episodeNum, episode.path, {
                 thumbnail: thumbnailPath,
                 duration: duration
-            };
-            console.log(episodeData);
+            });
         });
     }
 }

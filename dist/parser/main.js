@@ -55,8 +55,9 @@ function orginizeSeriesFolder(path) {
     vtBuilder.commit(path);
     removeDSStore(path);
     // Parse Virtual tree
-    const vtParser = new VirtualTreeParser_1.default();
+    const vtParser = new VirtualTreeParser_1.default(new FSEditor_1.FSEditor());
     vtParser.generateThumbnails(vtBuilder.virtualTree);
+    console.log(vtParser.videoInfo);
 }
 function removeDSStore(path) {
     const fsEditor = new FSEditor_1.FSEditor();
