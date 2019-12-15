@@ -50,15 +50,16 @@ class VirtualTreeParser {
             if (!path)
                 return console.log(`Error: season ${season.seasonNum} folder not defined`);
             const thumbnails = `${path}/thumbnails`;
-            const thumbnail = `${path}/thumbnails/${episode.episodeNum}.png`;
+            const thumbnail = `${path}/thumbnails/E${episode.episodeNum}.png`;
             fsEditor.makeDirectory(thumbnails);
-            videoProcessor.generateThumbnail(episode.path, thumbnail);
+            const thumbnailPath = videoProcessor.generateThumbnail(episode.path, thumbnail);
             const duration = videoProcessor.getDuration(episode.path);
             const episodeData = {
                 videoPath: episode.path,
-                thumbnail: thumbnail,
+                thumbnail: thumbnailPath,
                 duration: duration
             };
+            console.log(episodeData);
         });
     }
 }

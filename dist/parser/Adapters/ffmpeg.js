@@ -6,9 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = __importDefault(require("child_process"));
 class ffmpeg {
     // `destination` has to include the extension
+    // returns path to the thumbnail if successfully extracted, otherwise undefined
     generateThumbnail(videoPath, destination, width = '600') {
         const args = ['-ss', '00:10:50', '-i', videoPath, '-vframes', '1', '-filter:v', 'scale=' + width + ':-1', destination];
-        child_process_1.default.spawnSync('ffmpeg', args);
+        const process = child_process_1.default.spawnSync('ffmpeg', args, { encoding: 'utf-8' });
+        const error = process.stderr;
+        const reg = /Invalid data found when processing input/;
+        if (reg.test(error))
+            return undefined;
+        return destination;
     }
     getDuration(videoPath) {
         const args = ['-i', videoPath, '-show_entries', 'format=duration', '-v', 'quiet', '-of', 'csv=p=0'];
