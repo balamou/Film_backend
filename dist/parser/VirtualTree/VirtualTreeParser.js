@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const omdb_1 = require("../FilmScrapper/omdb");
+const HTTPReq_1 = require("../Adapters/HTTPReq");
 const ffmpeg_1 = __importDefault(require("../Adapters/ffmpeg"));
 class VideoInfo {
     constructor(season, episode, videoPath, title, plot, thumbnail, duration) {
@@ -47,9 +48,22 @@ class VirtualTreeParser {
                 match.duration = data.duration;
         }
     }
-    getSeriesInformation(seriesName, virtualTree) {
+    getSeriesInformation(path, seriesName, virtualTree) {
         return __awaiter(this, void 0, void 0, function* () {
             const fetcher = new omdb_1.SeriesFetcher();
+            try {
+                const seriesData = yield fetcher.fetchSeries(seriesName);
+                this.seriesInformation = {
+                    title: seriesData.title,
+                    plot: seriesData.plot,
+                    poster: `${path}/poster.jpg`,
+                    totalSeasons: seriesData.totalSeasons
+                };
+                yield HTTPReq_1.download(seriesData.poster, `${path}/poster.jpg`);
+            }
+            catch (_a) {
+                console.log(`Error parsing series info '${seriesName}'`);
+            }
             yield virtualTree.asyncForEach((season, episode) => __awaiter(this, void 0, void 0, function* () {
                 const seasonNum = season.seasonNum.toString();
                 const episodeNum = episode.episodeNum.toString();
@@ -60,7 +74,7 @@ class VirtualTreeParser {
                         plot: episodeInfo.plot
                     });
                 }
-                catch (_a) {
+                catch (_b) {
                     console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
                 }
             }));

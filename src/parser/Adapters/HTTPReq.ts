@@ -17,3 +17,23 @@ export const httpGet = (url: string) => {
         }).on('error', reject);
     });
 };
+
+
+import fs from 'fs';
+import request from 'request';
+
+// Example usage: 
+// download('https://www.google.com/images/srpr/logo3w.png', 'google.png');
+
+export const download = (uri: string, filename: string) => {
+    return new Promise<void>((resolve, reject) => {
+        request.head(uri, (err, res, body) => {
+            console.log('content-type:', res.headers['content-type']);
+            console.log('content-length:', res.headers['content-length']);
+
+            if (err) reject(err);
+
+            request(uri).pipe(fs.createWriteStream(filename)).on('close', () => resolve());
+        });
+    });
+};

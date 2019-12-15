@@ -8,7 +8,7 @@ const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 const Factory_1 = __importDefault(require("./Factory"));
 const factory = new Factory_1.default();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
-const NETWORK_ENABLED = false;
+const NETWORK_ENABLED = true;
 function main() {
     const fsEditor = new FSEditor_1.FSEditor();
     const path = './public/en/shows';
@@ -61,7 +61,7 @@ function orginizeSeriesFolder(path) {
     vtParser.generateThumbnails(vtBuilder.virtualTree);
     const seriesName = new FSEditor_1.FSEditor().getBasename(path);
     if (NETWORK_ENABLED) {
-        vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
+        vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then(() => {
             console.log(vtParser.videoInfo);
         });
     }

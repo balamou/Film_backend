@@ -22,3 +22,18 @@ exports.httpGet = (url) => {
         }).on('error', reject);
     });
 };
+const fs_1 = __importDefault(require("fs"));
+const request_1 = __importDefault(require("request"));
+// Example usage: 
+// download('https://www.google.com/images/srpr/logo3w.png', 'google.png');
+exports.download = (uri, filename) => {
+    return new Promise((resolve, reject) => {
+        request_1.default.head(uri, (err, res, body) => {
+            console.log('content-type:', res.headers['content-type']);
+            console.log('content-length:', res.headers['content-length']);
+            if (err)
+                reject(err);
+            request_1.default(uri).pipe(fs_1.default.createWriteStream(filename)).on('close', () => resolve());
+        });
+    });
+};

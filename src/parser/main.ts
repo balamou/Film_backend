@@ -1,11 +1,11 @@
 import { FSEditor } from './Adapters/FSEditor';
-import { getDirTree, DirTree } from './Adapters/DirTreeCreator';
+import { getDirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
 import Tree from './Tree';
 
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
-const NETWORK_ENABLED = false;
+const NETWORK_ENABLED = true;
 
 export default function main() {
     const fsEditor = new FSEditor();
@@ -75,7 +75,7 @@ function orginizeSeriesFolder(path: string) {
     const seriesName = new FSEditor().getBasename(path);
 
     if (NETWORK_ENABLED) {
-        vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
+        vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then(() => {
             console.log(vtParser.videoInfo);
         });
     }

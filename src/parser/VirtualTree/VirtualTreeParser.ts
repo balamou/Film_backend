@@ -1,6 +1,7 @@
 import { VirtualTree } from './VirtualTree';
 import { SeriesFetcher } from '../FilmScrapper/omdb';
 import { FileSystemEditor } from '../Adapters/FSEditor';
+import { download } from '../Adapters/HTTPReq';
 
 import ffmpeg from '../Adapters/ffmpeg';
 
@@ -34,6 +35,7 @@ class VideoInfo {
 
 export class VirtualTreeParser {
     videoInfo: VideoInfo[] = [];
+    seriesInformation?: { title?: string, poster?: string, plot?: string, totalSeasons?: number };
     private fsEditor: FileSystemEditor;
 
     constructor(fsEditor: FileSystemEditor) {
@@ -55,8 +57,23 @@ export class VirtualTreeParser {
         }
     }
 
-    async getSeriesInformation(seriesName: string, virtualTree: VirtualTree) {
+    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree) {
         const fetcher = new SeriesFetcher();
+
+        try {
+            const seriesData = await fetcher.fetchSeries(seriesName);
+
+            this.seriesInformation = {
+                title: seriesData.title,
+                plot: seriesData.plot,
+                poster: `${path}/poster.jpg`,
+                totalSeasons: seriesData.totalSeasons
+            };
+
+            await download(seriesData.poster, `${path}/poster.jpg`);
+        } catch {
+            console.log(`Error parsing series info '${seriesName}'`);
+        }
 
         await virtualTree.asyncForEach(async (season, episode) => {
             const seasonNum = season.seasonNum.toString();
