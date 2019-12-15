@@ -47,7 +47,7 @@ class VirtualTreeParser {
                 match.duration = data.duration;
         }
     }
-    findInformation(seriesName, virtualTree) {
+    getSeriesInformation(seriesName, virtualTree) {
         return __awaiter(this, void 0, void 0, function* () {
             const fetcher = new omdb_1.SeriesFetcher();
             const seriesInfo = yield fetcher.fetchSeries(seriesName);

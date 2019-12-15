@@ -55,4 +55,8 @@ export class FSEditor implements FileSystemEditor {
     deleteFile(path: string) {
         fs.unlinkSync(path);
     }
+
+    getBasename(paths: string): string {
+        return path.basename(paths);
+    }
 }

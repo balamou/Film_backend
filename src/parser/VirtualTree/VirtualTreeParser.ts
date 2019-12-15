@@ -55,7 +55,7 @@ export default class VirtualTreeParser {
         }
     }
 
-    async findInformation(seriesName: string, virtualTree: VirtualTree) {
+    async getSeriesInformation(seriesName: string, virtualTree: VirtualTree) {
         const fetcher = new SeriesFetcher();
         const seriesInfo = await fetcher.fetchSeries(seriesName);
 
