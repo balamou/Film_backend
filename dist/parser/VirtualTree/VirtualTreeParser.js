@@ -50,7 +50,6 @@ class VirtualTreeParser {
     getSeriesInformation(seriesName, virtualTree) {
         return __awaiter(this, void 0, void 0, function* () {
             const fetcher = new omdb_1.SeriesFetcher();
-            const seriesInfo = yield fetcher.fetchSeries(seriesName);
             yield virtualTree.asyncForEach((season, episode) => __awaiter(this, void 0, void 0, function* () {
                 const seasonNum = season.seasonNum.toString();
                 const episodeNum = episode.episodeNum.toString();
@@ -62,7 +61,6 @@ class VirtualTreeParser {
                     });
                 }
                 catch (_a) {
-                    // fallback model
                     console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
                 }
             }));

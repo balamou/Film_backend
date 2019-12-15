@@ -27,7 +27,7 @@ export class SeriesFetcher {
     async fetchSeries(seriesName: string) {
         const seriesInfo = await Omdb.fetchSeries(seriesName);
 
-        if (!seriesInfo.Error)
+        if (seriesInfo.Error)
             throw new Error(seriesInfo.Error);
 
         return {
@@ -41,7 +41,7 @@ export class SeriesFetcher {
     async fetchEpisode(seriesName: string, season: string, episode: string) {
         const episodeInfo = await Omdb.fetchEpisode(seriesName, season, episode);
 
-        if (!episodeInfo.Error)
+        if (episodeInfo.Error)
             throw new Error(episodeInfo.Error);
         
         return {

@@ -66,9 +66,12 @@ function orginizeSeriesFolder(path: string) {
     // Parse Virtual tree
     const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
+    
     const seriesName = new FSEditor().getBasename(path);
-    console.log(seriesName);
-    //vtParser.getSeriesInformation()
+    
+    vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
+        console.log(vtParser.videoInfo);
+    });
 }
 
 function removeDSStore(path: string) {

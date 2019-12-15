@@ -56,8 +56,9 @@ function orginizeSeriesFolder(path) {
     const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
     const seriesName = new FSEditor_1.FSEditor().getBasename(path);
-    console.log(seriesName);
-    //vtParser.getSeriesInformation()
+    vtParser.getSeriesInformation(seriesName, vtBuilder.virtualTree).then(() => {
+        console.log(vtParser.videoInfo);
+    });
 }
 function removeDSStore(path) {
     const fsEditor = new FSEditor_1.FSEditor();

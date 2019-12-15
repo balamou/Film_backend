@@ -57,7 +57,6 @@ export class VirtualTreeParser {
 
     async getSeriesInformation(seriesName: string, virtualTree: VirtualTree) {
         const fetcher = new SeriesFetcher();
-        const seriesInfo = await fetcher.fetchSeries(seriesName);
 
         await virtualTree.asyncForEach(async (season, episode) => {
             const seasonNum = season.seasonNum.toString();
@@ -71,7 +70,6 @@ export class VirtualTreeParser {
                     plot: episodeInfo.plot
                 });
             } catch {
-                // fallback model
                 console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
             }
         });

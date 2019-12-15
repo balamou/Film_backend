@@ -30,7 +30,7 @@ class SeriesFetcher {
     fetchSeries(seriesName) {
         return __awaiter(this, void 0, void 0, function* () {
             const seriesInfo = yield Omdb.fetchSeries(seriesName);
-            if (!seriesInfo.Error)
+            if (seriesInfo.Error)
                 throw new Error(seriesInfo.Error);
             return {
                 title: seriesInfo.Title,
@@ -43,7 +43,7 @@ class SeriesFetcher {
     fetchEpisode(seriesName, season, episode) {
         return __awaiter(this, void 0, void 0, function* () {
             const episodeInfo = yield Omdb.fetchEpisode(seriesName, season, episode);
-            if (!episodeInfo.Error)
+            if (episodeInfo.Error)
                 throw new Error(episodeInfo.Error);
             return {
                 title: episodeInfo.Title,
