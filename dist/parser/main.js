@@ -6,13 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const FSEditor_1 = require("./Adapters/FSEditor");
 const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 const Factory_1 = __importDefault(require("./Factory"));
-const VirtualTreeParser_1 = __importDefault(require("./VirtualTree/VirtualTreeParser"));
 const factory = new Factory_1.default();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
 function main() {
-    const fs = new FSEditor_1.FSEditor();
+    const fsEditor = new FSEditor_1.FSEditor();
     const path = './public/en/shows';
-    if (fs.doesFileExist(`${path}/film.config`)) {
+    if (fsEditor.doesFileExist(`${path}/film.config`)) {
         // Parse file and create a json Tree
     }
     else {
@@ -27,7 +26,6 @@ function main() {
                 files.push(node);
         });
         // move files to purge
-        const fsEditor = new FSEditor_1.FSEditor();
         const purgeFolder = `${path}/purge`;
         fsEditor.makeDirectory(purgeFolder);
         files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
@@ -55,7 +53,7 @@ function orginizeSeriesFolder(path) {
     vtBuilder.commit(path);
     removeDSStore(path);
     // Parse Virtual tree
-    const vtParser = new VirtualTreeParser_1.default(new FSEditor_1.FSEditor());
+    const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
     const seriesName = new FSEditor_1.FSEditor().getBasename(path);
     console.log(seriesName);

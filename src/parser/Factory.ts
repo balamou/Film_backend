@@ -4,6 +4,7 @@ import { FSEditor } from './Adapters/FSEditor';
 
 import { TitleParserAdapter } from './Adapters/TitleParser';
 import { VirtualTreeBuilder } from './VirtualTree/VirtualTreeBuilder';
+import { VirtualTreeParser } from './VirtualTree/VirtualTreeParser';
 
 export default class Factory {
 
@@ -13,5 +14,9 @@ export default class Factory {
 
     createVirtualTreeBuilder(): VirtualTreeBuilder {
         return new VirtualTreeBuilder(new TitleParserAdapter(), new FSEditor(), new DirTree());
+    }
+
+    createVirtualTreeParser(): VirtualTreeParser {
+        return new VirtualTreeParser(new FSEditor());
     }
 }

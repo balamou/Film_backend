@@ -32,7 +32,7 @@ class VideoInfo {
     }
 }
 
-export default class VirtualTreeParser {
+export class VirtualTreeParser {
     videoInfo: VideoInfo[] = [];
     private fsEditor: FileSystemEditor;
 

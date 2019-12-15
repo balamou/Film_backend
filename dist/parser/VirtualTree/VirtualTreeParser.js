@@ -86,4 +86,4 @@ class VirtualTreeParser {
         });
     }
 }
-exports.default = VirtualTreeParser;
+exports.VirtualTreeParser = VirtualTreeParser;

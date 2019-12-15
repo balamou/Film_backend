@@ -3,16 +3,14 @@ import { getDirTree, DirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
 import Tree from './Tree';
 
-import VirtualTreeParser from './VirtualTree/VirtualTreeParser';
-
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
 
 export default function main() {
-    const fs = new FSEditor();
+    const fsEditor = new FSEditor();
     const path = './public/en/shows';
 
-    if (fs.doesFileExist(`${path}/film.config`)) {
+    if (fsEditor.doesFileExist(`${path}/film.config`)) {
         // Parse file and create a json Tree
 
     } else {
@@ -31,7 +29,6 @@ export default function main() {
         });
 
         // move files to purge
-        const fsEditor = new FSEditor();
         const purgeFolder = `${path}/purge`;
         fsEditor.makeDirectory(purgeFolder);
         files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
@@ -67,7 +64,7 @@ function orginizeSeriesFolder(path: string) {
     removeDSStore(path);
 
     // Parse Virtual tree
-    const vtParser = new VirtualTreeParser(new FSEditor());
+    const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
     const seriesName = new FSEditor().getBasename(path);
     console.log(seriesName);
