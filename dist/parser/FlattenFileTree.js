@@ -6,10 +6,9 @@ class FlattenFileTree {
         this.dirTreeCreator = dirTreeCreator;
         this.fileSystemEditor = fileSystemEditor;
     }
-    findMisplacedFiles(path) {
-        const directoryTree = this.dirTreeCreator.treeFrom(path, this.exclude);
-        if (!(directoryTree && directoryTree.isFolder))
-            return;
+    // `pathToFolder` is the path to the series folder
+    findMisplacedFiles(pathToFolder) {
+        const directoryTree = this.dirTreeCreator.treeFrom(pathToFolder, this.exclude);
         const move_up = [];
         let purge = [];
         const level4folders = [];
@@ -23,7 +22,7 @@ class FlattenFileTree {
             if (level == 1 && node.isFile && !node.isVideo)
                 purge.push(node.path);
         });
-        const filtered = level4folders.filter(folder => !folder.contains(node => node.isFile && node.isVideo)).map(node => node.path);
+        const filtered = level4folders.filter(folder => !folder.contains(node => node.isVideo)).map(node => node.path);
         purge = purge.concat(filtered);
         console.log(purge);
         return {
@@ -34,15 +33,15 @@ class FlattenFileTree {
     moveUp(files) {
         files.forEach(file => {
             const components = file.split('/');
+            //                          public     /      en        /     shows      /    TheShow     /   Season_1
             const level4folder = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
             this.fileSystemEditor.moveFileToFolder(file, level4folder);
         });
     }
+    // `path` points to the series folder
     flatten(path) {
         const result = this.findMisplacedFiles(path);
         const purgeFolder = `${path}/purge`;
-        if (!result)
-            return;
         this.moveUp(result.moveup);
         this.fileSystemEditor.makeDirectory(purgeFolder); // create purge folder
         result.purge.forEach(file => {

@@ -2,6 +2,7 @@ export interface FileSystemEditor {
     makeDirectory(dirName: string): void;
     moveAndRename(from: string, to: string): void;
     moveFileToFolder(from: string, to: string): void;
+    doesFileExist(path: string): boolean;
 }
 
 import fs from 'fs';
@@ -23,5 +24,13 @@ export class FSEditor implements FileSystemEditor {
         const dest = path.resolve(to, basename);
         
         fs.renameSync(from, dest);
+    }
+
+    doesFileExist(path: string): boolean {
+        try {
+            return fs.existsSync(path);
+        } catch (err) {
+            return false; // error occured 
+        }
     }
 }

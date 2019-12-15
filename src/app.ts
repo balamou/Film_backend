@@ -13,7 +13,7 @@ import episodes from './routes/episodes';
 import series from './model/series';
 import sequelize from './util/database';
 
-import watcher from './parser/watcher';
+import watcher from './parser/other/watcher';
 
 
 const PORT_NUMBER = 3000;

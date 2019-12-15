@@ -1,10 +1,10 @@
 import { PathValidator, PathData } from './PathValidator';
-import { FlattenFileTree} from './FlattenFileTree';
-import { FSEditor } from './Adapters/FSEditor';
-import { DirTree } from './Adapters/DirTreeCreator';
-import Tree from './Tree';
-import { VirtualTreeBuilder } from './VirtualTree/VirtualTreeBuilder';
-import { TitleParser, TitleParserAdapter } from './Adapters/TitleParser';
+import { FlattenFileTree} from '../FlattenFileTree';
+import { FSEditor } from '../Adapters/FSEditor';
+import { DirTree } from '../Adapters/DirTreeCreator';
+import Tree from '../Tree';
+import { VirtualTreeBuilder } from '../VirtualTree/VirtualTreeBuilder';
+import { TitleParser, TitleParserAdapter } from '../Adapters/TitleParser';
 
 // import omdb from './omdb';
 // import SeriesModel from '../model/series';

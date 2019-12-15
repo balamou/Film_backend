@@ -18,5 +18,13 @@ class FSEditor {
         const dest = path_1.default.resolve(to, basename);
         fs_1.default.renameSync(from, dest);
     }
+    doesFileExist(path) {
+        try {
+            return fs_1.default.existsSync(path);
+        }
+        catch (err) {
+            return false; // error occured 
+        }
+    }
 }
 exports.FSEditor = FSEditor;

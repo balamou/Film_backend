@@ -21,3 +21,7 @@ class DirTree {
     }
 }
 exports.DirTree = DirTree;
+function getDirTree(path, exclude) {
+    return new DirTree().treeFrom(path, exclude);
+}
+exports.getDirTree = getDirTree;

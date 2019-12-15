@@ -2,12 +2,12 @@ import Tree from '../Tree';
 import dirTree from 'directory-tree';
 
 export interface DirectoryTreeCreator {
-    treeFrom(path: string, exclude?: RegExp): Tree | undefined;
+    treeFrom(path: string, exclude?: RegExp): Tree;
 }
 
 export class DirTree implements DirectoryTreeCreator {
 
-    treeFrom(path: string, exclude?: RegExp | undefined): Tree | undefined {
+    treeFrom(path: string, exclude?: RegExp | undefined): Tree {
         const parsedDirectory = dirTree(path, { exclude: exclude });
 
         return this.buildTree(parsedDirectory);
@@ -24,4 +24,8 @@ export class DirTree implements DirectoryTreeCreator {
 
         return new Tree(node.path, node.name, node.type, node.extension, newChildren);
     }
+}
+
+export function getDirTree(path: string, exclude?: RegExp | undefined) {
+     return new DirTree().treeFrom(path, exclude);
 }

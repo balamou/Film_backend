@@ -23,7 +23,7 @@ const show_1 = __importDefault(require("./routes/show"));
 const movie_1 = __importDefault(require("./routes/movie"));
 const episodes_1 = __importDefault(require("./routes/episodes"));
 const database_1 = __importDefault(require("./util/database"));
-const watcher_1 = __importDefault(require("./parser/watcher"));
+const watcher_1 = __importDefault(require("./parser/other/watcher"));
 const PORT_NUMBER = 3000;
 app.use(express_1.default.static("./public"));
 app.use(login_1.default);
