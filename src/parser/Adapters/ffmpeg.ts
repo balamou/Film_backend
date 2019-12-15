@@ -23,4 +23,16 @@ export default class ffmpeg {
         const actualDuration = parseInt(duration);
         return isNaN(actualDuration) ? undefined : actualDuration;
     }
+
+    // returns `true` if the video is not damaged
+    isVideoNotDamaged(videoPath: string) {
+        const args = ['-i', videoPath];
+        const process = cprocess.spawnSync('ffmpeg', args, { encoding: 'utf-8' });
+        const error = process.stderr;
+
+        const reg = /Invalid data found when processing input/;
+        if (reg.test(error)) return false;
+
+        return true;
+    }
 }
