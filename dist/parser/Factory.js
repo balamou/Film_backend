@@ -9,8 +9,8 @@ class Factory {
     createFlattenFileTree() {
         return new FlattenFileTree_1.FlattenFileTree(new DirTreeCreator_1.DirTree(), new FSEditor_1.FSEditor());
     }
-    createVirtualTreeBuilder(path) {
-        return new VirtualTreeBuilder_1.VirtualTreeBuilder(path, new TitleParser_1.TitleParserAdapter(), new FSEditor_1.FSEditor());
+    createVirtualTreeBuilder() {
+        return new VirtualTreeBuilder_1.VirtualTreeBuilder(new TitleParser_1.TitleParserAdapter(), new FSEditor_1.FSEditor(), new DirTreeCreator_1.DirTree());
     }
 }
 exports.default = Factory;

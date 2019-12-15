@@ -49,10 +49,10 @@ function orginizeSeriesFolder(path) {
             level4files.push(node);
     });
     // Virtual tree
-    const vtBuilder = factory.createVirtualTreeBuilder(path);
+    const vtBuilder = factory.createVirtualTreeBuilder();
     vtBuilder.buildVirtualTree(level4files);
     vtBuilder.buildVirtualTreeFromFolders(level4folders);
-    vtBuilder.commit();
+    vtBuilder.commit(path);
     removeDSStore(path);
     // Parse Virtual tree
     const vtParser = new VirtualTreeParser_1.default();

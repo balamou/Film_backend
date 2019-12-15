@@ -11,7 +11,7 @@ export default class Factory {
         return new FlattenFileTree(new DirTree(), new FSEditor());
     }
 
-    createVirtualTreeBuilder(path: string): VirtualTreeBuilder {
-        return new VirtualTreeBuilder(path, new TitleParserAdapter(), new FSEditor());
+    createVirtualTreeBuilder(): VirtualTreeBuilder {
+        return new VirtualTreeBuilder(new TitleParserAdapter(), new FSEditor(), new DirTree());
     }
 }

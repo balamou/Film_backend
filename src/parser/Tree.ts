@@ -51,6 +51,7 @@ export default class Tree {
 
             children.forEach((item: any) => queue.push(item));
         }
+        return false;
     };
 
     get isFile(): boolean {
