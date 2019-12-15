@@ -3,6 +3,7 @@ import { SeriesFetcher } from '../FilmScrapper/omdb';
 import { FileSystemEditor } from '../Adapters/FSEditor';
 
 import ffmpeg from '../Adapters/ffmpeg';
+import { download } from '../Adapters/HTTPReq';
 
 class VideoInfo {
     season: number;
@@ -73,11 +74,11 @@ export class VirtualTreeParser {
             const seriesData = fetcher.fetchSeries(seriesName);
             let fullPosterName: string | undefined;
 
-            // try {
-            //     fullPosterName = download(seriesData.poster, `${path}/poster`);
-            // } catch {
-            //     console.log(`Unable to download poster image for ${seriesName}`);
-            // }
+            try {
+                fullPosterName = download(seriesData.poster, `${path}/poster`);
+            } catch {
+                console.log(`Unable to download poster image for ${seriesName}`);
+            }
 
             this.seriesInfo = {
                 title: seriesData.title,

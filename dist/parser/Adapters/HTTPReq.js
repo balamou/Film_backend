@@ -5,13 +5,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
 const sync_request_1 = __importDefault(require("sync-request"));
+const FSEditor_1 = require("../Adapters/FSEditor");
+const fs_1 = __importDefault(require("fs"));
 function httpGet(url) {
-    var res = sync_request_1.default('GET', url);
+    const res = sync_request_1.default('GET', url);
     const body = res.getBody('utf8');
     const bodyInJSONFormat = JSON.parse(body);
     return bodyInJSONFormat;
 }
 exports.httpGet = httpGet;
+function download(url, filename) {
+    const res = sync_request_1.default('GET', url);
+    const body = res.getBody();
+    const fsEditor = new FSEditor_1.FSEditor();
+    const wstream = fs_1.default.createWriteStream(`${filename}.jpeg`);
+    wstream.write(body);
+    wstream.end();
+    return filename;
+}
+exports.download = download;
 exports.httpGetOLD = (url) => {
     return new Promise((resolve, reject) => {
         http_1.default.get(url, res => {
@@ -30,11 +42,10 @@ exports.httpGetOLD = (url) => {
         }).on('error', reject);
     });
 };
-const fs_1 = __importDefault(require("fs"));
 const request_1 = __importDefault(require("request"));
 // Example usage: 
 // download('https://www.google.com/images/srpr/logo3w.png', 'google.png');
-exports.download = (uri, filename) => {
+exports.downloadOld = (uri, filename) => {
     return new Promise((resolve, reject) => {
         request_1.default.head(uri, (err, res, body) => {
             if (err)

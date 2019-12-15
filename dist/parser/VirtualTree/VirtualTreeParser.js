@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const omdb_1 = require("../FilmScrapper/omdb");
 const ffmpeg_1 = __importDefault(require("../Adapters/ffmpeg"));
+const HTTPReq_1 = require("../Adapters/HTTPReq");
 class VideoInfo {
     constructor(season, episode, videoPath, title, plot, thumbnail, duration) {
         this.season = season;
@@ -43,11 +44,12 @@ class VirtualTreeParser {
         try {
             const seriesData = fetcher.fetchSeries(seriesName);
             let fullPosterName;
-            // try {
-            //     fullPosterName = download(seriesData.poster, `${path}/poster`);
-            // } catch {
-            //     console.log(`Unable to download poster image for ${seriesName}`);
-            // }
+            try {
+                fullPosterName = HTTPReq_1.download(seriesData.poster, `${path}/poster`);
+            }
+            catch (_a) {
+                console.log(`Unable to download poster image for ${seriesName}`);
+            }
             this.seriesInfo = {
                 title: seriesData.title,
                 plot: seriesData.plot,
@@ -55,7 +57,7 @@ class VirtualTreeParser {
                 totalSeasons: seriesData.totalSeasons
             };
         }
-        catch (_a) {
+        catch (_b) {
             console.log(`Error parsing series info '${seriesName}'`);
         }
     }
