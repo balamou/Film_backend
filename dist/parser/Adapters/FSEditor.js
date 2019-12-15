@@ -53,5 +53,11 @@ class FSEditor {
     getBasename(paths) {
         return path_1.default.basename(paths);
     }
+    writeToFile(path, data) {
+        fs_1.default.writeFileSync(path, data);
+    }
+    readFile(path) {
+        return fs_1.default.readFileSync(path).toString();
+    }
 }
 exports.FSEditor = FSEditor;

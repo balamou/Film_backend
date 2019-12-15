@@ -60,4 +60,12 @@ export class FSEditor implements FileSystemEditor {
     getBasename(paths: string): string {
         return path.basename(paths);
     }
+
+    writeToFile(path: string, data: string) {
+        fs.writeFileSync(path, data);
+    }
+
+    readFile(path: string) {
+        return fs.readFileSync(path).toString();
+    }
 }

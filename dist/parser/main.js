@@ -7,19 +7,32 @@ const FSEditor_1 = require("./Adapters/FSEditor");
 const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 const Factory_1 = __importDefault(require("./Factory"));
 const factory = new Factory_1.default();
-const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
+const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
 function main() {
     const fsEditor = new FSEditor_1.FSEditor();
     const path = './public/en/shows';
     if (fsEditor.doesFileExist(`${path}/film.config`)) {
         // Parse file and create a json Tree
+        loadDirectoryStateFromFile(path);
     }
     else {
         orginizeAllSeries(path);
+        saveDirectoryStateOnDisk(path);
     }
 }
 exports.default = main;
+function saveDirectoryStateOnDisk(path) {
+    const tree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
+    const fsEditor = new FSEditor_1.FSEditor();
+    fsEditor.writeToFile(`${path}/film.config`, JSON.stringify(tree));
+}
+function loadDirectoryStateFromFile(path) {
+    const fsEditor = new FSEditor_1.FSEditor();
+    const data = fsEditor.readFile(`${path}/film.config`);
+    const tree = JSON.parse(data);
+    console.log(tree.path);
+}
 function orginizeAllSeries(path) {
     const fsEditor = new FSEditor_1.FSEditor();
     // orginize folder
@@ -63,6 +76,7 @@ function orginizeSeriesFolder(path) {
     if (NETWORK_ENABLED) {
         vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then(seriesInfo => {
             console.log(seriesInfo);
+            // commit to the database
         });
     }
 }

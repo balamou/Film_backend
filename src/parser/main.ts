@@ -4,7 +4,7 @@ import Factory from './Factory';
 import Tree from './Tree';
 
 const factory = new Factory();
-const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
+const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
 
 export default function main() {
@@ -13,10 +13,26 @@ export default function main() {
 
     if (fsEditor.doesFileExist(`${path}/film.config`)) {
         // Parse file and create a json Tree
-
+        loadDirectoryStateFromFile(path);
     } else {
         orginizeAllSeries(path);
+        saveDirectoryStateOnDisk(path);
     }
+}
+
+function saveDirectoryStateOnDisk(path: string) {
+    const tree = getDirTree(path, GLOBAL_EXCLUDE);
+    const fsEditor = new FSEditor();
+
+    fsEditor.writeToFile(`${path}/film.config`, JSON.stringify(tree));
+}
+
+function loadDirectoryStateFromFile(path: string) {
+    const fsEditor = new FSEditor();
+
+    const data = fsEditor.readFile(`${path}/film.config`);
+    const tree = JSON.parse(data) as Tree;
+    console.log(tree.path);
 }
 
 function orginizeAllSeries(path: string) {
@@ -77,6 +93,7 @@ function orginizeSeriesFolder(path: string) {
     if (NETWORK_ENABLED) {
         vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then( seriesInfo => {
             console.log(seriesInfo);
+            // commit to the database
         });
     }
 }
