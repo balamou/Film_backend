@@ -75,8 +75,8 @@ function orginizeSeriesFolder(path: string) {
     const seriesName = new FSEditor().getBasename(path);
 
     if (NETWORK_ENABLED) {
-        vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then(() => {
-            console.log(vtParser.videoInfo);
+        vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree).then( seriesInfo => {
+            console.log(seriesInfo);
         });
     }
 }

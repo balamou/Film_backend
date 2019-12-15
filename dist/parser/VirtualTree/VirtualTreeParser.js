@@ -90,6 +90,7 @@ class VirtualTreeParser {
                     console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
                 }
             }));
+            return { seriesInfo: this.seriesInformation, videoInfo: this.videoInfo };
         });
     }
     generateThumbnails(virtualTree) {

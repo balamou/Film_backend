@@ -4,6 +4,7 @@ import { FileSystemEditor } from '../Adapters/FSEditor';
 import { download } from '../Adapters/HTTPReq';
 
 import ffmpeg from '../Adapters/ffmpeg';
+import { resolve } from 'bluebird';
 
 class VideoInfo {
     season: number;
@@ -32,6 +33,16 @@ class VideoInfo {
         this.duration = duration;
     }
 }
+
+type seriesInfo = {
+    seriesInfo: {
+        title?: string | undefined;
+        poster?: string | undefined;
+        plot?: string | undefined;
+        totalSeasons?: number | undefined;
+    } | undefined;
+    videoInfo: VideoInfo[];
+};
 
 export class VirtualTreeParser {
     videoInfo: VideoInfo[] = [];
@@ -81,9 +92,9 @@ export class VirtualTreeParser {
         }
     }
 
-    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree) {
+    async getSeriesInformation(path: string, seriesName: string, virtualTree: VirtualTree): Promise<seriesInfo> {
         const fetcher = new SeriesFetcher();
-        
+
         await this.getSeriesInfo(path, seriesName);
 
         await virtualTree.asyncForEach(async (season, episode) => {
@@ -101,6 +112,8 @@ export class VirtualTreeParser {
                 console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
             }
         });
+
+        return { seriesInfo: this.seriesInformation, videoInfo: this.videoInfo };
     }
 
     generateThumbnails(virtualTree: VirtualTree) {
