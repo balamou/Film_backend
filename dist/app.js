@@ -22,7 +22,8 @@ const watched_1 = __importDefault(require("./routes/watched"));
 const show_1 = __importDefault(require("./routes/show"));
 const movie_1 = __importDefault(require("./routes/movie"));
 const episodes_1 = __importDefault(require("./routes/episodes"));
-const database_1 = __importDefault(require("./util/database"));
+// import watcher from './parser/other/watcher';
+const dbsetup_1 = __importDefault(require("./util/dbsetup"));
 const PORT_NUMBER = 3000;
 app.use(express_1.default.static("./public"));
 app.use(login_1.default);
@@ -36,9 +37,12 @@ app.use(movie_1.default);
 app.get("/", (req, res, next) => {
     res.send("<p>REST API</p>");
 });
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield database_1.default.sync({ force: true, logging: false });
-    yield app.listen(PORT_NUMBER);
-    // watcher();
-});
+function main() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield app.listen(PORT_NUMBER);
+        yield dbsetup_1.default();
+        // watcher();
+    });
+}
+;
 main();

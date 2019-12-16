@@ -17,7 +17,7 @@ const database_1 = __importDefault(require("../util/database"));
 //     createdAt?: Date;
 //     updatedAt?: Date;
 // }
-const Episode = database_1.default.define('series', {
+const Episode = database_1.default.define('episodes', {
     episodeNumber: { type: sequelize_1.default.INTEGER, allowNull: false },
     seasonNumber: { type: sequelize_1.default.INTEGER, allowNull: false },
     videoURL: { type: sequelize_1.default.STRING, allowNull: false },

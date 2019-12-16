@@ -16,7 +16,7 @@ import sequelize from '../util/database';
 //     updatedAt?: Date;
 // }
 
-const Episode = sequelize.define('series', {
+const Episode = sequelize.define('episodes', {
     episodeNumber: { type: Sequelize.INTEGER, allowNull: false },
     seasonNumber: { type: Sequelize.INTEGER, allowNull: false },
     videoURL: { type: Sequelize.STRING, allowNull: false },

@@ -10,12 +10,8 @@ import show from './routes/show';
 import movie from './routes/movie';
 import episodes from './routes/episodes';
 
-import series from './model/series';
-import episode from './model/episode';
-import sequelize from './util/database';
-
-import watcher from './parser/other/watcher';
-
+// import watcher from './parser/other/watcher';
+import dbsetup from './util/dbsetup';
 
 const PORT_NUMBER = 3000;
 
@@ -37,9 +33,10 @@ app.get("/", (req, res, next) => {
     res.send("<p>REST API</p>");
 });
 
-const main = async () => {
-    await sequelize.sync({ force: true, logging: false });
+
+async function main() {
     await app.listen(PORT_NUMBER);
+    await dbsetup();
     // watcher();
 };
 
