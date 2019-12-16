@@ -14,24 +14,34 @@ export default function main() {
     const path = './public/en/shows';
 
     if (fsEditor.doesFileExist(`${path}/film.config`)) {
-        const tree = loadDirectoryStateFromFile(path);
-        const currTree = getDirTree(path, GLOBAL_EXCLUDE);
-
-        if (tree) {
-            console.log(tree);
-            console.log(currTree);
-
-            if (tree.hash() === currTree.hash()) {
-                console.log("No changes in the file system.");
-            } else {
-                console.log("Changes occured!");
-            }
-        }
-
+        dirTreeComparison(path);
     } else {
         orginizeAllSeries(path);
         saveDirectoryStateOnDisk(path);
     }
+}
+
+function dirTreeComparison(path: string) {
+    removeFiles(path);
+    const tree = loadDirectoryStateFromFile(path);
+    const currTree = getDirTree(path, GLOBAL_EXCLUDE);
+
+    if (tree) {
+        console.log(tree);
+        console.log(currTree);
+
+        if (tree.hash() === currTree.hash()) {
+            console.log("No changes in the file system.");
+        } else {
+            console.log("Changes occured!");
+        }
+    }
+}
+
+function removeFiles(path: string) {
+    const tree = getDirTree(path, GLOBAL_EXCLUDE);
+    const purge = tree.children.filter(child => child.isFile);
+    purgeFiles(path, purge);
 }
 
 function saveDirectoryStateOnDisk(path: string) {
@@ -55,9 +65,14 @@ function loadDirectoryStateFromFile(path: string): Tree | undefined {
     }
 }
 
-function orginizeAllSeries(path: string) {
+function purgeFiles(path: string, files: Tree[]) {
     const fsEditor = new FSEditor();
+    const purgeFolder = `${path}/purge`;
+    fsEditor.makeDirectory(purgeFolder);
+    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+}
 
+function orginizeAllSeries(path: string) {
     // orginize folder
     const tree = getDirTree(path, GLOBAL_EXCLUDE);
 
@@ -73,10 +88,9 @@ function orginizeAllSeries(path: string) {
     });
 
     // move files to purge
-    const purgeFolder = `${path}/purge`;
-    fsEditor.makeDirectory(purgeFolder);
-    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+    purgeFiles(path, files);
 
+    // orginize each series folder
     folders.forEach(folder => orginizeSeriesFolder(folder.path));
 }
 

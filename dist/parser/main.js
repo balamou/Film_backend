@@ -16,18 +16,7 @@ function main() {
     const fsEditor = new FSEditor_1.FSEditor();
     const path = './public/en/shows';
     if (fsEditor.doesFileExist(`${path}/film.config`)) {
-        const tree = loadDirectoryStateFromFile(path);
-        const currTree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
-        if (tree) {
-            console.log(tree);
-            console.log(currTree);
-            if (tree.hash() === currTree.hash()) {
-                console.log("No changes in the file system.");
-            }
-            else {
-                console.log("Changes occured!");
-            }
-        }
+        dirTreeComparison(path);
     }
     else {
         orginizeAllSeries(path);
@@ -35,6 +24,26 @@ function main() {
     }
 }
 exports.default = main;
+function dirTreeComparison(path) {
+    removeFiles(path);
+    const tree = loadDirectoryStateFromFile(path);
+    const currTree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
+    if (tree) {
+        console.log(tree);
+        console.log(currTree);
+        if (tree.hash() === currTree.hash()) {
+            console.log("No changes in the file system.");
+        }
+        else {
+            console.log("Changes occured!");
+        }
+    }
+}
+function removeFiles(path) {
+    const tree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
+    const purge = tree.children.filter(child => child.isFile);
+    purgeFiles(path, purge);
+}
 function saveDirectoryStateOnDisk(path) {
     const tree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
     const fsEditor = new FSEditor_1.FSEditor();
@@ -52,8 +61,13 @@ function loadDirectoryStateFromFile(path) {
         return undefined;
     }
 }
-function orginizeAllSeries(path) {
+function purgeFiles(path, files) {
     const fsEditor = new FSEditor_1.FSEditor();
+    const purgeFolder = `${path}/purge`;
+    fsEditor.makeDirectory(purgeFolder);
+    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+}
+function orginizeAllSeries(path) {
     // orginize folder
     const tree = DirTreeCreator_1.getDirTree(path, GLOBAL_EXCLUDE);
     const folders = [];
@@ -65,9 +79,8 @@ function orginizeAllSeries(path) {
             files.push(node);
     });
     // move files to purge
-    const purgeFolder = `${path}/purge`;
-    fsEditor.makeDirectory(purgeFolder);
-    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+    purgeFiles(path, files);
+    // orginize each series folder
     folders.forEach(folder => orginizeSeriesFolder(folder.path));
 }
 function orginizeSeriesFolder(path) {
