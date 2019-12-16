@@ -2,10 +2,12 @@ import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
 import Tree from './Tree';
+import Episode from '../model/episode';
 
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
+const DATABASE_ENABLED = true;
 
 export default function main() {
     const fsEditor = new FSEditor();
@@ -113,7 +115,20 @@ function orginizeSeriesFolder(path: string) {
         console.log(seriesInfo);
 
         // Add data to database
+        if (DATABASE_ENABLED) {
+            seriesInfo.videoInfo.forEach(videoInfo => {
 
+                Episode.create({
+                    episodeNumber: videoInfo.episode,
+                    seasonNumber: videoInfo.season,
+                    videoURL: videoInfo.videoPath,
+                    duration: videoInfo.duration || 10,
+                    thumbnailURL: videoInfo.thumbnail,
+                    title: videoInfo.title,
+                    plot: videoInfo.plot
+                }, { logging: false });
+            });
+        }
     }
 }
 

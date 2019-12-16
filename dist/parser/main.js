@@ -7,9 +7,11 @@ const FSEditor_1 = require("./Adapters/FSEditor");
 const DirTreeCreator_1 = require("./Adapters/DirTreeCreator");
 const Factory_1 = __importDefault(require("./Factory"));
 const Tree_1 = __importDefault(require("./Tree"));
+const episode_1 = __importDefault(require("../model/episode"));
 const factory = new Factory_1.default();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
+const DATABASE_ENABLED = true;
 function main() {
     const fsEditor = new FSEditor_1.FSEditor();
     const path = './public/en/shows';
@@ -94,6 +96,19 @@ function orginizeSeriesFolder(path) {
         const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
         console.log(seriesInfo);
         // Add data to database
+        if (DATABASE_ENABLED) {
+            seriesInfo.videoInfo.forEach(videoInfo => {
+                episode_1.default.create({
+                    episodeNumber: videoInfo.episode,
+                    seasonNumber: videoInfo.season,
+                    videoURL: videoInfo.videoPath,
+                    duration: videoInfo.duration || 10,
+                    thumbnailURL: videoInfo.thumbnail,
+                    title: videoInfo.title,
+                    plot: videoInfo.plot
+                }, { logging: false });
+            });
+        }
     }
 }
 main();

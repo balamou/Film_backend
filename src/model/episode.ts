@@ -1,30 +1,70 @@
-import Sequelize from 'sequelize';
+import { Sequelize, Model, DataTypes, BuildOptions } from 'sequelize';
 import sequelize from '../util/database';
 
-// export interface EpisodeAttributes {
-//     id?: number;
-//     episodeNumber: number;
-//     seasonNumber: number;
-//     videoURL: string;
-//     duration: number;
-    
-//     thumbnailURL?: string;
-//     title?: string;
-//     plot?: string;
+class Episode extends Model {
+    public id!: number;
+    public episodeNumber!: number;
+    public seasonNumber!: number;
+    public videoURL!: string;
+    public duration!: number;
 
-//     createdAt?: Date;
-//     updatedAt?: Date;
-// }
+    public thumbnailURL?: string | null;
+    public title?: string | null;
+    public plot?: string | null;
 
-const Episode = sequelize.define('episodes', {
-    episodeNumber: { type: Sequelize.INTEGER, allowNull: false },
-    seasonNumber: { type: Sequelize.INTEGER, allowNull: false },
-    videoURL: { type: Sequelize.STRING, allowNull: false },
-    duration: Sequelize.INTEGER,
-    
-    thumbnailURL: { type: Sequelize.STRING, allowNull: true },
-    title: { type: Sequelize.STRING, allowNull: true },
-    plot: { type: Sequelize.STRING, allowNull: true }
+    // timestamps!
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
+}
+
+Episode.init({
+    id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    episodeNumber: {
+        type: new DataTypes.INTEGER,
+        allowNull: false,
+    },
+    seasonNumber: {
+        type: new DataTypes.INTEGER,
+        allowNull: false
+    },
+    videoURL: {
+        type: new DataTypes.STRING,
+        allowNull: false
+    },
+    duration: {
+        type: new DataTypes.INTEGER,
+        allowNull: false
+    },
+    thumbnailURL: {
+        type: new DataTypes.STRING,
+        allowNull: true
+    },
+    title: {
+        type: new DataTypes.STRING,
+        allowNull: true
+    },
+    plot: {
+        type: new DataTypes.STRING,
+        allowNull: true
+    }
+}, {
+    tableName: 'episodes',
+    sequelize: sequelize,
 });
+
+// const EpisodeTMP = sequelize.define('episodes', {
+//     episodeNumber: { type: Sequelize.INTEGER, allowNull: false },
+//     seasonNumber: { type: Sequelize.INTEGER, allowNull: false },
+//     videoURL: { type: Sequelize.STRING, allowNull: false },
+//     duration: Sequelize.INTEGER,
+
+//     thumbnailURL: { type: Sequelize.STRING, allowNull: true },
+//     title: { type: Sequelize.STRING, allowNull: true },
+//     plot: { type: Sequelize.STRING, allowNull: true }
+// });
 
 export default Episode;
