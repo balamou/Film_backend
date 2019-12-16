@@ -48,13 +48,4 @@ Episode.init({
     tableName: 'episodes',
     sequelize: database_1.default,
 });
-// const EpisodeTMP = sequelize.define('episodes', {
-//     episodeNumber: { type: Sequelize.INTEGER, allowNull: false },
-//     seasonNumber: { type: Sequelize.INTEGER, allowNull: false },
-//     videoURL: { type: Sequelize.STRING, allowNull: false },
-//     duration: Sequelize.INTEGER,
-//     thumbnailURL: { type: Sequelize.STRING, allowNull: true },
-//     title: { type: Sequelize.STRING, allowNull: true },
-//     plot: { type: Sequelize.STRING, allowNull: true }
-// });
 exports.default = Episode;

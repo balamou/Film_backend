@@ -59,15 +59,4 @@ Episode.init({
     sequelize: sequelize,
 });
 
-// const EpisodeTMP = sequelize.define('episodes', {
-//     episodeNumber: { type: Sequelize.INTEGER, allowNull: false },
-//     seasonNumber: { type: Sequelize.INTEGER, allowNull: false },
-//     videoURL: { type: Sequelize.STRING, allowNull: false },
-//     duration: Sequelize.INTEGER,
-
-//     thumbnailURL: { type: Sequelize.STRING, allowNull: true },
-//     title: { type: Sequelize.STRING, allowNull: true },
-//     plot: { type: Sequelize.STRING, allowNull: true }
-// });
-
 export default Episode;
