@@ -38,8 +38,11 @@ Episode.init({
         allowNull: true
     },
     plot: {
-        type: new sequelize_1.DataTypes.STRING,
-        allowNull: true
+        type: new sequelize_1.DataTypes.STRING(250),
+        allowNull: true,
+        set(value) {
+            this.setDataValue('plot', value.substring(0, 250)); // work-around
+        }
     }
 }, {
     tableName: 'episodes',

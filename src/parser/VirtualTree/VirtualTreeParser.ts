@@ -33,7 +33,7 @@ class VideoInfo {
     }
 }
 
-type SeriesData = {
+export type SeriesData = {
     seriesInfo: {
         title?: string | undefined;
         poster?: string | undefined;

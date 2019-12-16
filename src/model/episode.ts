@@ -48,8 +48,11 @@ Episode.init({
         allowNull: true
     },
     plot: {
-        type: new DataTypes.STRING,
-        allowNull: true
+        type: new DataTypes.STRING(250),
+        allowNull: true,
+        set(value: string) {
+            (this as any).setDataValue('plot', value.substring(0, 250)); // work-around
+        }
     }
 }, {
     tableName: 'episodes',

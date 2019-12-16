@@ -1,30 +1,88 @@
-import Sequelize from 'sequelize';
+import { Sequelize, Model, DataTypes, BuildOptions, AbstractDataTypeConstructor } from 'sequelize';
 import sequelize from '../util/database';
 
-const notNullString = {
-    type: Sequelize.STRING,
-    allowNull: false
+class Series extends Model {
+    public id!: number;
+    public language!: string;
+    // The location of the top level series folder in public. Example: /en/shows/rick_and_morty/
+    public folder!: string;
+    public title!: string;
+    // total seasons as parsed from imdb
+    public seasons!: string;
+    public desc?: string;
+    public poster?: string;
+
+    // timestamps!
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 }
 
-const Series = sequelize.define('series', {
+Series.init({
+    id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+    },
     language: {
-        type: Sequelize.STRING,
+        type: new DataTypes.STRING,
         allowNull: false,
         defaultValue: 'en',
         validate: {
             isIn: [['en', 'ru']]
         }
     },
-    // the location of the top level series folder in public.
-    // example: /en/shows/rick_and_morty/
-    folder: notNullString,
-    title: notNullString,
-    seasons: { // total seasons as parsed from imdb
-        type: Sequelize.INTEGER,
+    folder: {
+        type: new DataTypes.STRING,
         allowNull: false
     },
-    desc: Sequelize.STRING, 
-    poster: Sequelize.STRING
+    title: {
+        type: new DataTypes.STRING,
+        allowNull: false
+    },
+    seasons: {
+        type: new DataTypes.INTEGER,
+        allowNull: false
+    },
+    desc: {
+        type: new DataTypes.STRING(250),
+        allowNull: true,
+        set(value: string) {
+            (this as any).setDataValue('desc', value.substring(0, 250)); // work-around
+        }
+    },
+    poster: {
+        type: new DataTypes.STRING,
+        allowNull: true
+    }
+}, {
+    tableName: 'series',
+    sequelize: sequelize,
 });
+
+// const notNullString = {
+//     type: Sequelize.STRING,
+//     allowNull: false
+// }
+
+// const Series = sequelize.define('series', {
+//     language: {
+//         type: Sequelize.STRING,
+//         allowNull: false,
+//         defaultValue: 'en',
+//         validate: {
+//             isIn: [['en', 'ru']]
+//         }
+//     },
+//     // the location of the top level series folder in public.
+//     // example: /en/shows/rick_and_morty/
+//     folder: notNullString,
+//     title: notNullString,
+//     seasons: { // total seasons as parsed from imdb
+//         type: Sequelize.INTEGER,
+//         allowNull: false
+//     },
+//     desc: Sequelize.STRING, 
+//     poster: Sequelize.STRING
+// });
 
 export default Series;
