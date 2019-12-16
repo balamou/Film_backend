@@ -3,3 +3,4 @@ public/en/movies/*
 public/en/shows/*
 public/ru/movies/*
 public/ru/shows/*
+__pycache__
