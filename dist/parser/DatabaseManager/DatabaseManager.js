@@ -33,7 +33,7 @@ class DatabaseManager {
                 seasons: (_c = seriesInfo.seriesInfo) === null || _c === void 0 ? void 0 : _c.totalSeasons,
                 desc: (_d = seriesInfo.seriesInfo) === null || _d === void 0 ? void 0 : _d.plot,
                 poster: (_e = seriesInfo.seriesInfo) === null || _e === void 0 ? void 0 : _e.poster
-            });
+            }, { logging: true });
             for (const videoInfo of seriesInfo.videoInfo) {
                 yield episode_1.default.create({
                     episodeNumber: videoInfo.episode,

@@ -105,14 +105,16 @@ function orginizeSeriesFolder(path) {
     const vtParser = factory.createVirtualTreeParser();
     vtParser.generateThumbnails(vtBuilder.virtualTree);
     const seriesName = new FSEditor_1.FSEditor().getBasename(path); // get series name from file
-    if (NETWORK_ENABLED) {
-        const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
-        console.log(seriesInfo);
-        // Add data to database
-        if (DATABASE_ENABLED) {
-            const dbManager = new DatabaseManager_1.default();
-            dbManager.commitToDB(path, seriesName, seriesInfo);
-        }
-    }
+    if (!NETWORK_ENABLED)
+        return;
+    const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
+    console.log(seriesInfo);
+    // Add data to database
+    if (!DATABASE_ENABLED)
+        return;
+    console.log("Adding to database...");
+    const dbManager = new DatabaseManager_1.default();
+    dbManager.commitToDB(path, seriesName, seriesInfo);
+    console.log("Done adding to database.");
 }
 main();

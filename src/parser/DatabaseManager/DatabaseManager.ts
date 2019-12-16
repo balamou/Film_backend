@@ -23,7 +23,7 @@ export default class DatabaseManager {
             seasons: seriesInfo.seriesInfo ?.totalSeasons,
             desc: seriesInfo.seriesInfo ?.plot,
             poster: seriesInfo.seriesInfo ?.poster
-        });
+        }, {logging: true});
 
         for (const videoInfo of seriesInfo.videoInfo) {
             await Episode.create({
