@@ -23,7 +23,6 @@ const show_1 = __importDefault(require("./routes/show"));
 const movie_1 = __importDefault(require("./routes/movie"));
 const episodes_1 = __importDefault(require("./routes/episodes"));
 const database_1 = __importDefault(require("./util/database"));
-const watcher_1 = __importDefault(require("./parser/other/watcher"));
 const PORT_NUMBER = 3000;
 app.use(express_1.default.static("./public"));
 app.use(login_1.default);
@@ -40,6 +39,6 @@ app.get("/", (req, res, next) => {
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield database_1.default.sync({ force: true, logging: false });
     yield app.listen(PORT_NUMBER);
-    watcher_1.default();
+    // watcher();
 });
 main();

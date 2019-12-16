@@ -93,7 +93,7 @@ function orginizeSeriesFolder(path) {
     if (NETWORK_ENABLED) {
         const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
         console.log(seriesInfo);
+        // Add data to database
     }
-    // Add data to database
 }
 main();

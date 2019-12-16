@@ -25,7 +25,7 @@ export default function main() {
                 console.log("Changes occured!");
             }
         }
-        
+
     } else {
         orginizeAllSeries(path);
         saveDirectoryStateOnDisk(path);
@@ -45,7 +45,7 @@ function loadDirectoryStateFromFile(path: string): Tree | undefined {
     try {
         const data = fsEditor.readFile(`${path}/film.config`);
         const tree = JSON.parse(data) as Tree;
-        
+
         return Tree.instanciateFromJSON(tree);
     } catch {
         console.log("Error loading or decoding 'film.config' file");
@@ -111,10 +111,10 @@ function orginizeSeriesFolder(path: string) {
     if (NETWORK_ENABLED) {
         const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
         console.log(seriesInfo);
-    }
 
-    // Add data to database
-    
+        // Add data to database
+
+    }
 }
 
 main();

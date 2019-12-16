@@ -11,6 +11,7 @@ import movie from './routes/movie';
 import episodes from './routes/episodes';
 
 import series from './model/series';
+import episode from './model/episode';
 import sequelize from './util/database';
 
 import watcher from './parser/other/watcher';
@@ -39,7 +40,7 @@ app.get("/", (req, res, next) => {
 const main = async () => {
     await sequelize.sync({ force: true, logging: false });
     await app.listen(PORT_NUMBER);
-    watcher();
+    // watcher();
 };
 
 main();
