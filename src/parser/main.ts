@@ -2,6 +2,7 @@ import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
 import Tree from './Tree';
+import DatabaseManager from './DatabaseManager/DatabaseManager';
 
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
@@ -115,37 +116,9 @@ function orginizeSeriesFolder(path: string) {
 
         // Add data to database
         if (DATABASE_ENABLED) {
-            commitToDB(path, seriesName, seriesInfo);
+            const dbManager = new DatabaseManager();
+            dbManager.commitToDB(path, seriesName, seriesInfo);
         }
-    }
-}
-
-import Episode from '../model/episode';
-import Series from '../model/series';
-import { SeriesData } from './VirtualTree/VirtualTreeParser';
-
-async function commitToDB(path: string, seriesName: string, seriesInfo: SeriesData) {
-    // nil coalescing and optional chaining will be marked as an error
-    // but it can be safely ignored
-    await Series.create({
-        language: 'en',
-        folder: path,
-        title: seriesInfo.seriesInfo?.title ?? seriesName,
-        seasons: seriesInfo.seriesInfo?.totalSeasons,
-        desc: seriesInfo.seriesInfo?.plot,
-        poster: seriesInfo.seriesInfo?.poster
-    });
-
-    for (const videoInfo of seriesInfo.videoInfo) {
-        await Episode.create({
-            episodeNumber: videoInfo.episode,
-            seasonNumber: videoInfo.season,
-            videoURL: videoInfo.videoPath,
-            duration: videoInfo.duration ?? 10, // TODO: Fix
-            thumbnailURL: videoInfo.thumbnail,
-            title: videoInfo.title,
-            plot: videoInfo.plot
-        }, { logging: false });
     }
 }
 

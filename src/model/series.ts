@@ -4,11 +4,9 @@ import sequelize from '../util/database';
 class Series extends Model {
     public id!: number;
     public language!: string;
-    // The location of the top level series folder in public. Example: /en/shows/rick_and_morty/
-    public folder!: string;
+    public folder!: string; // The location of the top level series folder in public. Example: /en/shows/rick_and_morty/
     public title!: string;
-    // total seasons as parsed from imdb
-    public seasons!: string;
+    public seasons!: string; // total seasons as parsed from imdb
     public desc?: string;
     public poster?: string;
 
@@ -46,8 +44,9 @@ Series.init({
     desc: {
         type: new DataTypes.STRING(250),
         allowNull: true,
-        set(value: string) {
-            (this as any).setDataValue('desc', value.substring(0, 250)); // work-around
+        set(value: string | undefined) {
+            if (value)
+                (this as any).setDataValue('desc', value.substring(0, 250)); // work-around
         }
     },
     poster: {

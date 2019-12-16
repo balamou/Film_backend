@@ -41,7 +41,8 @@ Episode.init({
         type: new sequelize_1.DataTypes.STRING(250),
         allowNull: true,
         set(value) {
-            this.setDataValue('plot', value.substring(0, 250)); // work-around
+            if (value)
+                this.setDataValue('plot', value.substring(0, 250)); // work-around
         }
     }
 }, {

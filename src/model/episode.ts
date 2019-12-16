@@ -50,8 +50,9 @@ Episode.init({
     plot: {
         type: new DataTypes.STRING(250),
         allowNull: true,
-        set(value: string) {
-            (this as any).setDataValue('plot', value.substring(0, 250)); // work-around
+        set(value: string | undefined) {
+            if (value)
+                (this as any).setDataValue('plot', value.substring(0, 250)); // work-around
         }
     }
 }, {
