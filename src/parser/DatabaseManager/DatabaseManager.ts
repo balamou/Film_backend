@@ -7,8 +7,8 @@ export default class DatabaseManager {
 
     commitToDB(path: string, seriesName: string, seriesInfo: SeriesData) {
         // this method makes _commitToDB execute asynchronously
-        const sp = require('synchronized-promise');
-        const syncCommitToDB = sp(this._commitToDB);
+        const synchronize = require('synchronized-promise');
+        const syncCommitToDB = synchronize(this._commitToDB);
 
         syncCommitToDB(path, seriesName, seriesInfo);
     }

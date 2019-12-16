@@ -17,8 +17,8 @@ const series_1 = __importDefault(require("../../model/series"));
 class DatabaseManager {
     commitToDB(path, seriesName, seriesInfo) {
         // this method makes _commitToDB execute asynchronously
-        const sp = require('synchronized-promise');
-        const syncCommitToDB = sp(this._commitToDB);
+        const synchronize = require('synchronized-promise');
+        const syncCommitToDB = synchronize(this._commitToDB);
         syncCommitToDB(path, seriesName, seriesInfo);
     }
     _commitToDB(path, seriesName, seriesInfo) {
