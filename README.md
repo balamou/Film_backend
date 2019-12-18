@@ -4,7 +4,7 @@
 ## Installation 
 - Have homebrew installed ([brew](https://brew.sh))
 - [Install pip](https://pip.pypa.io/en/stable/installing/)
-- After clonning and cd into the repo:
+- Clone and `cd` into the repo
 
 ```sh
 # install dependencies
@@ -18,6 +18,9 @@ brew services start postgresql
 
 # install kinopoiskpy
 pip3 install kinopoiskpy
+
+# install ffmpeg
+brew install ffmpeg
 
 # Get local ip address to put into the app
 ipconfig getifaddr en0

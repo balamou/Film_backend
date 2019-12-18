@@ -23,7 +23,7 @@ export function download(url: string, filename: string) {
     wstream.write(body);
     wstream.end();
 
-    return filename;
+    return `${filename}.jpeg`;
 }
 
 export const httpGetOLD = (url: string) => {
