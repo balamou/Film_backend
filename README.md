@@ -1,5 +1,27 @@
-## FILM BACKEND
-- REST API for (Film app)[https://github.com/balamou/Film]
+# ![Film](images/logo.png)
+> REST API backend for [Film app](https://github.com/balamou/Film)
+
+## Installation 
+- Have homebrew installed ([brew](https://brew.sh))
+- [Install pip](https://pip.pypa.io/en/stable/installing/)
+- After clonning and cd into the repo:
+
+```sh
+# install dependencies
+npm install
+
+# install postgres
+brew install postgresql
+
+# start postgres 
+brew services start postgresql
+
+# install kinopoiskpy
+pip3 install kinopoiskpy
+
+# Get local ip address to put into the app
+ipconfig getifaddr en0
+```
 
 ## REST ENDPOINTS
 
