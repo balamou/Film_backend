@@ -20,7 +20,7 @@ router.get("/show/:showId/:userId", (req, res, next) => {
             res.json(result);
         })
         .catch(error => {
-            res.json(error);
+            res.json({ error: error });
         });
 });
 
