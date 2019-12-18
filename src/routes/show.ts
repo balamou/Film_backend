@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import Series from '../model/series';
 import Episode from '../model/episode';
+import seqelize from '../util/database';
+import { Season } from '../parser/VirtualTree/VirtualTree';
 
 const router = Router();
 
@@ -14,43 +16,56 @@ router.get("/show/:showId/:userId", (req, res, next) => {
     // 3. Fetch all episodes from the same season as last viewed
     // 4. if last viewed is nil then fetch season 1
     //    or whichever is the lowest available season
+    execute(showId).then(result => {
+        res.json(result);
+    }).catch(error => {
+        res.json(error);
+    });
+});
 
-    Series.findByPk(showId, {
+async function execute(showId: number): Promise<any> {
+    const series = await Series.findByPk(showId, {
         include: [{model: Episode, as: 'episodes', where: {seasonNumber: 1} }],
         order: [[{model: Episode, as: 'episodes'}, 'episodeNumber','ASC']],
         rejectOnEmpty: true, // Specifying true here removes `null` from the return type!
         logging: false
-    }).then( series => {
-        const episodes = series.episodes?.map(ep => {
-            return {
-                id: ep.id,
-                episodeNumber: ep.episodeNumber,
-                seasonNumber: ep.seasonNumber,
-                videoURL: ep.videoURL?.replace(/public\//, ''),
-                duration: ep.duration,
-                
-                thumbnailURL: ep.thumbnailURL?.replace(/public\//, ''),
-                title: ep.title,
-                plot: ep.plot,
-                stoppedAt: numberBetween(0, ep.duration) // TODO: get actual stopped at
-            };
-        });
-
-        const fix = {
-            id: series.id,
-            title: series.title,
-            seasonSelected: 2, // TODO: get last viewed season
-            totalSeasons: series.seasons,
-            description: series.desc,
-            posterURL: series.poster?.replace(/public\//, ''),
-            lastWatchedEpisode: episodes![0] // TODO: get last viewed
-        };
-
-        res.json({series: fix, episodes: episodes});
-    }).catch( error => {
-        res.json({error: error});
     });
-});
+
+    const availableSeasons = await getAvailableSeasons(showId);
+
+    const episodes = series.episodes?.map(ep => {
+        return {
+            id: ep.id,
+            episodeNumber: ep.episodeNumber,
+            seasonNumber: ep.seasonNumber,
+            videoURL: ep.videoURL?.replace(/public\//, ''),
+            duration: ep.duration,
+            
+            thumbnailURL: ep.thumbnailURL?.replace(/public\//, ''),
+            title: ep.title,
+            plot: ep.plot,
+            stoppedAt: numberBetween(0, ep.duration) // TODO: get actual stopped at
+        };
+    });
+
+    const fix = {
+        id: series.id,
+        title: series.title,
+        seasonSelected: 2, // TODO: get last viewed season
+        totalSeasons: series.seasons,
+        description: series.desc,
+        posterURL: series.poster?.replace(/public\//, ''),
+        lastWatchedEpisode: episodes![0] // TODO: get last viewed
+    };
+
+    return {series: fix, episodes: episodes, availableSeasons: availableSeasons};
+}
+
+async function getAvailableSeasons(showId: number): Promise<number[]> {
+    const value = await seqelize.query('SELECT DISTINCT "seasonNumber" FROM episodes WHERE "seriesId"=' + showId);
+    const data = value[0] as {seasonNumber: number}[];
+    return data.map( el => el.seasonNumber);
+}
 
 const generateEpisodes = (number: number) => {
     const result = [];
