@@ -1,10 +1,12 @@
 import { Router } from 'express';
+import Series from '../model/series';
+import Episode from '../model/episode';
 
 const router = Router();
 
 router.get("/show/:showId/:userId", (req, res, next) => {
-    const showId = req.params.showId;
-    const userId = req.params.userId;
+    const showId = parseInt(req.params.showId);
+    const userId = parseInt(req.params.userId);
 
     // TODO:
     // 1. Fetch series info
@@ -13,19 +15,39 @@ router.get("/show/:showId/:userId", (req, res, next) => {
     // 4. if last viewed is nil then fetch season 1
     //    or whichever is the lowest available season
 
-    const episodes = generateEpisodes(numberBetween(5, 10));
+    Series.findByPk(showId, {
+        include: [Series.associations.episodes],
+        rejectOnEmpty: true, // Specifying true here removes `null` from the return type!
+    }).then( series => {
+        const episodes = series.episodes?.map(ep => {
+            return {
+                id: ep.id,
+                episodeNumber: ep.episodeNumber,
+                seasonNumber: ep.seasonNumber,
+                videoURL: ep.videoURL?.replace(/public\//, ''),
+                duration: ep.duration,
+                
+                thumbnailURL: ep.thumbnailURL?.replace(/public\//, ''),
+                title: ep.title,
+                plot: ep.plot,
+                stoppedAt: numberBetween(0, ep.duration) // TODO: get actual stopped at
+            };
+        });
 
-    const series = {
-        id: 1,
-        title: "Rick and Morty",
-        seasonSelected: 2,
-        totalSeasons: 3,
-        description: "Hehe",
-        posterURL: "",
-        lastWatchedEpisode: episodes[1]
-    };
+        const fix = {
+            id: series.id,
+            title: series.title,
+            seasonSelected: 2, // TODO: get last viewed season
+            totalSeasons: series.seasons,
+            description: series.desc,
+            posterURL: series.poster?.replace(/public\//, ''),
+            lastWatchedEpisode: episodes![0] // TODO: get last viewed
+        };
 
-    res.json({ series: series, episodes: episodes});
+        res.json({series: fix, episodes: episodes});
+    }).catch( error => {
+        res.send(`Error occured!\n${error}`);
+    });
 });
 
 const generateEpisodes = (number: number) => {

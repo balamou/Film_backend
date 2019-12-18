@@ -8,7 +8,7 @@ export default async function dbSetup() {
         foreignKey: 'seriesId',
         as: 'episodes'
       });
-    
+    return;
     await Series.sync();
     await Episode.sync();
     await sequelize.sync({ force: true, logging: false });

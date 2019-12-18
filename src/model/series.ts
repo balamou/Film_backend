@@ -8,7 +8,7 @@ class Series extends Model {
     public language!: string;
     public folder!: string; // The location of the top level series folder in public. Example: /en/shows/rick_and_morty/
     public title!: string;
-    public seasons!: string; // total seasons as parsed from imdb
+    public seasons!: number; // total seasons as parsed from imdb
     public desc?: string;
     public poster?: string;
 
@@ -17,6 +17,8 @@ class Series extends Model {
     public readonly updatedAt!: Date;
 
     // associations
+    public readonly episodes?: Episode[]; 
+
     public getEpisodes!: HasManyGetAssociationsMixin<Episode>; // Note the null assertions!
     public addEpisodes!: HasManyAddAssociationMixin<Episode, number>;
     public createEpisode!: HasManyCreateAssociationMixin<Episode>;
