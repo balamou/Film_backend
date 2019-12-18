@@ -1,0 +1,55 @@
+Title: Rick and Morty
+Season: '1'
+totalSeasons: '4'
+Episodes:
+- Title: Pilot
+  Released: '2013-12-02'
+  Episode: '1'
+  imdbRating: '8.0'
+  imdbID: tt2169080
+- Title: Anatomy Park
+  Released: '2013-12-16'
+  Episode: '3'
+  imdbRating: '8.3'
+  imdbID: tt3333828
+- Title: M. Night Shaym-Aliens!
+  Released: '2014-01-13'
+  Episode: '4'
+  imdbRating: '8.5'
+  imdbID: tt3333830
+- Title: Meeseeks and Destroy
+  Released: '2014-01-20'
+  Episode: '5'
+  imdbRating: '8.8'
+  imdbID: tt3333832
+- Title: 'Rick Potion #9'
+  Released: '2014-01-27'
+  Episode: '6'
+  imdbRating: '9.1'
+  imdbID: tt3333834
+- Title: Raising Gazorpazorp
+  Released: '2014-03-10'
+  Episode: '7'
+  imdbRating: '8.0'
+  imdbID: tt3333836
+- Title: Rixty Minutes
+  Released: '2014-03-17'
+  Episode: '8'
+  imdbRating: '8.8'
+  imdbID: tt3333838
+- Title: Something Ricked This Way Comes
+  Released: '2014-03-24'
+  Episode: '9'
+  imdbRating: '8.5'
+  imdbID: tt3333840
+- Title: Close Rick-counters of the Rick Kind
+  Released: '2014-04-07'
+  Episode: '10'
+  imdbRating: '9.4'
+  imdbID: tt3333846
+- Title: Ricksy Business
+  Released: '2014-04-14'
+  Episode: '11'
+  imdbRating: '8.5'
+  imdbID: tt3333854
+Response: 'True'

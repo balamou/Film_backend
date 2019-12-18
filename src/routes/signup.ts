@@ -1,4 +1,6 @@
-const router = require("express").Router();
+import { Router } from 'express';
+
+const router = Router();
 
 router.get("/signup/:username", (req, res, next) => {
     const username = req.params.username;
@@ -6,4 +8,4 @@ router.get("/signup/:username", (req, res, next) => {
     res.json({ userId: 2 });
 });
 
-module.exports = router;
+export default router;

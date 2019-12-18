@@ -1,4 +1,6 @@
-const router = require("express").Router();
+import { Router } from 'express';
+
+const router = Router();
 
 router.get("/show/:showId/:userId", (req, res, next) => {
     const showId = req.params.showId;
@@ -26,7 +28,7 @@ router.get("/show/:showId/:userId", (req, res, next) => {
     res.json({ series: series, episodes: episodes});
 });
 
-const generateEpisodes = (number) => {
+const generateEpisodes = (number: number) => {
     const result = [];
     const SEASON_NUM = 14;
 
@@ -55,10 +57,10 @@ const generateEpisodes = (number) => {
     return result;
 };
 
-const numberBetween = (start, end) => {
+const numberBetween = (start: number, end: number) => {
     return Math.floor((Math.random() * end) + start);
 };
 
-module.exports = router;
+export default router;
 
 

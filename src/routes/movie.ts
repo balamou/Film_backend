@@ -1,4 +1,6 @@
-const router = require("express").Router();
+import { Router } from 'express';
+
+const router = Router();
 
 router.get("/movie/:movieId/:userId", (req, res, next) => {
     const movieId = req.params.movieId;
@@ -19,4 +21,4 @@ router.get("/movie/:movieId/:userId", (req, res, next) => {
     res.json(movie);
 });
 
-module.exports = router;
+export default router;

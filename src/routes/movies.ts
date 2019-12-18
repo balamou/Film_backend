@@ -1,15 +1,20 @@
-const router = require("express").Router();
+import { Router } from 'express';
 
-router.get('/shows/:start/:quantity/:lang', (req, res, next) => {
+const router = Router();
 
-    const showsData = generateData(req.params.quantity);
+router.get("/movies/:start/:quantity/:language", (req, res, next) => {
+    const start = parseInt(req.params.start);
+    const quantity = parseInt(req.params.quantity);
+    const language = req.params.language;
 
-    const isLast = (req.params.start + req.params.quantity) > 20;
+    const moviesData = generateData(quantity);
+    const isLast = (start + quantity) > 20;
 
-    res.json({ showsData: showsData, isLast: isLast });
+    res.json({ movies: moviesData, isLast: isLast });
 });
 
-const generateData = (quantity) => {
+
+const generateData = (quantity: number) => {
     const posters = ["https://cdn.shopify.com/s/files/1/0191/7850/products/RICKMORTY_39_-_COVER_A_FNL_WEB_1024x.jpg?v=1530034748",
         "https://cdn.shopify.com/s/files/1/0191/7850/products/RICKMORTY_V9_TPB_-_COVER_B_FNL_WEB_1024x.jpg?v=1561666332",
         "https://cdn.shopify.com/s/files/1/0191/7850/products/RICKMORTY_53_-_COVER_A_SOLICIT_WEB_1024x.jpg?v=1566330470",
@@ -27,13 +32,13 @@ const generateData = (quantity) => {
         "https://m.media-amazon.com/images/M/MV5BNTEyYmIzMDUtNWMwNC00Y2Q1LWIyZTgtMGY1YzUxOTAwYTAwXkEyXkFqcGdeQXVyMjIyMTc0ODQ@._V1_.jpg",
         "https://m.media-amazon.com/images/M/MV5BMjM3MjQ1MzkxNl5BMl5BanBnXkFtZTgwODk1ODgyMjI@._V1_.jpg"];
 
-    const showsData = [];
+    const moviesData = [];
 
     for (let i = 0; i < quantity; i++) {
-        showsData.push({ id: i, posterURL: posters[i % posters.length] });
+        moviesData.push({ id: i, posterURL: posters[(i + 7) % posters.length] });
     }
 
-    return showsData;
+    return moviesData;
 };
 
-module.exports = router;
+export default router;

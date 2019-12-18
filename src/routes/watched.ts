@@ -1,4 +1,6 @@
-const router = require("express").Router();
+import { Router } from 'express';
+
+const router = Router();
 
 router.get("/watched/:userid", (req, res, next) => {
     const userid = req.params.userid;
@@ -18,4 +20,4 @@ router.get("/watched/:userid", (req, res, next) => {
     res.json(watched);
 });
 
-module.exports = router;
+export default router;
