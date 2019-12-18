@@ -1,10 +1,11 @@
 from kinopoisk.movie import Movie
 import time
 import json
-
+import sys
 
 def main():
-    movie_list = Movie.objects.search('Rick and morty')
+    title = sys.argv[1]
+    movie_list = Movie.objects.search(title)
     # print(movie_list[0].title)
     first_movie = movie_list[0]
 
@@ -24,7 +25,7 @@ def main():
     x = {"title": first_movie.title,
          "plot": movie.plot,
          "poster": poster}
-
+    
     encoded = json.dumps(x, ensure_ascii=False).encode('utf8')
     print(encoded.decode())
 

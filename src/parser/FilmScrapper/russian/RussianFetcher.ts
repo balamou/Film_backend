@@ -3,7 +3,7 @@ import cprocess from 'child_process';
 export default class RussianFetcher {
 
     private execScript(title: string) {
-        const process = cprocess.spawnSync('python3', ['main.py'], { encoding: 'utf-8' });
+        const process = cprocess.spawnSync('python3', ['main.py', 'rick\ and\ morty'], { encoding: 'utf-8' });
 
         if (process.stderr.length > 0)
             throw new Error(process.stderr);
@@ -19,7 +19,8 @@ export default class RussianFetcher {
 
             return seriesData;
         } catch (error) {
-            console.log(error);
+            const pythonError = (error as Error).message;
+            console.log(pythonError);
         }
     }
 }
