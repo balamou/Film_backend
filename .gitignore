@@ -5,3 +5,4 @@ public/en/shows/*
 public/ru/movies/*
 public/ru/shows/*
 __pycache__
+dist/

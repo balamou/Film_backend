@@ -1,5 +1,7 @@
 import { Sequelize, Model, DataTypes, BuildOptions, AbstractDataTypeConstructor } from 'sequelize';
+import { HasManyGetAssociationsMixin, HasManyAddAssociationMixin, HasManyHasAssociationMixin, Association, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin } from 'sequelize';
 import sequelize from '../util/database';
+import Episode from './episode';
 
 class Series extends Model {
     public id!: number;
@@ -13,6 +15,15 @@ class Series extends Model {
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    // associations
+    public getEpisodes!: HasManyGetAssociationsMixin<Episode>; // Note the null assertions!
+    public addEpisodes!: HasManyAddAssociationMixin<Episode, number>;
+    public createEpisode!: HasManyCreateAssociationMixin<Episode>;
+
+    public static associations: {
+        episodes: Association<Series, Episode>;
+    };
 }
 
 Series.init({

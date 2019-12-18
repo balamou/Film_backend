@@ -3,6 +3,7 @@ import sequelize from '../util/database';
 
 class Episode extends Model {
     public id!: number;
+    public seriesId!: number;
     public episodeNumber!: number;
     public seasonNumber!: number;
     public videoURL!: string;
@@ -22,6 +23,10 @@ Episode.init({
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
+    },
+    seriesId: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
     },
     episodeNumber: {
         type: new DataTypes.INTEGER,

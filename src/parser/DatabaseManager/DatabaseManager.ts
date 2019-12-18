@@ -16,7 +16,7 @@ export default class DatabaseManager {
     async _commitToDB(path: string, seriesName: string, seriesInfo: SeriesData) {
         // nil coalescing and optional chaining will be marked as an error
         // but it can be safely ignored
-        await Series.create({
+        const series = await Series.create({
             language: 'en',
             folder: path,
             title: seriesInfo.seriesInfo ?.title ?? seriesName,
@@ -27,6 +27,7 @@ export default class DatabaseManager {
 
         for (const videoInfo of seriesInfo.videoInfo) {
             await Episode.create({
+                seriesId: series.id,
                 episodeNumber: videoInfo.episode,
                 seasonNumber: videoInfo.season,
                 videoURL: videoInfo.videoPath,
@@ -34,7 +35,7 @@ export default class DatabaseManager {
                 thumbnailURL: videoInfo.thumbnail,
                 title: videoInfo.title,
                 plot: videoInfo.plot
-            }, { logging: false });
+            });
         }
     }
 }
