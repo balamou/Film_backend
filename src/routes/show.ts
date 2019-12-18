@@ -16,8 +16,10 @@ router.get("/show/:showId/:userId", (req, res, next) => {
     //    or whichever is the lowest available season
 
     Series.findByPk(showId, {
-        include: [Series.associations.episodes],
+        include: [{model: Episode, as: 'episodes', where: {seasonNumber: 1} }],
+        order: [[{model: Episode, as: 'episodes'}, 'episodeNumber','ASC']],
         rejectOnEmpty: true, // Specifying true here removes `null` from the return type!
+        logging: false
     }).then( series => {
         const episodes = series.episodes?.map(ep => {
             return {
@@ -46,7 +48,7 @@ router.get("/show/:showId/:userId", (req, res, next) => {
 
         res.json({series: fix, episodes: episodes});
     }).catch( error => {
-        res.send(`Error occured!\n${error}`);
+        res.json({error: error});
     });
 });
 
