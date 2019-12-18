@@ -1,14 +1,37 @@
 import { Router } from 'express';
+import Episode from '../model/episode';
 
 const router = Router();
 
 router.get("/episodes/:showId/:userId/:season", (req, res, next) => {
-    const showId = req.params.showId;
-    const userId = req.params.userId;
-    const season = req.params.season;
+    const showId = parseInt(req.params.showId);
+    const userId = parseInt(req.params.userId);
+    const season = parseInt(req.params.season);
 
-    const episodes = generateEpisodes();
-    res.json(episodes);
+    Episode.findAll({
+        where: { seriesId: showId, seasonNumber: season },
+        order: [['episodeNumber', 'ASC']]
+    }
+    ).then(episodes => {
+        const mapped = episodes.map( ep => {
+            return {
+                id: ep.id,
+                episodeNumber: ep.episodeNumber,
+                seasonNumber: ep.seasonNumber,
+                videoURL: ep.videoURL.replace(/public\//, ''),
+                duration: ep.duration,
+    
+                thumbnailURL: ep.thumbnailURL?.replace(/public\//, ''),
+                title: ep.title,
+                plot: ep.plot,
+                stoppedAt: numberBetween(0, ep.duration) // TODO: get stopped at
+            };
+        });
+
+        res.json(mapped);
+    }).catch(error => {
+        res.json({error: error });
+    });
 });
 
 const generateEpisodes = () => {
