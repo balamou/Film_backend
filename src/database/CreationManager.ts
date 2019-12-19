@@ -1,10 +1,10 @@
 import DatabaseManager from './DatabaseManager';
 
-type SeriesType = {id?: number, language: string, folder: string, title: string, seasons: number, description?: string, poster?: string};
+export type SeriesType = {id?: number, language: string, folder: string, title: string, seasons: number, description?: string, poster?: string};
 
-type EpisodeType = {id?: number, seriesId: number, seasonNumber: number, episodeNumber: number, videoURL: string, duration: number, thumbnailURL?: string, title?: string, plot?: string};
+export type EpisodeType = {id?: number, seriesId: number, seasonNumber: number, episodeNumber: number, videoURL: string, duration: number, thumbnailURL?: string, title?: string, plot?: string};
 
-type UserType = {id?: number, username: string};
+export type UserType = {id?: number, username: string};
 
 class CreationManager extends DatabaseManager {
 

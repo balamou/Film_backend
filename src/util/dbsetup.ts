@@ -4,6 +4,7 @@ import Episode from "../model/episode";
 import User from "../model/user";
 
 export default async function dbSetup() {
+    return;
     Series.hasMany(Episode, {
         sourceKey: "id",
         foreignKey: "seriesId",
