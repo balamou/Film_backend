@@ -12,7 +12,7 @@ DROP TYPE IF EXISTS language;
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS USERS(
   ID SERIAL PRIMARY KEY,
-  NAME VARCHAR(20)
+  USERNAME VARCHAR(20) UNIQUE
 );
 
 -- -----------------------------------------------------------------------------

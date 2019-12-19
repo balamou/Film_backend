@@ -4,10 +4,19 @@ type SeriesType = {id?: number, language: string, folder: string, title: string,
 
 type EpisodeType = {id?: number, seriesId: number, episodeNumber: number, seasonNumber: number, videoURL: string, duration: number, thumbnailURL?: string, title?: string, plot?: string};
 
+type UserType = {id?: number, username: string};
+
 class CreationManager extends DatabaseManager {
 
     constructor() {
         super();
+    }
+
+    async createUser(user: UserType) {
+        const query ='INSERT INTO USERS(USERNAME) VALUES($1) RETURNING *';
+        const result = await this.pool.query<UserType>(query, [user.username]);
+
+        return result.rows;
     }
 
     async createSeries(series: SeriesType) {
@@ -45,9 +54,20 @@ async function test() {
 
     const episode = await cManager.createEpisode({seriesId: seriesId, episodeNumber: 1, seasonNumber: 2, videoURL: "hehe", duration: 12});
     
+    console.log(episode.rows);
     cManager.endConnection();
 }
 
-test();
+async function test2() {
+    const cManager = new CreationManager();
+
+    const users = await cManager.createUser({username: "michelbalamou"});
+
+    console.log(users);
+
+    cManager.endConnection();
+}
+
+test2();
 
 export default CreationManager;
