@@ -1,4 +1,4 @@
-import DatabaseManager from './test';
+import DatabaseManager from './DatabaseManager';
 
 type SeriesType = {id?: number, language: string, folder: string, title: string, seasons: number, description?: string, poster?: string};
 
@@ -38,36 +38,5 @@ class CreationManager extends DatabaseManager {
     }
 
 }
-
-async function test() {
-    const cManager = new CreationManager();
-
-    const series = await cManager.createSeries({
-        language: "en",
-        folder: "hehe",
-        title: "rick_and_morty",
-        seasons: 2
-    });
-
-    const seriesId = series.rows[0].id;
-    if (!seriesId) return;
-
-    const episode = await cManager.createEpisode({seriesId: seriesId, episodeNumber: 1, seasonNumber: 2, videoURL: "hehe", duration: 12});
-    
-    console.log(episode.rows);
-    cManager.endConnection();
-}
-
-async function test2() {
-    const cManager = new CreationManager();
-
-    const users = await cManager.createUser({username: "michelbalamou"});
-
-    console.log(users);
-
-    cManager.endConnection();
-}
-
-test2();
 
 export default CreationManager;
