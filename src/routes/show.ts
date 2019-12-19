@@ -47,7 +47,7 @@ async function execute(showId: number, userId: number) {
             thumbnailURL: ep.thumbnailURL?.replace(/public\//, ""),
             title: ep.title,
             plot: ep.plot,
-            stoppedAt: numberBetween(0, ep.duration) // TODO: get actual stopped at
+            stoppedAt: ep.stoppedAt
         };
     });
 
@@ -57,9 +57,5 @@ async function execute(showId: number, userId: number) {
         availableSeasons: availableSeasons
     };
 }
-
-const numberBetween = (start: number, end: number) => {
-    return Math.floor(Math.random() * end + start);
-};
 
 export default router;

@@ -1,7 +1,7 @@
 import DatabaseManager from './DatabaseManager';
 import { SeriesType, EpisodeType } from "./CreationManager";
 
-type Episode_Type = {id?: number, series_id: number, season_number: number, episode_number: number, video_url: string, duration: number, thumbnail_url?: string, title?: string, plot?: string};
+type Episode_Type = {id?: number, series_id: number, season_number: number, episode_number: number, video_url: string, duration: number, thumbnail_url?: string, title?: string, plot?: string, stopped_at?: number};
 
 class DatabaseFetcher extends DatabaseManager {
 
@@ -19,7 +19,17 @@ class DatabaseFetcher extends DatabaseManager {
 
     // TODO: return actual stopped at
     async getEpisodesFromSeriesIdWithStoppedAt(seriesId: number, season: number, userId: number): Promise<EpisodeType[]> {        
-        const result = await this.pool.query<Episode_Type>('SELECT * FROM EPISODES WHERE SERIES_ID=$1 AND SEASON_NUMBER=$2 ORDER BY EPISODE_NUMBER ASC', [ seriesId, season ]);
+        const query = `SELECT EP.*, T.stopped_at
+        FROM EPISODES as EP
+        LEFT JOIN
+            (SELECT *
+            FROM VIEWED_EPISODES as VE
+            WHERE VE.USER_ID=$1) as T
+        ON EP.ID = T.EPISODE_ID
+        WHERE
+        EP.SERIES_ID=$2 AND EP.SEASON_NUMBER=$3 
+        ORDER BY EP.EPISODE_NUMBER;`;
+        const result = await this.pool.query<Episode_Type>(query, [ userId, seriesId, season ]);
 
         return result.rows.map(row => {
             return this.convertToEpisodeType(row);
@@ -36,7 +46,8 @@ class DatabaseFetcher extends DatabaseManager {
             duration: episode.duration,
             thumbnailURL: episode.thumbnail_url,
             title: episode.title,
-            plot: episode.plot
+            plot: episode.plot,
+            stoppedAt: episode.stopped_at 
         };
     }
 
