@@ -63,26 +63,30 @@ class DatabaseFetcher extends DatabaseManager {
         if (result.rows.length > 0) {
             return this.convertToEpisodeType(result.rows[0]);
         } else {
-            let query = `DROP TABLE IF EXISTS FIRST_EPISODE;`;
-            await this.pool.query(query);
-
-            query = `CREATE TEMP TABLE FIRST_EPISODE AS SELECT A.min_season, B.min_episode FROM
-            (SELECT min(season_number) as min_season
-            FROM EPISODES 
-            WHERE series_id = $1) as A,
-            (SELECT min(episode_number) as min_episode FROM
-            episodes,
-            (SELECT min(season_number) as min_season
-            FROM EPISODES 
-            WHERE series_id = $1) as T
-            WHERE series_id = $1 AND season_number = T.min_season) as B;`
-            await this.pool.query(query, [ seriesId ]);
-            
-            query = `SELECT * FROM EPISODES, FIRST_EPISODE WHERE series_id = $1 AND season_number = FIRST_EPISODE.min_season AND episode_number = FIRST_EPISODE.min_episode;`;
-            const result = await this.pool.query<Episode_Type>(query, [ seriesId ]);
-
-            return this.convertToEpisodeType(result.rows[0]);
+            return await this.getFirstEpisode(seriesId);
         }
+    }
+
+    async getFirstEpisode(seriesId: number) {
+        let query = `DROP TABLE IF EXISTS FIRST_EPISODE;`;
+        await this.pool.query(query);
+
+        query = `CREATE TEMP TABLE FIRST_EPISODE AS SELECT A.min_season, B.min_episode FROM
+        (SELECT min(season_number) as min_season
+        FROM EPISODES 
+        WHERE series_id = $1) as A,
+        (SELECT min(episode_number) as min_episode FROM
+        episodes,
+        (SELECT min(season_number) as min_season
+        FROM EPISODES 
+        WHERE series_id = $1) as T
+        WHERE series_id = $1 AND season_number = T.min_season) as B;`
+        await this.pool.query(query, [ seriesId ]);
+        
+        query = `SELECT * FROM EPISODES, FIRST_EPISODE WHERE series_id = $1 AND season_number = FIRST_EPISODE.min_season AND episode_number = FIRST_EPISODE.min_episode;`;
+        const result = await this.pool.query<Episode_Type>(query, [ seriesId ]);
+
+        return this.convertToEpisodeType(result.rows[0]); // TODO: throw error if empty
     }
 }
 
