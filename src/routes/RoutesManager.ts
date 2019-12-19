@@ -12,7 +12,7 @@ import path from 'path';
 
 class RoutesManager {
     private readonly app = express();
-    private readonly PORT_NUMBER: number;
+    readonly PORT_NUMBER: number;
 
     constructor(portNumber: number = 3000) {
         this.PORT_NUMBER = portNumber;
