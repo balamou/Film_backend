@@ -1,12 +1,20 @@
-import cprocess from 'child_process';
+import cprocess from "child_process";
+import path from "path";
 
 export default class RussianFetcher {
-
     private execScript(title: string) {
-        const process = cprocess.spawnSync('python3', ['main.py', 'rick\ and\ morty'], { encoding: 'utf-8' });
+        const scriptPath = path.join(__dirname, "main.py");
+        console.log(scriptPath);
 
-        if (process.stderr.length > 0)
-            throw new Error(process.stderr);
+        const process = cprocess.spawnSync(
+            "python3",
+            [scriptPath, `"${title}"`],
+            {
+                encoding: "utf-8"
+            }
+        );
+
+        if (process.stderr.length > 0) throw new Error(process.stderr);
 
         return process.stdout;
     }
@@ -14,7 +22,11 @@ export default class RussianFetcher {
     getSeries(title: string) {
         try {
             const output = this.execScript(title);
-            const seriesData = JSON.parse(output) as {title: string, plot: string, poster?: string};
+            const seriesData = JSON.parse(output) as {
+                title: string;
+                plot: string;
+                poster?: string;
+            };
             console.log(seriesData);
 
             return seriesData;
@@ -25,4 +37,4 @@ export default class RussianFetcher {
     }
 }
 
-new RussianFetcher().getSeries("Rick and morty");
+new RussianFetcher().getSeries("rick and morty");

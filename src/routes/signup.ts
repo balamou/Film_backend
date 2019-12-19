@@ -1,19 +1,25 @@
 import { Router } from "express";
-import User from "../model/user";
+import CreationManager from "../database/CreationManager";
 
 const router = Router();
 
 router.get("/signup/:username", (req, res, next) => {
     const username = req.params.username;
 
-    User.create({ username: username })
-        .then(user => {
-            res.json({ userId: user.id });
-        })
-        .catch(error => {
-            if (error.name) res.json({ error: error.name });
-            else res.json({ error: error });
-        });
+    createUser(username)
+    .then(userId => res.json({userId: userId}))
+    .catch(error => {
+        if (error.detail) res.json({ error: error.detail});
+        else res.json({ error: error });
+    });
 });
+
+async function createUser(username: string) {
+    const cManager = new CreationManager();
+    const user = await cManager.createUser({username: username});
+    await cManager.endConnection();
+
+    return user.id!;
+}
 
 export default router;
