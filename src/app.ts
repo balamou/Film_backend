@@ -1,38 +1,26 @@
-import express from 'express';
-const app = express();
+import RoutesManager from "./routes/RoutesManager";
+import cprocess from "child_process";
 
-import login from './routes/login';
-import signup from './routes/signup';
-import shows from './routes/shows';
-import movies from './routes/movies';
-import watched from './routes/watched';
-import show from './routes/show';
-import movie from './routes/movie';
-import episodes from './routes/episodes';
 
-const PORT_NUMBER = 3000;
+function getLocalIPAddress() {
+    const process = cprocess.spawnSync("ipconfig", ['getifaddr', 'en0'], { encoding: "utf-8" });
 
-app.use(express.static("./public"));
+    if (process.stderr.length > 0) throw new Error(process.stderr);
 
-app.use(login);
-app.use(signup);
-
-app.use(shows);
-app.use(movies);
-app.use(watched);
-
-app.use(show);
-app.use(episodes);
-
-app.use(movie);
-
-app.get("/", (req, res, next) => {
-    res.send("<p>REST API</p>");
-});
-
+    return process.stdout.replace(/\n/, '');
+}
 
 async function main() {
-    await app.listen(PORT_NUMBER);
+    const routesManager = new RoutesManager();
+    await routesManager.startServer();
+
+    try {
+        const localIpAddress = getLocalIPAddress();
+        console.log(`Server started at ${localIpAddress} using port ${routesManager.PORT_NUMBER}`);
+    } catch (error) {
+        console.log('Server started!');
+        console.log(error);
+    }
 };
 
 main();
