@@ -1,59 +1,79 @@
-import { Pool, Client } from "pg";
+import { Pool, Client, QueryResult } from "pg";
 import fs from "fs";
 require("dotenv").config();
 
-const DB_NAME = process.env.DB_NAME as string;
-const DB_USER = process.env.DB_USER as string;
-const DB_HOST = process.env.DB_HOST as string;
+class DatabaseManager {
+    private readonly DB_NAME: string;
+    private readonly DB_USER: string;
+    private readonly DB_HOST: string;
+    private pool: Pool;
 
-const pool = new Pool({
-    user: DB_USER,
-    host: DB_HOST,
-    database: DB_NAME,
-    port: 5432
-});
-
-async function dropTables() {
-    const query = `
-    DROP TABLE IF EXISTS viewed_episodes;
-    DROP TABLE IF EXISTS viewed_movies;
-    DROP TABLE IF EXISTS users;
-    DROP TABLE IF EXISTS movies;
-    DROP TABLE IF EXISTS episodes;
-    DROP TABLE IF EXISTS series;
-    `;
-
-    try {
-        const result = await pool.query(query);
-        await pool.end();
-
-        console.log(result);
-    } catch (error) {
-        console.log(error);
+    constructor() {
+        this.DB_NAME = process.env.DB_NAME as string;
+        this.DB_USER = process.env.DB_USER as string;
+        this.DB_HOST = process.env.DB_HOST as string;
+        this.pool = this.createPool();
     }
-}
 
-async function executeQueryFrom(file: string) {
-    try {
-        const query = await readFile(file);
-        const result = await pool.query(query);
-        await pool.end(); // close connection
-
-        console.log(result);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-function readFile(file: string) {
-    return new Promise<string>((resolve, reject) => {
-        fs.readFile(file, "utf-8", (err, contents) => {
-            if (err) reject(err);
-            else resolve(contents);
+    createPool(): Pool {
+        return new Pool({
+            user: this.DB_USER,
+            host: this.DB_HOST,
+            database: this.DB_NAME,
+            port: 5432
         });
-    });
+    }
+
+    async dropTables() {
+        const query = `
+        DROP TABLE IF EXISTS viewed_episodes;
+        DROP TABLE IF EXISTS viewed_movies;
+        DROP TABLE IF EXISTS users;
+        DROP TABLE IF EXISTS movies;
+        DROP TABLE IF EXISTS episodes;
+        DROP TABLE IF EXISTS series;
+        `;
+
+        try {
+            const result = await this.pool.query(query);
+            await this.pool.end();
+
+            console.log(result);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async executeQueryFrom(file: string): Promise<QueryResult<any>> {
+        const query = await this.readFile(file);
+        const result = await this.pool.query(query);
+        return result;
+    }
+
+    private readFile(file: string) {
+        return new Promise<string>((resolve, reject) => {
+            fs.readFile(file, "utf-8", (err, contents) => {
+                if (err) reject(err);
+                else resolve(contents);
+            });
+        });
+    }
+
+    async endConnection() {
+        await this.pool.end(); // close connection
+    }
 }
 
-executeQueryFrom(__dirname + "/database.sql");
+const dbManager = new DatabaseManager();
+dbManager
+    .executeQueryFrom(__dirname + "/database.sql")
+    .then(res => {
+        if (!res.rows) return;
 
-export default pool;
+        res.rows.forEach(row => {
+            console.log(row);
+        });
+    })
+    .finally(() => dbManager.endConnection());
+
+export default DatabaseManager;
