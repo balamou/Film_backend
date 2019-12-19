@@ -64,16 +64,21 @@ class DatabaseManager {
     }
 }
 
-// const dbManager = new DatabaseManager();
-// dbManager
-//     .setupDatabase()
-//     .then(res => {
-//         if (!res.rows) return;
+function test() {
+    const dbManager = new DatabaseManager();
+    dbManager
+        .setupDatabase()
+        .then(res => {
+            if (!res.rows)
+                return;
+            res.rows.forEach(row => {
+                console.log(row);
+            });
+        })
+        .finally(() => dbManager.endConnection());
+}
 
-//         res.rows.forEach(row => {
-//             console.log(row);
-//         });
-//     })
-//     .finally(() => dbManager.endConnection());
+// test();
 
 export default DatabaseManager;
+
