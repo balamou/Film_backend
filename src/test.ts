@@ -6,13 +6,17 @@ class DatabaseManager {
     private readonly DB_NAME: string;
     private readonly DB_USER: string;
     private readonly DB_HOST: string;
-    private pool: Pool;
+    protected pool: Pool;
 
     constructor() {
         this.DB_NAME = process.env.DB_NAME as string;
         this.DB_USER = process.env.DB_USER as string;
         this.DB_HOST = process.env.DB_HOST as string;
         this.pool = this.createPool();
+    }
+
+    async setupDatabase() {
+        return await this.executeQueryFrom(__dirname + "/database.sql");
     }
 
     createPool(): Pool {
@@ -60,16 +64,16 @@ class DatabaseManager {
     }
 }
 
-const dbManager = new DatabaseManager();
-dbManager
-    .executeQueryFrom(__dirname + "/database.sql")
-    .then(res => {
-        if (!res.rows) return;
+// const dbManager = new DatabaseManager();
+// dbManager
+//     .setupDatabase()
+//     .then(res => {
+//         if (!res.rows) return;
 
-        res.rows.forEach(row => {
-            console.log(row);
-        });
-    })
-    .finally(() => dbManager.endConnection());
+//         res.rows.forEach(row => {
+//             console.log(row);
+//         });
+//     })
+//     .finally(() => dbManager.endConnection());
 
 export default DatabaseManager;
