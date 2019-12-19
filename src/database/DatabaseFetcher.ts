@@ -1,5 +1,5 @@
 import DatabaseManager from './DatabaseManager';
-import { SeriesType, EpisodeType } from "./CreationManager";
+import { SeriesType, EpisodeType, UserType } from "./CreationManager";
 
 type Episode_Type = {id?: number, series_id: number, season_number: number, episode_number: number, video_url: string, duration: number, thumbnail_url?: string, title?: string, plot?: string, stopped_at?: number};
 
@@ -98,6 +98,14 @@ class DatabaseFetcher extends DatabaseManager {
         const result = await this.pool.query<Episode_Type>(query, [ seriesId ]);
 
         return this.convertToEpisodeType(result.rows[0]); // TODO: throw error if empty
+    }
+
+    async getUser(username: string) {
+        const user = await this.pool.query<UserType>('SELECT * FROM USERS WHERE USERNAME=$1', [ username ]);
+
+        if (user.rowCount > 0) return user.rows[0];
+
+        throw new Error('Username does not exist');
     }
 }
 

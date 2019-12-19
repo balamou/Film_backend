@@ -1,23 +1,29 @@
 import { Router } from "express";
-import User from "../model/user";
+import DatabaseFetcher from "../database/DatabaseFetcher";
 
 const router = Router();
 
 router.get("/login/:username", (req, res, next) => {
     const username = req.params.username;
 
-    User.findOne({ where: { username: username } })
-        .then(user => {
-            if (user) {
-                res.json({ userId: user.id });
-            } else {
-                // user does not exist
-                res.json({ error: "Username does not exist" });
-            }
-        })
-        .catch(error => {
+    getUser(username)
+    .then(userId => res.json({ userId: userId }))
+    .catch(error => {
+        if (error.message) 
+            res.json({ error: error.message });
+        else if (error.detail) 
+            res.json({ error: error.detail });
+        else
             res.json({ error: error });
-        });
+    });
 });
+
+async function getUser(username: string) {
+    const dbFetcher = new DatabaseFetcher();
+    const user = await dbFetcher.getUser(username);
+    await dbFetcher.endConnection();
+
+    return user.id!;
+} 
 
 export default router;
