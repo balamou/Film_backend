@@ -2,7 +2,7 @@ import DatabaseManager from './DatabaseManager';
 import CreationManager from './CreationManager';
 import DatabaseFetcher from './DatabaseFetcher';
 
-async function test1() {
+async function resetDatabase() {
     const dbManager = new DatabaseManager();
     const result = await dbManager.setupDatabase()
 
@@ -68,4 +68,4 @@ async function test5() {
 }
 
 
-test5();
+resetDatabase();

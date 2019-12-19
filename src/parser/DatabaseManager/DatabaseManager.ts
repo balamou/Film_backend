@@ -18,10 +18,10 @@ export default class DatabaseManager {
         const series = await cManager.createSeries({
             language: 'en', // TODO: add language
             folder: path,
-            title: seriesInfo.seriesInfo ?.title ?? seriesName,
+            title: seriesInfo.seriesInfo?.title ?? seriesName,
             seasons: seriesInfo.seriesInfo?.totalSeasons ?? 0, // TODO: make it not optional
             description: seriesInfo.seriesInfo?.plot,
-            poster: seriesInfo.seriesInfo?.poster
+            poster: seriesInfo.seriesInfo?.poster?.replace(/public\//, '')
         });
 
         if (!series.id) throw new Error(`Series '${seriesName}' has an unspecified 'seriesId'`);
@@ -31,9 +31,9 @@ export default class DatabaseManager {
                 seriesId: series.id,
                 seasonNumber: videoInfo.season,
                 episodeNumber: videoInfo.episode,
-                videoURL: videoInfo.videoPath,
+                videoURL: videoInfo.videoPath.replace(/public\//, ''),
                 duration: videoInfo.duration ?? 10, // TODO: Fix duration
-                thumbnailURL: videoInfo.thumbnail,
+                thumbnailURL: videoInfo.thumbnail?.replace(/public\//, ''),
                 title: videoInfo.title,
                 plot: videoInfo.plot
             });

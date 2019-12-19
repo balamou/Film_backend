@@ -33,7 +33,7 @@ async function execute(showId: number, userId: number) {
         seasonSelected: lastWatchedEpisode.seasonNumber,
         totalSeasons: series.seasons,
         description: series.description,
-        posterURL: series.poster?.replace(/public\//, ""),
+        posterURL: series.poster,
         lastWatchedEpisode: lastWatchedEpisode
     };
     const episodesFix = episodes.map(ep => {
@@ -41,10 +41,9 @@ async function execute(showId: number, userId: number) {
             id: ep.id,
             episodeNumber: ep.episodeNumber!,
             seasonNumber: ep.seasonNumber!,
-            videoURL: ep.videoURL?.replace(/public\//, ""),
+            videoURL: ep.videoURL,
             duration: ep.duration,
-
-            thumbnailURL: ep.thumbnailURL?.replace(/public\//, ""),
+            thumbnailURL: ep.thumbnailURL,
             title: ep.title,
             plot: ep.plot,
             stoppedAt: ep.stoppedAt

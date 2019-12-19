@@ -18,14 +18,16 @@ async function execute(seriesId: number, userId: number, season: number) {
 
     const episodes = await dbFetcher.getEpisodesFromSeriesIdWithStoppedAt(seriesId, season, userId);
 
+    await dbFetcher.endConnection();
+    
     return episodes.map( ep => {
         return {
             id: ep.id,
             episodeNumber: ep.episodeNumber,
             seasonNumber: ep.seasonNumber,
-            videoURL: ep.videoURL.replace(/public\//, ''),
+            videoURL: ep.videoURL,
             duration: ep.duration,
-            thumbnailURL: ep.thumbnailURL?.replace(/public\//, ''),
+            thumbnailURL: ep.thumbnailURL,
             title: ep.title,
             plot: ep.plot,
             stoppedAt: ep.stoppedAt

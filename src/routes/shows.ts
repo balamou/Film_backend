@@ -29,7 +29,7 @@ async function getSeries(start: number, quantity: number, language: string) {
     const showsData = result.map(show => {
         return {
             id: show.id!,
-            posterURL: show.poster?.replace(/public\//, "")
+            posterURL: show.poster
         };
     });
 
