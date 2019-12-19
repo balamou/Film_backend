@@ -10,9 +10,6 @@ import show from './routes/show';
 import movie from './routes/movie';
 import episodes from './routes/episodes';
 
-// import watcher from './parser/other/watcher';
-// import dbsetup from './util/dbsetup';
-
 const PORT_NUMBER = 3000;
 
 app.use(express.static("./public"));
@@ -36,8 +33,6 @@ app.get("/", (req, res, next) => {
 
 async function main() {
     await app.listen(PORT_NUMBER);
-    // await dbsetup();
-    // watcher();
 };
 
 main();
