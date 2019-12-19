@@ -33,7 +33,7 @@ async function getSeries(start: number, quantity: number, language: string) {
         };
     });
 
-    return { showsData: showsData, isLast: true };
+    return { showsData: showsData, isLast: true }; // TODO: enable pagination
 }
 
 export default router;
