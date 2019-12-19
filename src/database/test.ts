@@ -1,5 +1,6 @@
 import DatabaseManager from './DatabaseManager';
 import CreationManager from './CreationManager';
+import DatabaseFetcher from './DatabaseFetcher';
 
 async function test1() {
     const dbManager = new DatabaseManager();
@@ -54,4 +55,17 @@ async function test4() {
     cManager.endConnection();
 }
 
-test1();
+async function test5() {
+    const dbFetcher = new DatabaseFetcher();
+
+    const result = await dbFetcher.getLastWatchedEpisode(1, 1);
+    const result2 = await dbFetcher.getLastWatchedEpisode(1, 2);
+
+    console.log(result);
+    console.log(result2);
+
+    dbFetcher.endConnection();
+}
+
+
+test5();
