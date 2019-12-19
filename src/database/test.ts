@@ -9,7 +9,7 @@ async function test1() {
 
     console.log(result.rows);
         
-    dbManager.endConnection();
+    await dbManager.endConnection();
 }
 
 async function test2() {
@@ -22,13 +22,13 @@ async function test2() {
         seasons: 2
     });
 
-    const seriesId = series.rows[0].id;
+    const seriesId = series.id;
     if (!seriesId) return;
 
     const episode = await cManager.createEpisode({seriesId: seriesId, episodeNumber: 1, seasonNumber: 2, videoURL: "hehe", duration: 12});
     
-    console.log(episode.rows);
-    cManager.endConnection();
+    console.log(episode);
+    await cManager.endConnection();
 }
 
 async function test3() {
@@ -38,7 +38,20 @@ async function test3() {
 
     console.log(users);
 
+    await cManager.endConnection();
+}
+
+async function test4() {
+    const cManager = new CreationManager();
+
+    const episode = await cManager.createEpisode({
+        seriesId: 1,
+        seasonNumber: 1,
+        episodeNumber: 2,
+        videoURL: "hehe",
+        duration: 12
+    });
     cManager.endConnection();
 }
 
-test3();
+test1();

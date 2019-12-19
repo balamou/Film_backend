@@ -1,6 +1,5 @@
 
-import Episode from '../../model/episode';
-import Series from '../../model/series';
+import CreationManager from '../../database/CreationManager';
 import { SeriesData } from '../VirtualTree/VirtualTreeParser';
 
 export default class DatabaseManager {
@@ -14,28 +13,32 @@ export default class DatabaseManager {
     }
 
     async _commitToDB(path: string, seriesName: string, seriesInfo: SeriesData) {
-        // nil coalescing and optional chaining will be marked as an error
-        // but it can be safely ignored
-        const series = await Series.create({
-            language: 'en',
+        const cManager = new CreationManager();
+
+        const series = await cManager.createSeries({
+            language: 'en', // TODO: add language
             folder: path,
             title: seriesInfo.seriesInfo ?.title ?? seriesName,
-            seasons: seriesInfo.seriesInfo ?.totalSeasons,
-            desc: seriesInfo.seriesInfo ?.plot,
-            poster: seriesInfo.seriesInfo ?.poster
-        }, {logging: true});
+            seasons: seriesInfo.seriesInfo?.totalSeasons ?? 0, // TODO: make it not optional
+            description: seriesInfo.seriesInfo?.plot,
+            poster: seriesInfo.seriesInfo?.poster
+        });
+
+        if (!series.id) throw new Error(`Series '${seriesName}' has an unspecified 'seriesId'`);
 
         for (const videoInfo of seriesInfo.videoInfo) {
-            await Episode.create({
+            const episode = await cManager.createEpisode({
                 seriesId: series.id,
-                episodeNumber: videoInfo.episode,
                 seasonNumber: videoInfo.season,
+                episodeNumber: videoInfo.episode,
                 videoURL: videoInfo.videoPath,
-                duration: videoInfo.duration ?? 10, // TODO: Fix
+                duration: videoInfo.duration ?? 10, // TODO: Fix duration
                 thumbnailURL: videoInfo.thumbnail,
                 title: videoInfo.title,
                 plot: videoInfo.plot
             });
         }
+
+        await cManager.endConnection();
     }
 }
