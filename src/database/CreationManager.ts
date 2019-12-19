@@ -18,7 +18,7 @@ class CreationManager extends DatabaseManager {
         const query ='INSERT INTO USERS(USERNAME) VALUES($1) RETURNING *';
         const result = await this.pool.query<UserType>(query, [user.username]);
 
-        return result.rows;
+        return result.rows[0];
     }
 
     async createSeries(series: SeriesType) {
