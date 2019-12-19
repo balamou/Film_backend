@@ -34,14 +34,10 @@ class DatabaseManager {
         DROP TABLE IF EXISTS series;
         `;
 
-        try {
-            const result = await this.pool.query(query);
-            await this.pool.end();
+        const result = await this.pool.query(query);
+        await this.pool.end();
 
-            console.log(result);
-        } catch (error) {
-            console.log(error);
-        }
+        return result;
     }
 
     async executeQueryFrom(file: string): Promise<QueryResult<any>> {

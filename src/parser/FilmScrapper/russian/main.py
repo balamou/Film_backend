@@ -26,9 +26,11 @@ def main():
          "plot": movie.plot,
          "poster": poster}
     
-    encoded = json.dumps(x, ensure_ascii=False).encode('utf8')
-    print(encoded.decode())
-
+    try:
+        encoded = json.dumps(x, ensure_ascii=False).encode('utf8')
+        print(encoded.decode())
+    except:
+        sys.stderr.write("Decoding error")
     # series = MovieSeries(first_movie.id)
     # print(series)
 
