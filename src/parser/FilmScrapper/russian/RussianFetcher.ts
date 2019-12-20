@@ -13,21 +13,27 @@ export default class RussianFetcher {
     }
 
     getSeries(title: string) {
-        try {
-            const output = this.execScript(title);
-            const seriesData = JSON.parse(output) as {
+        type Episode = {episodeNumber: number, title?: string};
+        type Season = {seasonNumber: number, episodes: Episode[]};
+
+        const output = this.execScript(title);
+        const seriesData = JSON.parse(output) as {
+            seriesInfo: {
                 title: string;
                 plot: string;
                 poster?: string;
-            };
-            console.log(seriesData);
+            }, 
+            seasons: Season[]
+        };
+        console.log(seriesData);
 
-            return seriesData;
-        } catch (error) {
-            const pythonError = (error as Error).message;
-            console.log(pythonError);
-        }
+        return seriesData;
     }
 }
 
-new RussianFetcher().getSeries("rick and morty");
+try {
+    new RussianFetcher().getSeries("rick and morty");
+} catch (error) {
+    const pythonError = (error as Error).message;
+    console.log(pythonError);
+}
