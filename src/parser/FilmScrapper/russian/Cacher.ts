@@ -3,9 +3,11 @@ import YAML from 'yaml';
 
 class Cacher<T> {
     private fsEditor: FileSystemEditor
+    private readonly maxValidDays: number // Caching policy: maximum number of days the cache is valid
 
-    constructor(fsEditor: FileSystemEditor) {
+    constructor(fsEditor: FileSystemEditor, maxValidDays: number = 336) {
         this.fsEditor = fsEditor
+        this.maxValidDays = maxValidDays
     }
 
     retrieveCachedData(file: string, dir: string = 'cache') {
@@ -16,10 +18,11 @@ class Cacher<T> {
         const cachedData = this.fsEditor.readFile(cachedFile);
         const seriesData = YAML.parse(cachedData) as T & { dateCached: Date };
         
-        // console.log(seriesData.dateCached);
-        // const date = new Date(seriesData.dateCached);
-        // const timeDiff = (new Date()).getTime() - date.getTime();
-        // console.log(timeDiff/(1000 * 60));
+        const currDate = new Date();
+        const dateCached = new Date(seriesData.dateCached);
+        const daysSinceCached = Math.round((currDate.getTime() - dateCached.getTime())/(1000*60*60*24));
+    
+        if (daysSinceCached > this.maxValidDays) return; // return nothing indicating no cache
 
         return seriesData as T;
     }
