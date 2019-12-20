@@ -27,13 +27,14 @@ function dirTreeComparison(path: string) {
     const currTree = getDirTree(path, GLOBAL_EXCLUDE);
 
     if (tree) {
-        console.log(tree);
-        console.log(currTree);
+        // console.log(tree);
+        // console.log(currTree);
 
         if (tree.hash() === currTree.hash()) {
             console.log("No changes in the file system.");
         } else {
             console.log("Changes occured!");
+            Tree.compare(tree, currTree);
         }
     }
 }
