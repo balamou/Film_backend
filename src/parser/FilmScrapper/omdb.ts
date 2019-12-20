@@ -1,4 +1,5 @@
 import { httpGet } from '../Adapters/HTTPReq';
+import Fetcher from './fetcher';
 
 // Example rest calls:
 //
@@ -9,38 +10,17 @@ export class Omdb {
     static readonly API_KEY = 'b2141cec';
 
     private static seriesEndPoint = (seriesName: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series`;
-    private static seasonEndPoint = (seriesName: string, season: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}`;
-    private static episodeEndPoint = (seriesName: string, season: string, episode: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}&Episode=${episode}`;
+    private static seasonEndPoint = (seriesName: string, season: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}`;
+    private static episodeEndPoint = (seriesName: string, season: number, episode: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}&Episode=${episode}`;
     private static movieEndPoint = (movieName: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${movieName}&plot=full&type=movie`;
 
     static fetchSeries = (seriesName: string) => httpGet(Omdb.seriesEndPoint(seriesName));
-    static fetchSeason = (seriesName: string, season: string) => httpGet(Omdb.seasonEndPoint(seriesName, season));
-    static fetchEpisode = (seriesName: string, season: string, episode: string) => httpGet(Omdb.episodeEndPoint(seriesName, season, episode));
+    static fetchSeason = (seriesName: string, season: number) => httpGet(Omdb.seasonEndPoint(seriesName, season));
+    static fetchEpisode = (seriesName: string, season: number, episode: number) => httpGet(Omdb.episodeEndPoint(seriesName, season, episode));
     static fetchMovie = (movieName: string) => httpGet(Omdb.movieEndPoint(movieName));
 
     // Error respose:
     // {"Response":"False","Error":"Series or episode not found!"}
-}
-
-export interface Fetcher {
-    fetchSeries(seriesName: string): {
-        title?: string,
-        plot?: string,
-        poster?: string,
-        totalSeasons?: number
-    };
-    fetchEpisode(seriesName: string, season: string, episode: string): {
-        title?: string,
-        plot?: string,
-        imdbRating?: string
-    };
-    fetchMovie(movieName: string): {
-        title?: string,
-        year?: string,
-        plot?: string,
-        poster?: string,
-        imdbRating?: string
-    };
 }
 
 export class EnglishFetcher implements Fetcher {
@@ -59,7 +39,7 @@ export class EnglishFetcher implements Fetcher {
         };
     }
 
-    fetchEpisode(seriesName: string, season: string, episode: string) {
+    fetchEpisode(seriesName: string, season: number, episode: number) {
         const episodeInfo = Omdb.fetchEpisode(seriesName, season, episode);
 
         if (episodeInfo.Error)

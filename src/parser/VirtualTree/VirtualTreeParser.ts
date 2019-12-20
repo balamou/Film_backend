@@ -1,5 +1,5 @@
 import { VirtualTree } from './VirtualTree';
-import { Fetcher } from '../FilmScrapper/omdb';
+import Fetcher from '../FilmScrapper/fetcher';
 import { FileSystemEditor } from '../Adapters/FSEditor';
 
 import ffmpeg from '../Adapters/ffmpeg';
@@ -98,8 +98,8 @@ export class VirtualTreeParser {
         this.getSeriesInfo(path, seriesName);
 
         virtualTree.forEach((season, episode) => {
-            const seasonNum = season.seasonNum.toString();
-            const episodeNum = episode.episodeNum.toString();
+            const seasonNum = season.seasonNum;
+            const episodeNum = episode.episodeNum;
 
             try {
                 const episodeInfo = this.fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
