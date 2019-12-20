@@ -69,7 +69,7 @@ class RussianFetcher implements Fetcher {
     }
 
     private getSeries(title: string) {
-        const path = title.replace(/\s+/g, '_');
+        const path = title.trim().replace(/\s+/g, '_').toLocaleLowerCase();
         let seriesData = this.retrieveCachedData<SeriesInfo>(path);
         if (seriesData) return seriesData;
 
@@ -86,13 +86,17 @@ class RussianFetcher implements Fetcher {
     private retrieveCachedData<T>(file: string, dir: string = 'cache') {
         const cachedFile = `${dir}/${file}.yml`;
 
-        if (this.fsEditor.doesFileExist(cachedFile)) {
-            const cachedData = this.fsEditor.readFile(cachedFile);
-            const seriesData = YAML.parse(cachedData) as T & { dateCached: Date };
-            console.log(seriesData.dateCached);
+        if (!this.fsEditor.doesFileExist(cachedFile)) return;
+        
+        const cachedData = this.fsEditor.readFile(cachedFile);
+        const seriesData = YAML.parse(cachedData) as T & { dateCached: Date };
+        
+        // console.log(seriesData.dateCached);
+        // const date = new Date(seriesData.dateCached);
+        // const timeDiff = (new Date()).getTime() - date.getTime();
+        // console.log(timeDiff/(1000 * 60));
 
-            return seriesData as T;
-        }
+        return seriesData as T;
     }
 
     private cacheData<T>(file: string, data: T, dir: string = 'cache') {
@@ -107,11 +111,12 @@ export default RussianFetcher;
 function test() {
     try {
         const fetcher = new RussianFetcher();
-        console.log(fetcher.fetchSeries("game of thrones"));
+        console.log(fetcher.fetchSeries("american dad"));
         console.log(fetcher.fetchEpisode("rick and morty", 1, 8));
     } catch (error) {
         const pythonError = (error as Error).message;
         console.log(pythonError);
     }
 }
+
 test();
