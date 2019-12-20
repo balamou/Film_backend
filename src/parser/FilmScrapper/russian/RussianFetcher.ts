@@ -74,11 +74,13 @@ class RussianFetcher implements Fetcher {
 
 export default RussianFetcher;
 
-try {
-    const fetcher = new RussianFetcher();
-    console.log(fetcher.fetchSeries("rick and morty"));
-    console.log(fetcher.fetchEpisode("rick and morty", 1, 6));
-} catch (error) {
-    const pythonError = (error as Error).message;
-    console.log(pythonError);
+function test() {
+    try {
+        const fetcher = new RussianFetcher();
+        console.log(fetcher.fetchSeries("rick and morty"));
+        console.log(fetcher.fetchEpisode("rick and morty", 1, 6));
+    } catch (error) {
+        const pythonError = (error as Error).message;
+        console.log(pythonError);
+    }
 }
