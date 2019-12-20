@@ -2,13 +2,14 @@ import cprocess from "child_process";
 import path from "path";
 import Fetcher from "../fetcher";
 import { FSEditor } from "../../Adapters/FSEditor";
-import YAML from 'yaml';
+import Cacher from "./Cacher";
 
 type Episode = {episodeNumber: number, title?: string};
 type Season = {seasonNumber: number, episodes: Episode[]};
 type SeriesInfo = {
     seriesInfo: {
         title: string;
+        year?: string;
         plot: string;
         poster?: string;
     }, 
@@ -16,11 +17,10 @@ type SeriesInfo = {
 };
 
 class RussianFetcher implements Fetcher {
-    private seriesInfo?: SeriesInfo
-    private seriesName?: string
-    private fsEditor = new FSEditor() // TODO: Swap using interface & inject
-
-   
+    private seriesInfo?: SeriesInfo;
+    private seriesName?: string;
+    private cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
+    
     private execScript(title: string) {
         const scriptPath = path.join(__dirname, "main.py");
 
@@ -70,7 +70,7 @@ class RussianFetcher implements Fetcher {
 
     private getSeries(title: string) {
         const path = title.trim().replace(/\s+/g, '_').toLocaleLowerCase();
-        let seriesData = this.retrieveCachedData<SeriesInfo>(path);
+        let seriesData = this.cacher.retrieveCachedData(path);
         if (seriesData) return seriesData;
 
         // if no cached data make call
@@ -78,31 +78,9 @@ class RussianFetcher implements Fetcher {
         seriesData = JSON.parse(output) as SeriesInfo;
         
         // cache data
-        this.cacheData<SeriesInfo>(path, seriesData);
+        this.cacher.cacheData(path, seriesData);
 
         return seriesData;
-    }
-
-    private retrieveCachedData<T>(file: string, dir: string = 'cache') {
-        const cachedFile = `${dir}/${file}.yml`;
-
-        if (!this.fsEditor.doesFileExist(cachedFile)) return;
-        
-        const cachedData = this.fsEditor.readFile(cachedFile);
-        const seriesData = YAML.parse(cachedData) as T & { dateCached: Date };
-        
-        // console.log(seriesData.dateCached);
-        // const date = new Date(seriesData.dateCached);
-        // const timeDiff = (new Date()).getTime() - date.getTime();
-        // console.log(timeDiff/(1000 * 60));
-
-        return seriesData as T;
-    }
-
-    private cacheData<T>(file: string, data: T, dir: string = 'cache') {
-        const _data = {dateCached: new Date(), ...data}
-        this.fsEditor.makeDirectory(dir);
-        this.fsEditor.writeToFile(`${dir}/${file}.yml`, YAML.stringify(_data));
     }
 }
 
@@ -111,7 +89,7 @@ export default RussianFetcher;
 function test() {
     try {
         const fetcher = new RussianFetcher();
-        console.log(fetcher.fetchSeries("american dad"));
+        console.log(fetcher.fetchSeries("chernobyl"));
         console.log(fetcher.fetchEpisode("rick and morty", 1, 8));
     } catch (error) {
         const pythonError = (error as Error).message;

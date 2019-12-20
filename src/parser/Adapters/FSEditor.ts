@@ -4,6 +4,8 @@ export interface FileSystemEditor {
     moveFileToFolder(from: string, to: string): void;
     doesFileExist(path: string): boolean;
     deleteFile(path: string): void;
+    readFile(path: string): string;
+    writeToFile(path: string, data: string): void;
 }
 
 import fs from 'fs';

@@ -19,6 +19,7 @@ def get_film_info(movie):
         poster = movie.posters[0]
 
     return {"title": movie.title,
+            "year": movie.year,
             "plot": movie.plot,
             "poster": poster}
 
