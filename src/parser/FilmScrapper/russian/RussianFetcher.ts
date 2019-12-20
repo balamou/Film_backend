@@ -83,38 +83,22 @@ class RussianFetcher implements Fetcher {
         return seriesData;
     }
 
-    // private abc(title: string) {
-    //     return this.cache<SeriesInfo>(title, () => {
-    //         const output = this.execScript(title);
-    //         return JSON.parse(output) as SeriesInfo;
-    //     });
-    // }
-
-    // private cache<T>(title: string, cb: () => T) {
-    //     let data = this.retrieveCachedData<T>(title);
-    //     if (data) return data;
-
-    //     data = cb();
-        
-    //     this.cacheData<T>(title, data);
-
-    //     return data;
-    // }
-
     private retrieveCachedData<T>(file: string, dir: string = 'cache') {
         const cachedFile = `${dir}/${file}.yml`;
 
         if (this.fsEditor.doesFileExist(cachedFile)) {
             const cachedData = this.fsEditor.readFile(cachedFile);
-            const seriesData = YAML.parse(cachedData) as T;
+            const seriesData = YAML.parse(cachedData) as T & { dateCached: Date };
+            console.log(seriesData.dateCached);
 
-            return seriesData;
+            return seriesData as T;
         }
     }
 
     private cacheData<T>(file: string, data: T, dir: string = 'cache') {
+        const _data = {dateCached: new Date(), ...data}
         this.fsEditor.makeDirectory(dir);
-        this.fsEditor.writeToFile(`${dir}/${file}.yml`, YAML.stringify(data));
+        this.fsEditor.writeToFile(`${dir}/${file}.yml`, YAML.stringify(_data));
     }
 }
 
