@@ -7,6 +7,7 @@ import { VirtualTreeBuilder } from './VirtualTree/VirtualTreeBuilder';
 import { VirtualTreeParser } from './VirtualTree/VirtualTreeParser';
 
 import { EnglishFetcher } from './FilmScrapper/omdb';
+import RussianFetcher from './FilmScrapper/russian/RussianFetcher';
 
 export default class Factory {
 
@@ -19,6 +20,6 @@ export default class Factory {
     }
 
     createVirtualTreeParser(): VirtualTreeParser {
-        return new VirtualTreeParser(new FSEditor(), new EnglishFetcher());
+        return new VirtualTreeParser(new FSEditor(), new RussianFetcher());
     }
 }

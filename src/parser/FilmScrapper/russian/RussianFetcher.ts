@@ -1,12 +1,16 @@
 import cprocess from "child_process";
 import path from "path";
 import Fetcher from "../fetcher";
+import { FSEditor } from "../../Adapters/FSEditor";
+import Cacher from "./Cacher";
+import { EnglishFetcher } from "../omdb";
 
 type Episode = {episodeNumber: number, title?: string};
 type Season = {seasonNumber: number, episodes: Episode[]};
 type SeriesInfo = {
     seriesInfo: {
         title: string;
+        year?: string;
         plot: string;
         poster?: string;
     }, 
@@ -14,9 +18,10 @@ type SeriesInfo = {
 };
 
 class RussianFetcher implements Fetcher {
-    private seriesInfo?: SeriesInfo
-    private seriesName?: string
-   
+    private seriesInfo?: SeriesInfo;
+    private seriesName?: string;
+    private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
+    
     private execScript(title: string) {
         const scriptPath = path.join(__dirname, "main.py");
 
@@ -65,8 +70,22 @@ class RussianFetcher implements Fetcher {
     }
 
     private getSeries(title: string) {
+        const path = title.trim().replace(/\s+/g, '_').toLocaleLowerCase();
+        let seriesData = this.cacher.retrieveCachedData(path);
+        if (seriesData) return seriesData;
+
+        // if no cached data make call
         const output = this.execScript(title);
-        const seriesData = JSON.parse(output) as SeriesInfo;
+        seriesData = JSON.parse(output) as SeriesInfo;
+        
+        if (!seriesData.seriesInfo.poster) {
+            // backup poster fetcher
+            const backup = new EnglishFetcher().fetchSeries(title);
+            seriesData.seriesInfo.poster = backup.poster;
+        }
+
+        // cache data
+        this.cacher.cacheData(path, seriesData);
 
         return seriesData;
     }
@@ -77,10 +96,12 @@ export default RussianFetcher;
 function test() {
     try {
         const fetcher = new RussianFetcher();
-        console.log(fetcher.fetchSeries("rick and morty"));
-        console.log(fetcher.fetchEpisode("rick and morty", 1, 6));
+        console.log(fetcher.fetchSeries("south park"));
+        console.log(fetcher.fetchEpisode("rick and morty", 2, 10));
     } catch (error) {
         const pythonError = (error as Error).message;
         console.log(pythonError);
     }
 }
+
+test();
