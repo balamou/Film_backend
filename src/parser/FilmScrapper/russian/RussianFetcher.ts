@@ -101,7 +101,7 @@ class RussianFetcher implements Fetcher {
     //     return data;
     // }
 
-    private retrieveCachedData<T = any>(file: string, dir: string = 'cache') {
+    private retrieveCachedData<T>(file: string, dir: string = 'cache') {
         const cachedFile = `${dir}/${file}.yml`;
 
         if (this.fsEditor.doesFileExist(cachedFile)) {
@@ -112,7 +112,7 @@ class RussianFetcher implements Fetcher {
         }
     }
 
-    private cacheData<T = any>(file: string, data: T, dir: string = 'cache') {
+    private cacheData<T>(file: string, data: T, dir: string = 'cache') {
         this.fsEditor.makeDirectory(dir);
         this.fsEditor.writeToFile(`${dir}/${file}.yml`, YAML.stringify(data));
     }
@@ -123,7 +123,7 @@ export default RussianFetcher;
 function test() {
     try {
         const fetcher = new RussianFetcher();
-        console.log(fetcher.fetchSeries("breaking bad"));
+        console.log(fetcher.fetchSeries("game of thrones"));
         console.log(fetcher.fetchEpisode("rick and morty", 1, 8));
     } catch (error) {
         const pythonError = (error as Error).message;

@@ -54,7 +54,7 @@ def get_episode_data(title):
     time.sleep(8)
     episode_data = parse_episodes(movie)
     
-    seriesInfo["title"] = movies[0].title # override title (to avoid brackets)
+    seriesInfo["title"] = movies[0].title.strip() # override title (to avoid brackets)
     return { "seriesInfo": seriesInfo, "seasons" :episode_data }
 
 def main():

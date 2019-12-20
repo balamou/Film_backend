@@ -1,0 +1,173 @@
+seriesInfo:
+  title: Игра престолов
+  plot: К концу подходит время благоденствия, и лето, длившееся почти десятилетие,
+    угасает. Вокруг средоточия власти Семи королевств, Железного трона, зреет
+    заговор, и в это непростое время король решает искать поддержки у друга
+    юности Эддарда Старка. В мире, где все — от короля до наемника — рвутся к
+    власти, плетут интриги и готовы вонзить нож в спину, есть место и
+    благородству, состраданию и любви. Между тем, никто не замечает пробуждение
+    тьмы из легенд далеко на Севере — и лишь Стена защищает живых к югу от нее.
+  poster: null
+seasons:
+  - seasonNumber: 1
+    episodes:
+      - episodeNumber: 1
+        title: Зима близко
+      - episodeNumber: 2
+        title: Королевский тракт
+      - episodeNumber: 3
+        title: Лорд Сноу
+      - episodeNumber: 4
+        title: Калеки, бастарды и сломанные вещи
+      - episodeNumber: 5
+        title: Волк и лев
+      - episodeNumber: 6
+        title: Золотая корона
+      - episodeNumber: 7
+        title: Ты побеждаешь или погибаешь
+      - episodeNumber: 8
+        title: Острый конец
+      - episodeNumber: 9
+        title: Бейелор
+      - episodeNumber: 10
+        title: Пламя и кровь
+  - seasonNumber: 2
+    episodes:
+      - episodeNumber: 1
+        title: Север помнит
+      - episodeNumber: 2
+        title: Ночные земли
+      - episodeNumber: 3
+        title: То, что мертво, умереть не может
+      - episodeNumber: 4
+        title: Сад костей
+      - episodeNumber: 5
+        title: Призрак Харренхола
+      - episodeNumber: 6
+        title: Боги старые и новые
+      - episodeNumber: 7
+        title: Человек без чести
+      - episodeNumber: 8
+        title: Принц Винтерфелла
+      - episodeNumber: 9
+        title: Черноводная
+      - episodeNumber: 10
+        title: Валар Моргулис
+  - seasonNumber: 3
+    episodes:
+      - episodeNumber: 1
+        title: Валар Дохаэрис
+      - episodeNumber: 2
+        title: Чёрные крылья, чёрные вести
+      - episodeNumber: 3
+        title: Стезя страданий
+      - episodeNumber: 4
+        title: Теперь его дозор окончен
+      - episodeNumber: 5
+        title: Поцелованная огнём
+      - episodeNumber: 6
+        title: Подъём
+      - episodeNumber: 7
+        title: Медведь и прекрасная дева
+      - episodeNumber: 8
+        title: Младшие Сыны
+      - episodeNumber: 9
+        title: Рейны из Кастамере
+      - episodeNumber: 10
+        title: Миса
+  - seasonNumber: 4
+    episodes:
+      - episodeNumber: 1
+        title: Два меча
+      - episodeNumber: 2
+        title: Лев и Роза
+      - episodeNumber: 3
+        title: Разрушительница оков
+      - episodeNumber: 4
+        title: Верный клятве
+      - episodeNumber: 5
+        title: Первый этого имени
+      - episodeNumber: 6
+        title: Законы Богов и Людей
+      - episodeNumber: 7
+        title: Пересмешник
+      - episodeNumber: 8
+        title: Гора и змей
+      - episodeNumber: 9
+        title: Дозорные на стене
+      - episodeNumber: 10
+        title: Дети
+  - seasonNumber: 5
+    episodes:
+      - episodeNumber: 1
+        title: Грядущие войны
+      - episodeNumber: 2
+        title: Чёрно-белый дом
+      - episodeNumber: 3
+        title: Его Воробейшество
+      - episodeNumber: 4
+        title: Сыны Гарпии
+      - episodeNumber: 5
+        title: Убей мальчишку
+      - episodeNumber: 6
+        title: Непокорны, несгибаемы, не сломлены
+      - episodeNumber: 7
+        title: Дар
+      - episodeNumber: 8
+        title: Суровый дом
+      - episodeNumber: 9
+        title: Танец Драконов
+      - episodeNumber: 10
+        title: Милосердие матери
+  - seasonNumber: 6
+    episodes:
+      - episodeNumber: 1
+        title: Красная женщина
+      - episodeNumber: 2
+        title: Дом
+      - episodeNumber: 3
+        title: Клятвопреступник
+      - episodeNumber: 4
+        title: Книга неведомого
+      - episodeNumber: 5
+        title: Дверь
+      - episodeNumber: 6
+        title: Кровь моей крови
+      - episodeNumber: 7
+        title: Сломленный
+      - episodeNumber: 8
+        title: Никто
+      - episodeNumber: 9
+        title: Битва бастардов
+      - episodeNumber: 10
+        title: Ветра зимы
+  - seasonNumber: 7
+    episodes:
+      - episodeNumber: 1
+        title: Драконий камень
+      - episodeNumber: 2
+        title: Бурерожденная
+      - episodeNumber: 3
+        title: Правосудие королевы
+      - episodeNumber: 4
+        title: Трофеи войны
+      - episodeNumber: 5
+        title: Восточный дозор
+      - episodeNumber: 6
+        title: За стеной
+      - episodeNumber: 7
+        title: Дракон и волк
+  - seasonNumber: 8
+    episodes:
+      - episodeNumber: 1
+        title: Винтерфелл
+      - episodeNumber: 2
+        title: Рыцарь Семи Королевств
+      - episodeNumber: 3
+        title: Долгая ночь
+      - episodeNumber: 4
+        title: Последние из Старков
+      - episodeNumber: 5
+        title: Колокола
+      - episodeNumber: 6
+        title: Железный Трон
