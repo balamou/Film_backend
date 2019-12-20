@@ -52,7 +52,7 @@ class DatabaseFetcher extends DatabaseManager {
     }
 
     async getAvailableSeasons(seriesId: number) {
-        const result = await this.pool.query<{season_number: number}>('SELECT DISTINCT SEASON_NUMBER FROM EPISODES WHERE series_id=$1', [ seriesId ]);
+        const result = await this.pool.query<{season_number: number}>('SELECT DISTINCT SEASON_NUMBER FROM EPISODES WHERE series_id=$1 ORDER BY SEASON_NUMBER ASC', [ seriesId ]);
         
         return result.rows.map(row => row.season_number);
     }
