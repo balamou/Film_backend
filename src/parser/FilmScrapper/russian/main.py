@@ -1,8 +1,8 @@
 from kinopoisk.movie import Movie
+import timeout_decorator # https://pypi.org/project/timeout-decorator/
 import time
 import json
 import sys
-import timeout_decorator
 
 # Finds movies matching the title
 # returns an object that has `title` and `id` attributes
