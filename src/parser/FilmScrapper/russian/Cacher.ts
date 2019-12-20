@@ -20,8 +20,8 @@ class Cacher<T> {
         
         const currDate = new Date();
         const dateCached = new Date(seriesData.dateCached);
-        const daysSinceCached = Math.round((currDate.getTime() - dateCached.getTime())/(1000*60*60*24));
-    
+        const daysSinceCached = this.daysBetween(currDate, dateCached);
+        
         if (daysSinceCached > this.maxValidDays) return; // return nothing indicating no cache
 
         return seriesData as T;
@@ -31,6 +31,10 @@ class Cacher<T> {
         const _data = {dateCached: new Date(), ...data}
         this.fsEditor.makeDirectory(dir);
         this.fsEditor.writeToFile(`${dir}/${file}.yml`, YAML.stringify(_data));
+    }
+
+    private daysBetween(date1: Date, date2: Date) {
+        return Math.round((date1.getTime() - date2.getTime())/(1000*60*60*24));
     }
 }
 
