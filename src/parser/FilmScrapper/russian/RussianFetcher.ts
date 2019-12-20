@@ -3,6 +3,7 @@ import path from "path";
 import Fetcher from "../fetcher";
 import { FSEditor } from "../../Adapters/FSEditor";
 import Cacher from "./Cacher";
+import { EnglishFetcher } from "../omdb";
 
 type Episode = {episodeNumber: number, title?: string};
 type Season = {seasonNumber: number, episodes: Episode[]};
@@ -77,6 +78,12 @@ class RussianFetcher implements Fetcher {
         const output = this.execScript(title);
         seriesData = JSON.parse(output) as SeriesInfo;
         
+        if (!seriesData.seriesInfo.poster) {
+            // backup poster fetcher
+            const backup = new EnglishFetcher().fetchSeries(title);
+            seriesData.seriesInfo.poster = backup.poster;
+        }
+
         // cache data
         this.cacher.cacheData(path, seriesData);
 
@@ -96,3 +103,5 @@ function test() {
         console.log(pythonError);
     }
 }
+
+test();
