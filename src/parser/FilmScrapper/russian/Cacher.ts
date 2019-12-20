@@ -22,7 +22,7 @@ class Cacher<T> {
         const dateCached = new Date(seriesData.dateCached);
         const daysSinceCached = this.daysBetween(currDate, dateCached);
         
-        if (daysSinceCached > this.maxValidDays) return; // return nothing indicating no cache
+        if (daysSinceCached > this.maxValidDays) return; // return nothing if expired
 
         return seriesData as T;
     }

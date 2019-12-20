@@ -19,7 +19,7 @@ type SeriesInfo = {
 class RussianFetcher implements Fetcher {
     private seriesInfo?: SeriesInfo;
     private seriesName?: string;
-    private cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
+    private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
     
     private execScript(title: string) {
         const scriptPath = path.join(__dirname, "main.py");
@@ -90,11 +90,9 @@ function test() {
     try {
         const fetcher = new RussianFetcher();
         console.log(fetcher.fetchSeries("chernobyl"));
-        console.log(fetcher.fetchEpisode("rick and morty", 1, 8));
+        console.log(fetcher.fetchEpisode("rick and morty", 2, 10));
     } catch (error) {
         const pythonError = (error as Error).message;
         console.log(pythonError);
     }
 }
-
-test();
