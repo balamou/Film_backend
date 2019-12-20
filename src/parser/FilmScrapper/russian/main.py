@@ -12,7 +12,7 @@ def get_film_info(movie):
     time.sleep(5)
     movie.get_content('main_page')
     time.sleep(8)
-    movie.get_content('posters')
+    # movie.get_content('posters')
 
     poster = None
     if len(movie.posters) > 0:
@@ -54,6 +54,7 @@ def get_episode_data(title):
     time.sleep(8)
     episode_data = parse_episodes(movie)
     
+    seriesInfo["title"] = movies[0].title # override title (to avoid brackets)
     return { "seriesInfo": seriesInfo, "seasons" :episode_data }
 
 def main():

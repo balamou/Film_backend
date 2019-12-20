@@ -1,6 +1,8 @@
 import cprocess from "child_process";
 import path from "path";
 import Fetcher from "../fetcher";
+import { FSEditor } from "../../Adapters/FSEditor";
+import YAML from 'yaml';
 
 type Episode = {episodeNumber: number, title?: string};
 type Season = {seasonNumber: number, episodes: Episode[]};
@@ -16,6 +18,8 @@ type SeriesInfo = {
 class RussianFetcher implements Fetcher {
     private seriesInfo?: SeriesInfo
     private seriesName?: string
+    private fsEditor = new FSEditor() // TODO: Swap using interface & inject
+
    
     private execScript(title: string) {
         const scriptPath = path.join(__dirname, "main.py");
@@ -65,10 +69,52 @@ class RussianFetcher implements Fetcher {
     }
 
     private getSeries(title: string) {
+        const path = title.replace(/\s+/g, '_');
+        let seriesData = this.retrieveCachedData<SeriesInfo>(path);
+        if (seriesData) return seriesData;
+
+        // if no cached data make call
         const output = this.execScript(title);
-        const seriesData = JSON.parse(output) as SeriesInfo;
+        seriesData = JSON.parse(output) as SeriesInfo;
+        
+        // cache data
+        this.cacheData<SeriesInfo>(path, seriesData);
 
         return seriesData;
+    }
+
+    // private abc(title: string) {
+    //     return this.cache<SeriesInfo>(title, () => {
+    //         const output = this.execScript(title);
+    //         return JSON.parse(output) as SeriesInfo;
+    //     });
+    // }
+
+    // private cache<T>(title: string, cb: () => T) {
+    //     let data = this.retrieveCachedData<T>(title);
+    //     if (data) return data;
+
+    //     data = cb();
+        
+    //     this.cacheData<T>(title, data);
+
+    //     return data;
+    // }
+
+    private retrieveCachedData<T = any>(file: string, dir: string = 'cache') {
+        const cachedFile = `${dir}/${file}.yml`;
+
+        if (this.fsEditor.doesFileExist(cachedFile)) {
+            const cachedData = this.fsEditor.readFile(cachedFile);
+            const seriesData = YAML.parse(cachedData) as T;
+
+            return seriesData;
+        }
+    }
+
+    private cacheData<T = any>(file: string, data: T, dir: string = 'cache') {
+        this.fsEditor.makeDirectory(dir);
+        this.fsEditor.writeToFile(`${dir}/${file}.yml`, YAML.stringify(data));
     }
 }
 
@@ -77,10 +123,11 @@ export default RussianFetcher;
 function test() {
     try {
         const fetcher = new RussianFetcher();
-        console.log(fetcher.fetchSeries("rick and morty"));
-        console.log(fetcher.fetchEpisode("rick and morty", 1, 6));
+        console.log(fetcher.fetchSeries("breaking bad"));
+        console.log(fetcher.fetchEpisode("rick and morty", 1, 8));
     } catch (error) {
         const pythonError = (error as Error).message;
         console.log(pythonError);
     }
 }
+test();

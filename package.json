@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@types/request": "^2.48.3",
+    "@types/yaml": "^1.2.0",
     "chokidar": "^3.3.0",
     "directory-tree": "^2.2.4",
     "dotenv": "^8.2.0",
@@ -32,6 +33,7 @@
     "pg-hstore": "^2.3.3",
     "request": "^2.88.0",
     "sync-request": "^6.1.0",
-    "synchronized-promise": "^0.2.0"
+    "synchronized-promise": "^0.2.0",
+    "yaml": "^1.7.2"
   }
 }
