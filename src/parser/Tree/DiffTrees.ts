@@ -53,9 +53,17 @@ export default function diffTrees(cached: Tree, current: Tree) {
         
         console.log('----');
         console.log(`FOLDER - ${pair[0].name}:`);
-        console.log("Deleted: ", difference2.deleted.map(x => x.name));
-        console.log("Added: ", difference2.added.map(x => x.name));
-        console.log("Contents modified: ", difference2.modified.map(x => x[0].name));
+        console.log("Deleted: ", difference2.deleted.map(x => x.name)); // if poster deleted => refetch. If season deleted => remove from DB
+        console.log("Added: ", difference2.added.map(x => x.name)); // if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
+        console.log("Contents modified: ", difference2.modified.map(x => x[0].name)); // add logic to handle episode removal/addition
+
+
+        // Deleted: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
+        // Added: if video added => parse Episode information from title, scrape thumbs, parse from imdb, else purge
+        // Contents modified: add logic to handle each thumbnail removal
+
+        // Deleted: regenerate thumbnail if possible
+        // Added: purge
     });
 }
 
