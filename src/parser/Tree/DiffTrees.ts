@@ -24,11 +24,33 @@ export default function diffTrees(cached: Tree, current: Tree) {
     
     let deletedSeries = cachedLevel1.filter(x => !currentLevel1.includesTree(x));
     let addedSeries = currentLevel1.filter(x => !cachedLevel1.includesTree(x));
-    let didNotChange = cachedLevel1.filter(x => currentLevel1.includesTree(x));
+    let modified = getModified(cachedLevel1, currentLevel1);
 
     console.log("Deleted: ", deletedSeries.map(x => x.path));
     console.log("Added: ", addedSeries.map(x => x.path));
-    console.log("Did not change: ", didNotChange.map(x => x.path));
+    console.log("Did not change: ", modified.didNotChange.map(x => x.path));
+    console.log("Contents modified: ", modified.contentsModified.map(x => x.path));
+}
+
+function getModified(cached: Tree[], current: Tree[]) {
+    const didNotChange: Tree[] = []; 
+    const contentsModified: Tree[] = [];
+
+    cached.forEach(folder => {
+        const matchingFolder = current.find(x => x.name === folder.name);
+        if (!matchingFolder) return; // folder deleted
+
+        if (folder.hash() === matchingFolder.hash()) {
+            didNotChange.push(matchingFolder);
+        } else {
+            contentsModified.push(matchingFolder);
+        }
+    });
+
+    return {
+        didNotChange: didNotChange,
+        contentsModified: contentsModified
+    };
 }
 
 
