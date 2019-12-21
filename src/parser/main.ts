@@ -1,8 +1,9 @@
 import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
-import Tree from './Tree';
+import Tree from './Tree/Tree';
 import DatabaseManager from './DatabaseManager/DatabaseManager';
+import diffTrees from './Tree/DiffTrees';
 
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
@@ -22,7 +23,7 @@ export default function main() {
 }
 
 function dirTreeComparison(path: string) {
-    removeFiles(path);
+    removeFiles(path); // remove files from path
     const tree = loadDirectoryStateFromFile(path);
     const currTree = getDirTree(path, GLOBAL_EXCLUDE);
 
@@ -34,7 +35,7 @@ function dirTreeComparison(path: string) {
             console.log("No changes in the file system.");
         } else {
             console.log("Changes occured!");
-            Tree.compare(tree, currTree);
+            diffTrees(tree, currTree);
         }
     }
 }

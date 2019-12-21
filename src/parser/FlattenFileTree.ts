@@ -1,6 +1,6 @@
 import { DirectoryTreeCreator } from './Adapters/DirTreeCreator';
 import { FileSystemEditor } from './Adapters/FSEditor';
-import Tree from './Tree';
+import Tree from './Tree/Tree';
 
 export class FlattenFileTree {
     private dirTreeCreator: DirectoryTreeCreator;
