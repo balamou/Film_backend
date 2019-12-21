@@ -41,6 +41,25 @@ Array.prototype.includesTree = includesTree;
 Array.prototype.intersect = intersect;
 
 export default function diffTrees(cached: Tree, current: Tree) {
+    const difference = diff(cached, current);
+
+    // PRINT RESULTS vvvv
+    console.log("Deleted: ", difference.deleted.map(x => x.name)); // remove from DB
+    console.log("Added: ", difference.added.map(x => x.name)); // do a hard reload
+    console.log("Contents modified: ", difference.modified.map(x => x[0].name)); // add logic to handle this
+
+    difference.modified.forEach(pair => {
+        const difference2 = diff(pair[0], pair[1]);
+        
+        console.log('----');
+        console.log(`FOLDER - ${pair[0].name}:`);
+        console.log("Deleted: ", difference2.deleted.map(x => x.name));
+        console.log("Added: ", difference2.added.map(x => x.name));
+        console.log("Contents modified: ", difference2.modified.map(x => x[0].name));
+    });
+}
+
+function diff(cached: Tree, current: Tree) {
     const currentLevel1: Tree[] = current.children;
     const cachedLevel1: Tree[] = cached.children;
     
@@ -48,33 +67,13 @@ export default function diffTrees(cached: Tree, current: Tree) {
     let addedSeries = currentLevel1.filter(x => !cachedLevel1.includesTree(x));
     let modified = getModified(cachedLevel1, currentLevel1);
 
-    console.log(cachedLevel1.intersect(currentLevel1, (l, r) => l.name === r.name).map((val) => {
-        return `${val[0].name} -> ${val[0].hash()} == ${val[1].hash()}`;
-    }));
-    console.log("Deleted: ", deletedSeries.map(x => x.path));
-    console.log("Added: ", addedSeries.map(x => x.path));
-    console.log("Did not change: ", modified.didNotChange.map(x => x.path));
-    console.log("Contents modified: ", modified.contentsModified.map(x => x.path));
-}
-
-function getModified(cached: Tree[], current: Tree[]) {
-    const didNotChange: Tree[] = []; // names equal and hashes equal
-    const contentsModified: Tree[] = []; // names equal but hashes not equal
-
-    const pairs = cached.intersect(current, (l, r) => l.name === r.name);
-
-    pairs.forEach(pair => {
-        if (pair[0].hash() === pair[1].hash())
-            didNotChange.push(pair[1]);
-        else
-            contentsModified.push(pair[1]);
-    });
-
     return {
-        didNotChange: didNotChange,
-        contentsModified: contentsModified
+        deleted: deletedSeries,
+        added: addedSeries,
+        modified: modified
     };
 }
 
-
-  
+function getModified(cached: Tree[], current: Tree[]) {
+    return cached.intersect(current, (l, r) => l.name === r.name && l.hash() !== r.hash());
+} 
