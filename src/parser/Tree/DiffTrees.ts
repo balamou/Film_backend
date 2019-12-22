@@ -33,10 +33,8 @@ class Difference {
     }
 }
 
-export default function diffTrees(before: Tree, after: Tree): Difference {
-    const difference = differentiatePair([[before, after]], 3);
-
-    difference[0].print();
+export default function diffTrees(before: Tree, after: Tree, depth: number = 3): Difference {
+    const difference = differentiatePair([[before, after]], depth);
 
     return difference[0];
 }
@@ -57,17 +55,9 @@ function diff(before: Tree, after: Tree) {
     const beforeChildren: Tree[] = before.children;
     const afterChildren: Tree[] = after.children;
     
-    let deletedSeries = beforeChildren.butNotIn(afterChildren, (l, r) => l.name === r.name);
-    let addedSeries = afterChildren.butNotIn(beforeChildren, (l, r) => l.name === r.name);
-    let modified = getModified(beforeChildren, afterChildren);
-
     return {
-        deleted: deletedSeries,
-        added: addedSeries,
-        modified: modified
+        deleted: beforeChildren.butNotIn(afterChildren, (l, r) => l.name === r.name),
+        added: afterChildren.butNotIn(beforeChildren, (l, r) => l.name === r.name),
+        modified: beforeChildren.intersect(afterChildren, (l, r) => l.name === r.name && l.hash() !== r.hash())
     };
 }
-
-function getModified(cached: Tree[], current: Tree[]) {
-    return cached.intersect(current, (l, r) => l.name === r.name && l.hash() !== r.hash());
-} 

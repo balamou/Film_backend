@@ -36,6 +36,7 @@ function dirTreeComparison(path: string) {
         } else {
             console.log("Changes occured!");
             const difference = diffTrees(tree, currTree);
+            difference.print();
             // d[SERIES] remove from DB
             // a[SERIES] do a hard reload (Assumption -> all files are purged before this method executes)
             // m[see below] add logic to handle this
