@@ -63,7 +63,7 @@ Logins a user (if exists) and returns the user's id
 
 <details>
     <summary></summary>
-Created a user (if doesn't exist) and return new user's id
+Creates a user (if doesn't exist) and return new user's id
 
 * **URL**
 
@@ -91,7 +91,7 @@ Created a user (if doesn't exist) and return new user's id
 
 <details>
     <summary></summary>
-Created a user (if doesn't exist) and return new user's id
+Get a list of shows 
 
 * **URL**
 
@@ -107,13 +107,13 @@ Created a user (if doesn't exist) and return new user's id
  
   `start=[int]` id of the first show to fetch</br>
   `quantity=[int]` number of shows to fetch after the `start` id</br>
-  `language=[string]` - can be 'en' (aslo 'english') or 'ru' (also 'russian') </br>
+  `language=[string]` can be 'en' (aslo 'english') or 'ru' (also 'russian') </br>
  
 * **Success Response:**
 
     * **Code:** 200 </br>
-    **Content:** `{ showData: { id: number, posterURL?: string, isLast: boolean }[] }`
-    **Example:** `{ showsData: [{ id: 20, posterURL: "en/shows/rick_and_morty/poster.jpeg" }, {id: 21, posterURL:"en/shows/south_park/poster.jpeg" }], isLast:true}`
+    **Content:** `{ showData: { id: number, posterURL?: string }[], isLast: boolean } }` </br>
+    **Example:** `{ showsData: [{ id: 20, posterURL: "en/shows/rick_and_morty/poster.jpeg" }, {id: 21, posterURL:"en/shows/south_park/poster.jpeg" }], isLast: true }`
 
 </details>
 
