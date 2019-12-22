@@ -31,10 +31,35 @@ ipconfig getifaddr en0
 
 ## REST ENDPOINTS
 
-<details>
-    <summary>GET /login/:username</summary>
-    returns user id as an integer
-</details>
+### Login user
+    
+Logins a user (if exists) and returns the user's id
+
+* **URL**
+
+    /login/:username
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+  `username=[string]`
+ 
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:** `{ userId: 12 }`
+
+* **Error Response:**
+
+    * **Code:** 404 NOT FOUND </br>
+    **Content:** `{ error : "User doesn't exist" }`
+
 <details>
     <summary>GET /signup/:username</summary>
     returns user id as an integer 
