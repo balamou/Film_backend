@@ -1,9 +1,9 @@
-# ![Film](images/logo.png)
+# <div align="center">![Film](images/logo.png)</div>
 > REST API backend for [Film app](https://github.com/balamou/Film)
 
 ## Installation 
 - Have homebrew installed ([brew](https://brew.sh))
-- [Install pip](https://pip.pypa.io/en/stable/installing/)
+- [Install pip3](https://pip.pypa.io/en/stable/installing/)
 - Clone and `cd` into the repo
 
 ```sh
@@ -18,6 +18,9 @@ brew services start postgresql
 
 # install kinopoiskpy
 pip3 install kinopoiskpy
+
+# install timeout_decorator
+pip3 install timeout_decorator
 
 # install ffmpeg
 brew install ffmpeg
