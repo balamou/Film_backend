@@ -1,28 +1,44 @@
 import Tree from "./Tree";
 import './Array';
 
-type Difference = {parent: Tree, deleted: Tree[], added: Tree[], modified: Difference[]};
+class Difference {
+    parent: Tree;
+    deleted: Tree[]; 
+    added: Tree[];
+    modified: Difference[];
+
+    constructor(parent: Tree, deleted: Tree[], added: Tree[], modified: Difference[]) {
+        this.parent = parent;
+        this.deleted = deleted;
+        this.added = added;
+        this.modified = modified;
+    }
+
+    print() {
+        this.printAux(this);
+    }
+
+    private printAux(difference: Difference, level: number = 0) {
+        console.log('  '.repeat(level), [ difference.parent.name ]);
+        console.log('  '.repeat(level), 'Deleted: ', difference.deleted.map(x => x.name));
+        console.log('  '.repeat(level), 'Added: ', difference.added.map(x => x.name));
+        
+        if (difference.modified.length == 0) return;
+    
+        console.log('  '.repeat(level), 'Modified: ');
+    
+        difference.modified.forEach(mod => {
+            this.printAux(mod, level + 1);
+        });
+    }
+}
 
 export default function diffTrees(before: Tree, after: Tree): Difference {
     const difference = differentiatePair([[before, after]], 3);
 
-    printDifference(difference[0]);
+    difference[0].print();
 
     return difference[0];
-}
-
-function printDifference(difference: Difference, level: number = 0) {
-    console.log('  '.repeat(level), [ difference.parent.name ]);
-    console.log('  '.repeat(level), 'Deleted: ', difference.deleted.map(x => x.name));
-    console.log('  '.repeat(level), 'Added: ', difference.added.map(x => x.name));
-    
-    if (difference.modified.length == 0) return;
-
-    console.log('  '.repeat(level), 'Modified: ');
-
-    difference.modified.forEach(mod => {
-        printDifference(mod, level + 1);
-    });
 }
 
 function differentiatePair(modified: [Tree, Tree][], depth: number) {
@@ -33,12 +49,7 @@ function differentiatePair(modified: [Tree, Tree][], depth: number) {
         if (depth > 0)
             mod = differentiatePair(difference.modified, depth - 1);
         
-        return {
-            parent: pair[0],
-            deleted: difference.deleted,
-            added: difference.added,
-            modified: mod
-        } as Difference;
+        return new Difference(pair[0], difference.deleted, difference.added,mod);
     });
 }
 
