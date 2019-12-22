@@ -336,7 +336,7 @@ Returns episodes corresponding to a specific season in a show
         title?: string;
         plot?: string;
         stoppedAt?: number; 
-    }
+    }[]
     ``` 
     <details>
         <summary>Example response in YAML</summary>
@@ -448,13 +448,33 @@ Returns episodes corresponding to a specific season in a show
 </details>
 
 
-<details>
-    <summary>GET /movies/:start/:quantity/:language</summary>
-    <b>start</b>: starting index of the movie<br/>
-    <b>quantity</b> amount of movies to fetch<br/>
-    <b>language</b> language<br/>
+### Get movies
 
-    returns {shows: [{id: INT, posterURL?: STRING}], isLast: BOOL}
+<details>
+    <summary></summary>
+Returns a list of movies
+
+* **URL**
+
+    /movies/:start/:quantity/:language
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+    `start=[int]` id of the first movie to fetch </br>
+    `quantity=[int]` number of movies to fetch after the start id </br>
+    `language=[string]` can be 'en' (aslo 'english') or 'ru' (also 'russian') 
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:** `{ movies: { id: number, posterURL?: string }[], isLast: boolean }`
+
 </details>
 
 <details>
