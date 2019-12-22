@@ -59,13 +59,13 @@ function differentiatePair(modified: [Tree, Tree][], depth: number) {
     });
 }
 
-function diff(cached: Tree, current: Tree) {
-    const currentLevel1: Tree[] = current.children;
-    const cachedLevel1: Tree[] = cached.children;
+function diff(before: Tree, after: Tree) {
+    const beforeChildren: Tree[] = before.children;
+    const afterChildren: Tree[] = after.children;
     
-    let deletedSeries = cachedLevel1.filter(x => !currentLevel1.doesInclude(x, (l, r) => l.name === r.name));
-    let addedSeries = currentLevel1.filter(x => !cachedLevel1.doesInclude(x, (l, r) => l.name === r.name));
-    let modified = getModified(cachedLevel1, currentLevel1);
+    let deletedSeries = beforeChildren.filter(file => !afterChildren.doesInclude(file, (l, r) => l.name === r.name));
+    let addedSeries = afterChildren.filter(file => !beforeChildren.doesInclude(file, (l, r) => l.name === r.name));
+    let modified = getModified(beforeChildren, afterChildren);
 
     return {
         deleted: deletedSeries,
