@@ -33,21 +33,23 @@ class Difference {
     }
 }
 
-export default function diffTrees(before: Tree, after: Tree, depth: number = 3): Difference {
+export default function diffTrees(before: Tree, after: Tree, depth: number = 3) {
     const difference = differentiatePair([[before, after]], depth);
 
     return difference[0];
 }
 
 function differentiatePair(modified: [Tree, Tree][], depth: number) {
-    return modified.map(pair => {
-        const difference = diff(pair[0], pair[1]);
+    return modified.map(modifiedPair => {
+        const before = modifiedPair[0];
+        const after = modifiedPair[1];
+        const difference = diff(before, after);
 
-        let mod: Difference[] = [];
+        let nestedModifications: Difference[] = [];
         if (depth > 0)
-            mod = differentiatePair(difference.modified, depth - 1);
+            nestedModifications = differentiatePair(difference.modified, depth - 1);
         
-        return new Difference(pair[0], difference.deleted, difference.added,mod);
+        return new Difference(before, difference.deleted, difference.added, nestedModifications);
     });
 }
 
