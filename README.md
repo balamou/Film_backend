@@ -142,7 +142,7 @@ Get information about a show
 
     * **Code:** 200 </br>
     **Content:** 
-    ```json {
+    ```ts {
     series: {id: number, 
              title: string, 
              seasonSelected: number, 
@@ -161,8 +161,7 @@ Get information about a show
                 stoppedAt?: number}[],
     availableSeasons: number[]
     }
-    ``` 
-    </br>
+    ```
     <details>
         <summary>Example response in YAML:</summary>
 
