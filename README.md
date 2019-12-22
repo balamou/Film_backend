@@ -302,7 +302,7 @@ Get information about a show
 ### Get episodes
 
 <details>
-    <summary>Example response in YAML:</summary>
+    <summary></summary>
 Returns episodes corresponding to a specific season in a show
 
 * **URL**
@@ -340,6 +340,7 @@ Returns episodes corresponding to a specific season in a show
     ``` 
     <details>
         <summary>Example response in YAML</summary>
+
     ```yaml
     - id: 223
       episodeNumber: 1
@@ -441,6 +442,7 @@ Returns episodes corresponding to a specific season in a show
       plot: 
       stoppedAt:
     ```
+
     </details>
 
 </details>
