@@ -23,7 +23,7 @@ class Difference {
         console.log('  '.repeat(level), 'Deleted: ', difference.deleted.map(x => x.name));
         console.log('  '.repeat(level), 'Added: ', difference.added.map(x => x.name));
         
-        if (difference.modified.length == 0) return;
+        if (difference.modified.length === 0) return;
     
         console.log('  '.repeat(level), 'Modified: ');
     
