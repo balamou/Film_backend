@@ -57,15 +57,34 @@ Logins a user (if exists) and returns the user's id
     * **Code:** 200 </br>
     **Content:** `{ userId: 12 }`
 
-* **Error Response:**
-
-    * **Code:** 404 NOT FOUND </br>
-    **Content:** `{ error : "User doesn't exist" }`
 </details>
 
+### Sign up user
+
 <details>
-    <summary>GET /signup/:username</summary>
-    returns user id as an integer 
+    <summary></summary>
+Created a user (if doesn't exist) and return new user's id
+
+* **URL**
+
+    /signup/:username
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+  `username=[string]`
+ 
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:** `{ userId: 12 }`
+
 </details>
 
 <details>
