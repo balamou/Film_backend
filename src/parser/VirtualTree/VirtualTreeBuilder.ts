@@ -1,4 +1,4 @@
-import Tree from '../Tree';
+import Tree from '../Tree/Tree';
 
 import { VirtualTree, Episode } from './VirtualTree';
 import { TitleParser } from '../Adapters/TitleParser';

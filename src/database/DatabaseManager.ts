@@ -62,6 +62,12 @@ class DatabaseManager {
     async endConnection() {
         await this.pool.end(); // close connection
     }
+
+    async executeCustomQuery<T>(query: string, values?: any[]) {
+        const result = await this.pool.query<T>(query, values);
+
+        return result;
+    }
 }
 
 export default DatabaseManager;

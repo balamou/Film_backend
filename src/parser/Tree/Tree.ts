@@ -1,4 +1,4 @@
-export default class Tree {
+class Tree {
     readonly path: string;
     readonly name: string;
     readonly type: string;
@@ -112,8 +112,6 @@ export default class Tree {
 
         return new Tree(tree.path, tree.name, tree.type, tree.extension, newChildren);
     }   
-
-    static compare(lhs: Tree, rhs: Tree) {
-        
-    }
 }
+
+export default Tree;

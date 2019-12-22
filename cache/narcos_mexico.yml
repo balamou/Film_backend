@@ -1,0 +1,44 @@
+dateCached: 2019-12-20T21:31:36.802Z
+seriesInfo:
+  title: "Нарко: Мексика"
+  year: 2018
+  plot: В 1980-х годах Феликс Гальярдо решил объединить разрозненных и независимых
+    производителей и дилеров наркотиков Мексики и построить собственную
+    криминальную империю. В это же время агент Управления по борьбе с
+    наркотиками Кики Камарена, получив повышение, переезжает с женой и маленьким
+    сыном из Калифорнии в Гвадалахару. На новом месте он сталкивается с
+    сильнейшим противником, и их противостояние затягивается на долгие годы.
+  poster: https://m.media-amazon.com/images/M/MV5BMTcyODAxNzcwNF5BMl5BanBnXkFtZTgwNzM1Mjc1NjM@._V1_SX300.jpg
+seasons:
+  - seasonNumber: 1
+    episodes:
+      - episodeNumber: 1
+        title: Camelot
+      - episodeNumber: 2
+        title: The Plaza System
+      - episodeNumber: 3
+        title: El Padrino
+      - episodeNumber: 4
+        title: Rafa, Rafa, Rafa!
+      - episodeNumber: 5
+        title: The Colombian Connection
+      - episodeNumber: 6
+        title: La Última Frontera
+      - episodeNumber: 7
+        title: Jefe de Jefes
+      - episodeNumber: 8
+        title: Just Say No
+      - episodeNumber: 9
+        title: 881 Lope de Vega
+      - episodeNumber: 10
+        title: Leyenda
+  - seasonNumber: 2
+    episodes:
+      - episodeNumber: 1
+        title: null
+      - episodeNumber: 2
+        title: null
+      - episodeNumber: 3
+        title: null
+      - episodeNumber: 4
+        title: null

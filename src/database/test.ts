@@ -52,7 +52,7 @@ async function test4() {
         videoURL: "hehe",
         duration: 12
     });
-    cManager.endConnection();
+    await cManager.endConnection();
 }
 
 async function test5() {
@@ -64,8 +64,15 @@ async function test5() {
     console.log(result);
     console.log(result2);
 
-    dbFetcher.endConnection();
+    await dbFetcher.endConnection();
 }
 
+async function emptyEpisodesAndSeries() {
+    const dbManager = new DatabaseManager();
 
-resetDatabase();
+    await dbManager.executeCustomQuery('DELETE FROM EPISODES;');
+    await dbManager.executeCustomQuery('DELETE FROM SERIES;');
+    await dbManager.endConnection();
+}
+
+emptyEpisodesAndSeries();

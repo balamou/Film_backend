@@ -1,8 +1,9 @@
 import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
 import Factory from './Factory';
-import Tree from './Tree';
+import Tree from './Tree/Tree';
 import DatabaseManager from './DatabaseManager/DatabaseManager';
+import diffTrees from './Tree/DiffTrees';
 
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
@@ -22,18 +23,34 @@ export default function main() {
 }
 
 function dirTreeComparison(path: string) {
-    removeFiles(path);
+    removeFiles(path); // remove files from path
     const tree = loadDirectoryStateFromFile(path);
     const currTree = getDirTree(path, GLOBAL_EXCLUDE);
 
     if (tree) {
-        console.log(tree);
-        console.log(currTree);
+        // console.log(tree);
+        // console.log(currTree);
 
         if (tree.hash() === currTree.hash()) {
             console.log("No changes in the file system.");
         } else {
             console.log("Changes occured!");
+            const difference = diffTrees(tree, currTree);
+            difference.print();
+            // d[SERIES] remove from DB
+            // a[SERIES] do a hard reload (Assumption -> all files are purged before this method executes)
+            // m[see below] add logic to handle this
+
+                // d[SEASON, POSTER] if poster deleted => refetch. If season deleted => remove from DB
+                // a[FOLDER(season/purge), FILE(video/purge)] if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
+                // m[SEASON see below] add logic to handle episode removal/addition
+
+                    // d[EPISODE, THUMBNAILS]: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
+                    // a[FOLDER(purge), FILE(video, purge)]: if video added => parse Episode information from title, scrape thumbs, parse from imdb, else purge
+                    // m[THUMBAILS see below] Contents modified: add logic to handle each thumbnail removal
+
+                        // Deleted: regenerate thumbnail if possible
+                        // Added: purge
         }
     }
 }
