@@ -2,6 +2,7 @@ declare global {
     interface Array<T> {
         doesInclude<T>(this: T[], rhs: T, predicate: (lhs: T, rhs: T) => boolean): boolean;
         intersect<T>(this: T[], rhs: T[], predicate: (lhs: T, rhs: T) => boolean): [T, T][];
+        butNotIn<T>(this: T[], rhs: T[], comparator: (lhs: T, rhs: T) => boolean): T[];
     }
 }
 
@@ -34,7 +35,13 @@ function intersect<T>(this: T[], rhs: T[], equalityPredicate: (lhs: T, rhs: T) =
     return result;
 }
 
+// Returns all objects in `this` that are not found in `rhs`
+function butNotIn<T>(this: T[], rhs: T[], comparator: (lhs: T, rhs: T) => boolean): T[] {
+    return this.filter(obj => !rhs.doesInclude(obj, comparator));
+}
+
 Array.prototype.doesInclude = doesInclude;
 Array.prototype.intersect = intersect;
+Array.prototype.butNotIn = butNotIn;
 
 export {};

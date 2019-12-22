@@ -63,8 +63,8 @@ function diff(before: Tree, after: Tree) {
     const beforeChildren: Tree[] = before.children;
     const afterChildren: Tree[] = after.children;
     
-    let deletedSeries = beforeChildren.filter(file => !afterChildren.doesInclude(file, (l, r) => l.name === r.name));
-    let addedSeries = afterChildren.filter(file => !beforeChildren.doesInclude(file, (l, r) => l.name === r.name));
+    let deletedSeries = beforeChildren.butNotIn(afterChildren, (l, r) => l.name === r.name);
+    let addedSeries = afterChildren.butNotIn(beforeChildren, (l, r) => l.name === r.name);
     let modified = getModified(beforeChildren, afterChildren);
 
     return {
