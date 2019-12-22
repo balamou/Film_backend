@@ -170,7 +170,6 @@ Get information about a show
         <summary>Example response in YAML:</summary>
 
     ```yaml
-    ---
     series:
       id: 20
       title: Рик и Морти
@@ -475,6 +474,46 @@ Returns a list of movies
 
     * **Code:** 200 </br>
     **Content:** `{ movies: { id: number, posterURL?: string }[], isLast: boolean }`
+
+</details>
+
+### Get movie
+
+<details>
+    <summary></summary>
+Get movie information based on id
+
+* **URL**
+
+    /movie/:movieId/:userId
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+  `movieId=[number]` </br>
+  `userId=[number]`
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:**
+
+    ```ts
+    {
+        id: number;
+        title: string;
+        duration: number;
+        videoURL: string;
+        description?: string;
+        poster?: string;
+        stoppedAt?: number;
+    }
+    ```
 
 </details>
 
