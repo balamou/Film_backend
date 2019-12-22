@@ -299,6 +299,153 @@ Get information about a show
 
 </details>
 
+### Get episodes
+
+<details>
+    <summary>Example response in YAML:</summary>
+Returns episodes corresponding to a specific season in a show
+
+* **URL**
+
+    /episodes/:seriesId/:userId/:season
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+  `seriesId=[number]` show id </br>
+  `userId=[number]` user id (this is used to get `stopped at` position for each episode) </br>
+  `season=[number]` season number  
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:** 
+    ```ts
+    { 
+        id: number;
+        episodeNumber: number;
+        seasonNumber: number;
+        videoURL: string;
+        duration: number;
+        thumbnailURL?: string;
+        title?: string;
+        plot?: string;
+        stoppedAt?: number; 
+    }
+    ``` 
+    <details>
+        <summary>Example response in YAML</summary>
+    ```yaml
+    - id: 223
+      episodeNumber: 1
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E1.mp4
+      duration: 1321
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E1.png
+      title: Пилотная серия
+      plot: 
+      stoppedAt: 
+    - id: 226
+      episodeNumber: 2
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E2.mp4
+      duration: 1318
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E2.png
+      title: Пёс-газонокосильщик
+      plot: 
+      stoppedAt: 
+    - id: 227
+      episodeNumber: 3
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E3.mp4
+      duration: 1315
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E3.png
+      title: Анатомический парк
+      plot: 
+      stoppedAt: 
+    - id: 228
+      episodeNumber: 4
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E4.mp4
+      duration: 1265
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E4.png
+      title: М. Найт Шьямал-Инопланетяне!
+      plot: 
+      stoppedAt: 
+    - id: 229
+      episodeNumber: 5
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E5.mp4
+      duration: 1269
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E5.png
+      title: Мисикс и разрушение
+      plot: 
+      stoppedAt: 
+    - id: 230
+      episodeNumber: 6
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E6.mp4
+      duration: 1288
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E6.png
+      title: Напиток Рика №9
+      plot: 
+      stoppedAt: 
+    - id: 231
+      episodeNumber: 7
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E7.mp4
+      duration: 1321
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E7.png
+      title: Воспитание Газорпазорпа
+      plot: 
+      stoppedAt: 
+    - id: 232
+      episodeNumber: 8
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E8.mp4
+      duration: 1335
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E8.png
+      title: Скандалы, Рик и расследования
+      plot: 
+      stoppedAt: 
+    - id: 233
+      episodeNumber: 9
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E9.mp4
+      duration: 1340
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E9.png
+      title: Надвигается нечто риканутое
+      plot: 
+      stoppedAt: 
+    - id: 224
+      episodeNumber: 10
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E10.mp4
+      duration: 1347
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E10.png
+      title: Близкие риконтакты риковой степени
+      plot: 
+      stoppedAt: 
+    - id: 225
+      episodeNumber: 11
+      seasonNumber: 1
+      videoURL: en/shows/rick_and_morty/S1/E11.mp4
+      duration: 1341
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E11.png
+      title: Риксованный бизнес
+      plot: 
+      stoppedAt:
+    ```
+    </details>
+
+</details>
+
+
 <details>
     <summary>GET /movies/:start/:quantity/:language</summary>
     <b>start</b>: starting index of the movie<br/>
