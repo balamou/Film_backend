@@ -35,7 +35,7 @@ function dirTreeComparison(path: string) {
             console.log("No changes in the file system.");
         } else {
             console.log("Changes occured!");
-            diffTrees(tree, currTree);
+            const difference = diffTrees(tree, currTree);
         }
     }
 }

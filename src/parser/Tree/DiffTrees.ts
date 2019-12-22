@@ -40,30 +40,61 @@ function intersect<T>(this: T[], rhs: T[], equalityPredicate: (lhs: T, rhs: T) =
 Array.prototype.includesTree = includesTree;
 Array.prototype.intersect = intersect;
 
-export default function diffTrees(cached: Tree, current: Tree) {
-    const difference = diff(cached, current);
+function instructions() {
+    // d[SERIES] remove from DB
+    // a[SERIES] do a hard reload (Assumption -> all files are purged before this method executes)
+    // m[see below] add logic to handle this
 
-    // PRINT RESULTS vvvv
-    console.log("Deleted: ", difference.deleted.map(x => x.name)); // remove from DB
-    console.log("Added: ", difference.added.map(x => x.name)); // do a hard reload
-    console.log("Contents modified: ", difference.modified.map(x => x[0].name)); // add logic to handle this
+        // d[SEASON, POSTER] if poster deleted => refetch. If season deleted => remove from DB
+        // a[FOLDER(season/purge), FILE(video/purge)] if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
+        // m[SEASON see below] add logic to handle episode removal/addition
 
-    difference.modified.forEach(pair => {
-        const difference2 = diff(pair[0], pair[1]);
+            // d[EPISODE, THUMBNAILS]: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
+            // a[FOLDER(purge), FILE(video, purge)]: if video added => parse Episode information from title, scrape thumbs, parse from imdb, else purge
+            // m[THUMBAILS see below] Contents modified: add logic to handle each thumbnail removal
+
+                // Deleted: regenerate thumbnail if possible
+                // Added: purge
+}
+
+type Difference = {parent: Tree, deleted: Tree[], added: Tree[], modified: Difference[]};
+
+export default function diffTrees(before: Tree, after: Tree): Difference {
+    const difference = differentiatePair([[before, after]], 3);
+
+    printDifference(difference[0]);
+
+    return difference[0];
+}
+
+function printDifference(difference: Difference, level: number = 0) {
+    console.log('  '.repeat(level), [ difference.parent.name ]);
+    console.log('  '.repeat(level), 'Deleted: ', difference.deleted.map(x => x.name));
+    console.log('  '.repeat(level), 'Added: ', difference.added.map(x => x.name));
+    
+    if (difference.modified.length == 0) return;
+    
+    console.log('  '.repeat(level), 'Modified: ');
+
+    difference.modified.forEach(mod => {
+        printDifference(mod, ++level);
+    });
+}
+
+function differentiatePair(modified: [Tree, Tree][], depth: number) {
+    return modified.map(pair => {
+        const difference = diff(pair[0], pair[1]);
+
+        let mod: Difference[] = [];
+        if (depth > 0)
+            mod = differentiatePair(difference.modified, --depth);
         
-        console.log('----');
-        console.log(`FOLDER - ${pair[0].name}:`);
-        console.log("Deleted: ", difference2.deleted.map(x => x.name)); // if poster deleted => refetch. If season deleted => remove from DB
-        console.log("Added: ", difference2.added.map(x => x.name)); // if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
-        console.log("Contents modified: ", difference2.modified.map(x => x[0].name)); // add logic to handle episode removal/addition
-
-
-        // Deleted: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
-        // Added: if video added => parse Episode information from title, scrape thumbs, parse from imdb, else purge
-        // Contents modified: add logic to handle each thumbnail removal
-
-        // Deleted: regenerate thumbnail if possible
-        // Added: purge
+        return {
+            parent: pair[0],
+            deleted: difference.deleted,
+            added: difference.added,
+            modified: mod
+        } as Difference;
     });
 }
 
