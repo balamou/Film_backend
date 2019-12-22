@@ -32,7 +32,9 @@ ipconfig getifaddr en0
 ## REST ENDPOINTS
 
 ### Login user
-    
+
+<details>
+    <summary></summary>
 Logins a user (if exists) and returns the user's id
 
 * **URL**
@@ -59,6 +61,7 @@ Logins a user (if exists) and returns the user's id
 
     * **Code:** 404 NOT FOUND </br>
     **Content:** `{ error : "User doesn't exist" }`
+</details>
 
 <details>
     <summary>GET /signup/:username</summary>
