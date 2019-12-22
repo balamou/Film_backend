@@ -73,11 +73,11 @@ function printDifference(difference: Difference, level: number = 0) {
     console.log('  '.repeat(level), 'Added: ', difference.added.map(x => x.name));
     
     if (difference.modified.length == 0) return;
-    
+
     console.log('  '.repeat(level), 'Modified: ');
 
     difference.modified.forEach(mod => {
-        printDifference(mod, ++level);
+        printDifference(mod, level + 1);
     });
 }
 
@@ -87,7 +87,7 @@ function differentiatePair(modified: [Tree, Tree][], depth: number) {
 
         let mod: Difference[] = [];
         if (depth > 0)
-            mod = differentiatePair(difference.modified, --depth);
+            mod = differentiatePair(difference.modified, depth - 1);
         
         return {
             parent: pair[0],
