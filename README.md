@@ -87,6 +87,36 @@ Created a user (if doesn't exist) and return new user's id
 
 </details>
 
+### Get shows
+
+<details>
+    <summary></summary>
+Created a user (if doesn't exist) and return new user's id
+
+* **URL**
+
+    /shows/:start/:quantity/:language
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+  `start=[int]` id of the first show to fetch</br>
+  `quantity=[int]` number of shows to fetch after the `start` id</br>
+  `language=[string]` - can be 'en' (aslo 'english') or 'ru' (also 'russian') </br>
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:** `{ showData: { id: number, posterURL?: string, isLast: boolean }[] }`
+    **Example:** `{ showsData: [{ id: 20, posterURL: "en/shows/rick_and_morty/poster.jpeg" }, {id: 21, posterURL:"en/shows/south_park/poster.jpeg" }], isLast:true}`
+
+</details>
+
 <details>
     <summary>GET /shows/:start/:quantity/:language</summary>
     <b>start</b>: starting index of the show<br/>
