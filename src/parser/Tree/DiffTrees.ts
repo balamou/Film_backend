@@ -2,16 +2,15 @@ import Tree from "./Tree";
 
 declare global {
     interface Array<T> {
-      includesTree(this: Tree[], tree: Tree): boolean;
-      intersect<T>(this: T[], rhs: T[], predicate: (lhs: T, rhs: T) => boolean): [T, T][];
+        doesInclude<T>(this: T[], rhs: T, predicate: (lhs: T, rhs: T) => boolean): boolean;
+        intersect<T>(this: T[], rhs: T[], predicate: (lhs: T, rhs: T) => boolean): [T, T][];
     }
 }
 
-function includesTree(this: Tree[], tree: Tree): boolean {
-    for (let node of this) {
-        if (node.name === tree.name) {
+function doesInclude<T>(this: T[], rhs: T, predicate: (lhs: T, rhs: T) => boolean): boolean {
+    for (let obj of this) {
+        if (predicate(obj, rhs))
             return true;
-        }
     }
 
     return false;
@@ -37,7 +36,7 @@ function intersect<T>(this: T[], rhs: T[], equalityPredicate: (lhs: T, rhs: T) =
     return result;
 }
 
-Array.prototype.includesTree = includesTree;
+Array.prototype.doesInclude = doesInclude;
 Array.prototype.intersect = intersect;
 
 function instructions() {
@@ -102,8 +101,8 @@ function diff(cached: Tree, current: Tree) {
     const currentLevel1: Tree[] = current.children;
     const cachedLevel1: Tree[] = cached.children;
     
-    let deletedSeries = cachedLevel1.filter(x => !currentLevel1.includesTree(x));
-    let addedSeries = currentLevel1.filter(x => !cachedLevel1.includesTree(x));
+    let deletedSeries = cachedLevel1.filter(x => !currentLevel1.doesInclude(x, (l, r) => l.name === r.name));
+    let addedSeries = currentLevel1.filter(x => !cachedLevel1.doesInclude(x, (l, r) => l.name === r.name));
     let modified = getModified(cachedLevel1, currentLevel1);
 
     return {
