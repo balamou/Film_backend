@@ -170,17 +170,18 @@ Get information about a show
         <summary>Example response in YAML:</summary>
 
     ```yaml
+    ---
     series:
-    id: 20
-    title: Рик и Морти
-    seasonSelected: 1
-    totalSeasons: 4
-    description: 'В центре сюжета — школьник по имени Морти и его дедушка Рик. Морти
+      id: 20
+      title: Рик и Морти
+      seasonSelected: 1
+      totalSeasons: 4
+      description: 'В центре сюжета — школьник по имени Морти и его дедушка Рик. Морти
         — самый обычный мальчик, который ничем не отличается от своих сверстников. А вот
         его дедуля занимается необычными научными исследованиями и зачастую полностью
         неадекватен. Он может в '
-    posterURL: en/shows/rick_and_morty/poster.jpeg
-    lastWatchedEpisode:
+      posterURL: en/shows/rick_and_morty/poster.jpeg
+      lastWatchedEpisode:
         id: 223
         seriesId: 20
         seasonNumber: 1
@@ -205,7 +206,7 @@ Get information about a show
       seasonNumber: 1
       videoURL: en/shows/rick_and_morty/S1/E2.mp4
       duration: 1318
-      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E2.png 
+      thumbnailURL: en/shows/rick_and_morty/S1/thumbnails/E2.png
       title: Пёс-газонокосильщик
       plot: 
       stoppedAt: 
@@ -291,9 +292,9 @@ Get information about a show
       plot: 
       stoppedAt: 
     availableSeasons:
-      - 1
-      - 2
-      - 3
+    - 1
+    - 2
+    - 3
     ```
     </details>
 
