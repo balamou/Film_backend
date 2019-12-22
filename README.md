@@ -143,14 +143,17 @@ Get information about a show
     * **Code:** 200 </br>
     **Content:** 
     ```ts {
-    series: {id: number, 
-             title: string, 
-             seasonSelected: number, 
-             totalSeasons: number, 
-             description?: string, 
-             posterURL?: string, 
-             lastWatchedEpisode: <same_as_episodes> },
-    episodes: {id: number, 
+    series: {
+                id: number, 
+                title: string, 
+                seasonSelected: number, 
+                totalSeasons: number, 
+                description?: string, 
+                posterURL?: string, 
+                lastWatchedEpisode: <SAME_AS_EPISODES>  
+            },
+    episodes: {
+                id: number, 
                 episodeNumber: number, 
                 seasonNumber: number, 
                 videoURL: string, 
@@ -158,7 +161,8 @@ Get information about a show
                 thumbnailURL?: string,
                 title?: string,
                 plot?: string,
-                stoppedAt?: number}[],
+                stoppedAt?: number
+            }[],
     availableSeasons: number[]
     }
     ```
