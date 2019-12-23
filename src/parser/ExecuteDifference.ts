@@ -1,16 +1,18 @@
 import { FileSystemEditor } from "./Adapters/FSEditor";
 import { Difference } from './Tree/DiffTrees';
 import DatabaseManager from "../database/DatabaseManager";
+import Tree from "./Tree/Tree";
 
 
 class ExecuteDifference {
-
     private readonly fsEditor: FileSystemEditor;
     private readonly dbManager: DatabaseManager;
+    private hardReload: (seriesPath: string) => void;
     
-    constructor(fsEditor: FileSystemEditor) {
+    constructor(fsEditor: FileSystemEditor, hardReload: (seriesPath: string) => void) {
         this.fsEditor = fsEditor;
         this.dbManager = new DatabaseManager(); // TODO?: Dependency injection
+        this.hardReload = hardReload;
     }
 
     // Instructions
@@ -30,33 +32,48 @@ class ExecuteDifference {
     //              Deleted: regenerate thumbnail if possible
     //              Added: purge
     execute(difference: Difference) {
-        difference.deleted.forEach(node => {
-            const seriesFolder = node.path;
-            this.dbManager.deleteSeries(seriesFolder);
+        difference.levelOrderTraversal((level: number, parent: Tree, deleted: Tree[], added: Tree[]) => {
+            switch (level) {
+                case 0:
+                    this.levelOchange(parent, deleted, added);
+                break;
+                case 1:
+                    this.level1change(parent, deleted, added);
+                break;
+                case 2:
+                break;
+                case 3:
+                break;
+            }
         });
-
-        difference.modified.forEach(diff => {
-            const seriesFolder = diff.parent.path;
-
-            diff.deleted.forEach(node => {
-                if (node.name === 'poster.jpeg') {
-                    // refetch poster
-                    // use parser and get poster based on series name from the series folder
-                } else {
-                    let matched = node.name.match(/\d+/);
-
-                    if (!matched) return; // Weird: Folder with no number
-
-                    const seasonNumber = parseInt(matched[0]);
-
-                    this.dbManager.removeSeason(seriesFolder, seasonNumber);
-                }
-            });
-        });
-
+        
         this.dbManager.endConnection(); // async 
     }
 
+    levelOchange = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+        deleted.forEach(series => this.dbManager.deleteSeries(series.path));
+        added.forEach(series => this.hardReload(series.path));
+    }
+
+    level1change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+        const seriesFolder = parent.path;
+
+        deleted.forEach(node => {
+            if (node.name === 'poster.jpeg') {
+                // refetch poster
+                // use parser and get poster based on series name from the series folder
+            } else {
+                let matched = node.name.match(/\d+/);
+                if (!matched) return; // Weird: Folder with no number
+                const seasonNumber = parseInt(matched[0]);
+                this.dbManager.removeSeason(seriesFolder, seasonNumber);
+            }
+        });
+
+        added.forEach(node => {
+            
+        });
+    }
 }
 
 export default ExecuteDifference;

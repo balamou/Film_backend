@@ -31,6 +31,25 @@ export class Difference {
             this.printAux(mod, level + 1);
         });
     }
+
+    levelOrderTraversal(visit: (level: number, parent: Tree, deleted: Tree[], added: Tree[]) => void) {
+        const queue = [this as Difference];
+        let level = 0;
+        while(queue.length > 0) {
+            const size = queue.length;
+
+            for (let i = 0; i < size; i++) {
+                const diff = queue.shift();
+                if (!diff) continue;
+
+                visit(0, diff.parent, diff.deleted, diff.added);
+
+                diff.modified.forEach(mod => queue.push(mod));
+            }
+
+            level++;
+        }
+    }
 }
 
 export default function diffTrees(before: Tree, after: Tree, depth: number = 3) {

@@ -38,13 +38,8 @@ function dirTreeComparison(path: string) {
             console.log("Changes occured!");
             const difference = diffTrees(tree, currTree);
             difference.print();
-            const execDiff = new ExecuteDifference(new FSEditor()); // TODO: move to the factory
+            const execDiff = new ExecuteDifference(new FSEditor(), orginizeSeriesFolder); // TODO: move to the factory
             execDiff.execute(difference);
-
-            difference.added.forEach(seriesFolder => {
-                orginizeSeriesFolder(seriesFolder.path);
-            });
-
             // TODO: resave dir state
         }
     }
