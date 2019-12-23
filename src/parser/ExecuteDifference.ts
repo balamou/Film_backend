@@ -41,8 +41,10 @@ class ExecuteDifference {
                     this.level1change(parent, deleted, added);
                 break;
                 case 2:
+                    this.level2change(parent, deleted, added);
                 break;
                 case 3:
+                    this.level3change(parent, deleted, added);
                 break;
             }
         });
@@ -58,21 +60,33 @@ class ExecuteDifference {
     level1change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
         const seriesFolder = parent.path;
 
+        const removeSeason = (folderName: string) => {
+            let matched = folderName.match(/\d+/);
+            if (!matched) return; // Weird: Folder with no number
+            const seasonNumber = parseInt(matched[0]);
+            this.dbManager.removeSeason(seriesFolder, seasonNumber);
+        }; 
+
         deleted.forEach(node => {
             if (node.name === 'poster.jpeg') {
                 // refetch poster
                 // use parser and get poster based on series name from the series folder
             } else {
-                let matched = node.name.match(/\d+/);
-                if (!matched) return; // Weird: Folder with no number
-                const seasonNumber = parseInt(matched[0]);
-                this.dbManager.removeSeason(seriesFolder, seasonNumber);
+                removeSeason(node.path);
             }
         });
 
         added.forEach(node => {
             
         });
+    }
+
+    level2change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+        
+    }
+
+    level3change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+        
     }
 }
 

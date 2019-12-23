@@ -142,5 +142,3 @@ function orginizeSeriesFolder(path: string) {
     dbManager.commitToDB(path, seriesName, seriesInfo);
     console.log("Done adding to database.");
 }
-
-main();

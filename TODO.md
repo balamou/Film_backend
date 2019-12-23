@@ -12,3 +12,6 @@
 [ ] Unit test the parsing code
 
 [ ] Create a client-side web for displaying parsed data
+
+* Crop strings if they are too big for a database entry
+* Add episodes to the database as a batch and not one by one
