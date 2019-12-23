@@ -517,7 +517,52 @@ Get movie information based on id
 
 </details>
 
+
+### Get last watched movies/shows
+
 <details>
-    <summary>GET /watched/:userId</summary>
-    retuns all watched content (movie or show)
+    <summary></summary>
+Get last watched movies or shows
+
+* **URL**
+
+    /watched/:userid
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+  `userId=[number]`
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:**
+
+    ```ts
+    ({
+        id: number; // movie id
+        duration: number;
+        stoppedAt: number;
+        label: string;
+        videoURL: string;
+        type: 'movie';
+        posterURL?: string;
+    } |  {
+        id: number; // show id
+        duration: number;
+        stoppedAt: number;
+        label: string;
+        videoURL: string;
+        type: 'show';
+        showId: number;
+        posterURL?: string;
+    })[]
+    ```
+
 </details>
+
