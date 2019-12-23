@@ -30,13 +30,28 @@ class ExecuteDifference {
     //              Deleted: regenerate thumbnail if possible
     //              Added: purge
     execute(difference: Difference) {
-        // const synchronize = require('synchronized-promise');
-        // const deleteSeries: (folder: string) => void = synchronize(this.dbManager.deleteSeries);
-
         difference.deleted.forEach(node => {
             const seriesFolder = node.path;
             this.dbManager.deleteSeries(seriesFolder);
-            // deleteSeries(seriesFolder);
+        });
+
+        difference.modified.forEach(diff => {
+            const seriesFolder = diff.parent.path;
+
+            diff.deleted.forEach(node => {
+                if (node.name === 'poster.jpeg') {
+                    // refetch poster
+                    // use parser and get poster based on series name from the series folder
+                } else {
+                    let matched = node.name.match(/\d+/);
+
+                    if (!matched) return; // Weird: Folder with no number
+
+                    const seasonNumber = parseInt(matched[0]);
+
+                    this.dbManager.removeSeason(seriesFolder, seasonNumber);
+                }
+            });
         });
 
         this.dbManager.endConnection(); // async 

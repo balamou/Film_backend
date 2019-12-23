@@ -72,6 +72,11 @@ class DatabaseManager {
     async deleteSeries(seriesFolder: string) {
         const result = await this.pool.query('DELETE FROM series WHERE folder=$1', [seriesFolder]);
     }
+
+    async removeSeason(seriesFolder: string, seasonNumber: number) {
+        const query ='DELETE FROM episodes WHERE series_id IN (SELECT id FROM series WHERE folder=$1) AND season_number=$2';
+        const result = await this.pool.query(query, [seriesFolder, seasonNumber]);
+    }
 }
 
 export default DatabaseManager;
