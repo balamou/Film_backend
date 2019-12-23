@@ -73,5 +73,5 @@
 
 3. Install python dependencies:
 
-    `$ pip3 install kinopoiskpy`
+    `$ pip3 install kinopoiskpy` </br>
     `$ pip3 install timeout_decorator`
