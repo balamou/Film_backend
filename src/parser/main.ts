@@ -4,13 +4,14 @@ import Factory from './Factory';
 import Tree from './Tree/Tree';
 import DatabaseManager from './DatabaseManager/DatabaseManager';
 import diffTrees from './Tree/DiffTrees';
+import ExecuteDifference from './ExecuteDifference';
 
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
 const DATABASE_ENABLED = true;
 
-export default function main() {
+export default function main() { // TODO: Rename to facade
     const fsEditor = new FSEditor();
     const path = './public/en/shows';
 
@@ -37,7 +38,14 @@ function dirTreeComparison(path: string) {
             console.log("Changes occured!");
             const difference = diffTrees(tree, currTree);
             difference.print();
-            
+            const execDiff = new ExecuteDifference(new FSEditor()); // TODO: move to the factory
+            execDiff.execute(difference);
+
+            difference.added.forEach(seriesFolder => {
+                orginizeSeriesFolder(seriesFolder.path);
+            });
+
+            // TODO: resave dir state
         }
     }
 }

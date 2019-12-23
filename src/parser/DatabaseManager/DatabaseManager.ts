@@ -1,4 +1,3 @@
-
 import CreationManager from '../../database/CreationManager';
 import { SeriesData } from '../VirtualTree/VirtualTreeParser';
 

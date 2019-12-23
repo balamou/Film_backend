@@ -75,4 +75,4 @@ async function emptyEpisodesAndSeries() {
     await dbManager.endConnection();
 }
 
-emptyEpisodesAndSeries();
+resetDatabase();

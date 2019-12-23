@@ -1,15 +1,17 @@
 import { FileSystemEditor } from "./Adapters/FSEditor";
 import { Difference } from './Tree/DiffTrees';
+import DatabaseManager from "../database/DatabaseManager";
 
 
 class ExecuteDifference {
 
     private readonly fsEditor: FileSystemEditor;
-
+    private readonly dbManager: DatabaseManager;
+    
     constructor(fsEditor: FileSystemEditor) {
         this.fsEditor = fsEditor;
+        this.dbManager = new DatabaseManager(); // TODO?: Dependency injection
     }
-
 
     // Instructions
 
@@ -28,13 +30,18 @@ class ExecuteDifference {
     //              Deleted: regenerate thumbnail if possible
     //              Added: purge
     execute(difference: Difference) {
+        // const synchronize = require('synchronized-promise');
+        // const deleteSeries: (folder: string) => void = synchronize(this.dbManager.deleteSeries);
+
         difference.deleted.forEach(node => {
-            const series = node.name;
-            
+            const seriesFolder = node.path;
+            this.dbManager.deleteSeries(seriesFolder);
+            // deleteSeries(seriesFolder);
         });
 
-
+        this.dbManager.endConnection(); // async 
     }
+
 }
 
 export default ExecuteDifference;

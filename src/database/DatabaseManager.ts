@@ -69,7 +69,7 @@ class DatabaseManager {
         return result;
     }
 
-    async dropSeries(seriesFolder: string) {
+    async deleteSeries(seriesFolder: string) {
         const result = await this.pool.query('DELETE FROM series WHERE folder=$1', [seriesFolder]);
     }
 }
