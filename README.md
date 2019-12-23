@@ -518,7 +518,7 @@ Get movie information based on id
 </details>
 
 
-### Get last watched movies/shows
+### Get last watched movies and shows
 
 <details>
     <summary></summary>
