@@ -1,7 +1,7 @@
 import Tree from "./Tree";
 import './Array';
 
-class Difference {
+export class Difference {
     parent: Tree;
     deleted: Tree[]; 
     added: Tree[];
