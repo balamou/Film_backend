@@ -10,10 +10,6 @@ class CreationManager extends DatabaseManager {
 
     private readonly VARCHAR_LIMIT = 250;
 
-    constructor() {
-        super();
-    }
-
     async createUser(user: UserType) {
         const query ='INSERT INTO USERS(USERNAME) VALUES($1) RETURNING *';
         const result = await this.pool.query<UserType>(query, [user.username]);
