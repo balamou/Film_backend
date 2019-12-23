@@ -517,7 +517,6 @@ Get movie information based on id
 
 </details>
 
-
 ### Get last watched movies and shows
 
 <details>
@@ -566,3 +565,39 @@ Get last watched movies or shows
 
 </details>
 
+
+### Get video info
+
+<details>
+    <summary></summary>
+Get video info such as when to skip intro or move to the next episode
+
+* **URL**
+
+    /video_info/:episodeId
+
+* **Method:**
+    
+    `GET`
+    
+* **URL Params**
+
+  **Required:**
+ 
+  `episodeId=[number]`
+ 
+* **Success Response:**
+
+    * **Code:** 200 </br>
+    **Content:**
+
+    ```ts
+    {
+        name: string; // name displayed on the label: 'Skip intro'/'Skip to end scene' or 'Next episode'
+        action: 'skip' | 'next episode';
+        from: number; // timestamp at which to display the block
+        to?: number; // end timestamp to skip to (this is nil for next episode)
+    }[]
+    ```
+
+</details>
