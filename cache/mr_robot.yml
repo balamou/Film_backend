@@ -1,0 +1,114 @@
+dateCached: 2019-12-23T02:32:58.954Z
+seriesInfo:
+  title: Мистер Робот
+  year: 2015
+  plot: История молодого программиста Эллиота, страдающего социофобией и решившего,
+    что единственный приемлемый для него способ взаимодействия с людьми — это
+    профессия хакера. Таким образом, он быстро оказывается в том самом месте,
+    где пересекаются интересы его работодателя — фирмы, занимающейся
+    кибербезопасностью, — и подпольных организаций, которые пытаются его
+    завербовать с целью обрушения самых могучих американских корпораций.
+  poster: https://m.media-amazon.com/images/M/MV5BMzgxMmQxZjQtNDdmMC00MjRlLTk1MDEtZDcwNTdmOTg0YzA2XkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_SX300.jpg
+seasons:
+  - seasonNumber: 1
+    episodes:
+      - episodeNumber: 1
+        title: приветдруг.mov
+      - episodeNumber: 2
+        title: единицы-и-нули.mpeg
+      - episodeNumber: 3
+        title: д3баг.mkv
+      - episodeNumber: 4
+        title: д3м0ны.mp4
+      - episodeNumber: 5
+        title: уя3вим0сти.wmv
+      - episodeNumber: 6
+        title: хр4брый-путник.asf
+      - episodeNumber: 7
+        title: исх0дный-к0д.flv
+      - episodeNumber: 8
+        title: б3лаяр0за.m4v
+      - episodeNumber: 9
+        title: зерк4л0.qt
+      - episodeNumber: 10
+        title: нулев0й-день.avi
+  - seasonNumber: 2
+    episodes:
+      - episodeNumber: 1
+        title: eps2.0_unm4sk-pt1.tc
+      - episodeNumber: 2
+        title: eps2.0_unm4sk-pt2.tc
+      - episodeNumber: 3
+        title: eps2.1_k3rnel-pan1c.ksd
+      - episodeNumber: 4
+        title: eps2.2_init_1.asec
+      - episodeNumber: 5
+        title: eps2.3_logic-b0mb.hc
+      - episodeNumber: 6
+        title: eps2.4_m4ster-s1ave.aes
+      - episodeNumber: 7
+        title: eps2.5_h4ndshake.sme
+      - episodeNumber: 8
+        title: eps2.6_succ3ss0r.p12
+      - episodeNumber: 9
+        title: eps2.7_init_5.fve
+      - episodeNumber: 10
+        title: eps2.8_h1dden-pr0cess.axx
+      - episodeNumber: 11
+        title: eps2.9_pyth0n-pt1.p7z
+      - episodeNumber: 12
+        title: eps2.9_pyth0n-pt2.p7z
+  - seasonNumber: 3
+    episodes:
+      - episodeNumber: 1
+        title: eps3.0_power-saver-mode.h
+      - episodeNumber: 2
+        title: eps3.1_undo.gz
+      - episodeNumber: 3
+        title: eps3.2_legacy.so
+      - episodeNumber: 4
+        title: eps3.3_m3tadata.par2
+      - episodeNumber: 5
+        title: eps3.4_runtime-err0r.r00
+      - episodeNumber: 6
+        title: eps3.5_kill-pr0cess.inc
+      - episodeNumber: 7
+        title: eps3.6_fredrick+tanya.chk
+      - episodeNumber: 8
+        title: eps3.7_dont-delete-me.ko
+      - episodeNumber: 9
+        title: eps3.8_stage3.torrent
+      - episodeNumber: 10
+        title: shutdown -r
+  - seasonNumber: 4
+    episodes:
+      - episodeNumber: 1
+        title: 401 Unauthorized
+      - episodeNumber: 2
+        title: 402 Payment Required
+      - episodeNumber: 3
+        title: 403 Forbidden
+      - episodeNumber: 4
+        title: 404 Not Found
+      - episodeNumber: 5
+        title: 405 Method Not Allowed
+      - episodeNumber: 6
+        title: 406 Not Acceptable
+      - episodeNumber: 7
+        title: 407 Proxy Authentication Required
+      - episodeNumber: 8
+        title: 408 Request Timeout
+      - episodeNumber: 9
+        title: 409 Conflict
+      - episodeNumber: 10
+        title: 410 Gone
+      - episodeNumber: 11
+        title: eXit
+      - episodeNumber: 12
+        title: null
+      - episodeNumber: 13
+        title: null
+  - seasonNumber: 5
+    episodes:
+      - episodeNumber: 1
+        title: "Mr. Robot: Virtual Reality Experience - 360°"
