@@ -2,7 +2,7 @@
 
 - Required programs:
     * python3 
-    * pip3
+    * [pip3](https://pip.pypa.io/en/stable/installing/)
 
 ## PART 1: Install Node JS and NPM
 
@@ -70,3 +70,8 @@
 2. Cd into repo and install dependencies:
 
     `$ npm install`
+
+3. Install python dependencies:
+
+    `$ pip3 install kinopoiskpy`
+    `$ pip3 install timeout_decorator`

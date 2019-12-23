@@ -2,7 +2,7 @@
 > REST API backend for [Film app](https://github.com/balamou/Film)
 
 ## Installation 
-- To install on raspberry pi follow this [guide](/INSTALL_PI.md)
+- To install on **raspberry pi** follow this [guide](/INSTALL_PI.md)
 
 - Have homebrew installed ([brew](https://brew.sh))
 - [Install pip3](https://pip.pypa.io/en/stable/installing/)
