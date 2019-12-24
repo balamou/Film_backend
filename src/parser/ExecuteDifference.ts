@@ -62,15 +62,14 @@ class ExecuteDifference {
 
         const removeSeason = (folderName: string) => {
             let matched = folderName.match(/\d+/);
-            if (!matched) return; // Weird: Folder with no number
+            if (!matched) return; // Weird: Folder with no number (LOG)
             const seasonNumber = parseInt(matched[0]);
             this.dbManager.removeSeason(seriesFolder, seasonNumber);
         }; 
 
         deleted.forEach(node => {
             if (node.name === 'poster.jpeg') {
-                // refetch poster
-                // use parser and get poster based on series name from the series folder
+                // refetch poster (using parent.name)
             } else {
                 removeSeason(node.path);
             }

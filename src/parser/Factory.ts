@@ -1,4 +1,4 @@
-import { FlattenFileTree } from './FlattenFileTree';
+import { FlattenFileTree } from './DirManager/FlattenFileTree';
 import { DirTree } from './Adapters/DirTreeCreator';
 import { FSEditor } from './Adapters/FSEditor';
 

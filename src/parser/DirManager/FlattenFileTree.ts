@@ -1,6 +1,6 @@
-import { DirectoryTreeCreator } from './Adapters/DirTreeCreator';
-import { FileSystemEditor } from './Adapters/FSEditor';
-import Tree from './Tree/Tree';
+import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
+import { FileSystemEditor } from '../Adapters/FSEditor';
+import Tree from '../Tree/Tree';
 
 export class FlattenFileTree {
     private dirTreeCreator: DirectoryTreeCreator;
@@ -18,23 +18,23 @@ export class FlattenFileTree {
 
         const move_up: string[] = [];
         let purge: string[] = [];
-        const level4folders: Tree[] = [];
+        const level1folders: Tree[] = []; // folder corresponds to a folder inside season folder
 
         directoryTree.levelOrderTraversal((node, level) => {
-            if (level >= 3 && node.isVideo)
-                move_up.push(node.path);
-
             if (level == 1 && node.isFolder)
-                level4folders.push(node);
+                level1folders.push(node);
+
+            if (level == 1 && node.isFile && !node.isVideo)
+                purge.push(node.path);
 
             if (level == 2 && (node.isFolder || !node.isVideo))
                 purge.push(node.path);
 
-            if (level == 1 && node.isFile && !node.isVideo)
-                purge.push(node.path);
+            if (level >= 3 && node.isVideo)
+                move_up.push(node.path);
         });
 
-        const filtered = level4folders.filter(folder =>
+        const filtered = level1folders.filter(folder =>
             !folder.contains(node => node.isVideo)
         ).map(node => node.path);
 

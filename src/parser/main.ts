@@ -11,6 +11,11 @@ const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
 const DATABASE_ENABLED = true;
 
+const paths = [{ language: 'en', type: 'shows', path: '/public/en/shows' },
+                { language: 'en', type: 'movies', path: '/public/en/movies' },
+                { language: 'ru', type: 'shows', path: '/public/ru/shows' },
+                { language: 'ru', type: 'movies', path: '/public/ru/movies' }];
+
 export default function main() { // TODO: Rename to facade
     const fsEditor = new FSEditor();
     const path = './public/en/shows';
@@ -29,9 +34,6 @@ function dirTreeComparison(path: string) {
     const currTree = getDirTree(path, GLOBAL_EXCLUDE);
 
     if (tree) {
-        // console.log(tree);
-        // console.log(currTree);
-
         if (tree.hash() === currTree.hash()) {
             console.log("No changes in the file system.");
         } else {

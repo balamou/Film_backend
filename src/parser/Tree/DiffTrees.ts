@@ -42,7 +42,7 @@ export class Difference {
                 const diff = queue.shift();
                 if (!diff) continue;
 
-                visit(0, diff.parent, diff.deleted, diff.added);
+                visit(level, diff.parent, diff.deleted, diff.added);
 
                 diff.modified.forEach(mod => queue.push(mod));
             }
