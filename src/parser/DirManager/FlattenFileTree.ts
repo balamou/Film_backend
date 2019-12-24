@@ -13,10 +13,10 @@ export class FlattenFileTree {
     }
 
     // `pathToFolder` is the path to the series folder
-    private findMisplacedFiles(pathToFolder: string) {
+    findMisplacedFiles(pathToFolder: string) {
         const directoryTree = this.dirTreeCreator.treeFrom(pathToFolder, this.exclude);
 
-        const move_up: string[] = [];
+        const moveUp: string[] = [];
         let purge: string[] = [];
         const level1folders: Tree[] = []; // folder corresponds to a folder inside season folder
 
@@ -31,17 +31,15 @@ export class FlattenFileTree {
                 purge.push(node.path);
 
             if (level >= 3 && node.isVideo)
-                move_up.push(node.path);
+                moveUp.push(node.path);
         });
 
-        const filtered = level1folders.filter(folder =>
-            !folder.contains(node => node.isVideo)
-        ).map(node => node.path);
+        const level1foldersWithNoVideos = level1folders.filter(folder => !folder.contains(node => node.isVideo)).map(node => node.path);
 
-        purge = purge.concat(filtered);
+        purge = purge.concat(level1foldersWithNoVideos);
         
         return {
-            moveup: move_up,
+            moveup: moveUp,
             purge: purge
         };
     }

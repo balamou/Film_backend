@@ -1,8 +1,10 @@
-import { DirTree } from "../../src/parser/Adapters/DirTreeCreator";
 import Tree from "../../src/parser/Tree/Tree";
 import YAML from 'yaml';
-import { FSEditor } from "../../src/parser/Adapters/FSEditor";
 
+/**
+ * The purpose of this file is to generate YAML files from directories 
+ * so that those YAML files can be used in mock stubs
+ */
 type SimpleTree = {
     path: string;
     name: string;
@@ -29,19 +31,3 @@ export default class TreeToYaml {
         return { path: tree.path, name: tree.name, type: tree.type, extension: tree.extension, children: children};
     }
 }
-
-function convertFoldersToYaml(inputFolder: string, outputFolder: string) {
-    const dirTree = new DirTree().treeFrom(inputFolder, /.DS_Store|purge|reject/);
-    const treeToYaml = new TreeToYaml();
-    const fsEditor = new FSEditor();
-
-    dirTree.children.forEach(child => {
-        if (!child.isFolder) return;
-        
-        const yamlData = treeToYaml.treeToYaml(child);
-
-        fsEditor.writeToFile(`${outputFolder}/${child.name}.yml`, yamlData);
-    });
-}
-
-convertFoldersToYaml(`${__dirname}/example_folders`, `${__dirname}/generated_folders`);
