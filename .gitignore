@@ -6,3 +6,5 @@ public/ru/movies/*
 public/ru/shows/*
 __pycache__
 dist/
+coverage/
+.nyc_output

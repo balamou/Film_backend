@@ -1,0 +1,64 @@
+path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty
+name: rick_and_morty
+type: directory
+extension: null
+children:
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/S1
+    name: S1
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/S1/Ep3.mp4
+        name: Ep3.mp4
+        type: file
+        extension: .mp4
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/S1/Episode2.mkv
+        name: Episode2.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/S1/Episode_1.mkv
+        name: Episode_1.mkv
+        type: file
+        extension: .mkv
+        children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/Season
+      2
+    name: Season 2
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/Season
+          2/Ep9.mp4
+        name: Ep9.mp4
+        type: file
+        extension: .mp4
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/Season
+          2/Episode_4.mkv
+        name: Episode_4.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/Season
+          2/Season2_Episode2.mkv
+        name: Season2_Episode2.mkv
+        type: file
+        extension: .mkv
+        children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/hehe
+    name: hehe
+    type: directory
+    extension: null
+    children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/poster.jpeg
+    name: poster.jpeg
+    type: file
+    extension: .jpeg
+    children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/rick_and_morty/random.txt
+    name: random.txt
+    type: file
+    extension: .txt
+    children: []
