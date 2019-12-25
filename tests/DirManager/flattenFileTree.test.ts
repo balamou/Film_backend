@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import { FlattenFileTree } from '../src/parser/DirManager/FlattenFileTree';
-import MockDirTreeCreator from './stub/MockDirTreeCreator';
-import MockFSEditor from './stub/MockFSEditor';
+import { FlattenFileTree } from '../../src/parser/DirManager/FlattenFileTree';
+import MockDirTreeCreator from '../stub/MockDirTreeCreator';
+import MockFSEditor from '../stub/MockFSEditor';
 
 describe('reorginize series folders [flatten]', function () {
     const rootFolder = '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders';

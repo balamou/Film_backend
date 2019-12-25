@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import FilePurger from '../src/parser/DirManager/FilePurger';
-import MockFSEditor from './stub/MockFSEditor';
+import FilePurger from '../../src/parser/DirManager/FilePurger';
+import MockFSEditor from '../stub/MockFSEditor';
 import YAML from 'yaml';
-import { FSEditor } from '../src/parser/Adapters/FSEditor';
+import { FSEditor } from '../../src/parser/Adapters/FSEditor';
 
 describe('file purger tests', () => {
     const dirToTreeSnapshots = `${__dirname}/expected`;

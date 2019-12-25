@@ -1,14 +1,14 @@
 import { FileSystemEditor } from '../Adapters/FSEditor';
 import '../Tree/Array';
 
-type Node = {path: string, markedPath: boolean, nestedPaths: Node[]};
+type Node = { path: string, markedPath: boolean, nestedPaths: Node[] };
 
 /**
  * Using a Trie data structure
 */
 class FilePurger {
     private readonly fsEditor: FileSystemEditor;
-    private rootNode: Node = { path: "*", markedPath: false, nestedPaths: [] };
+    private rootNode: Node = { path: '*', markedPath: false, nestedPaths: [] };
 
     constructor(fsEditor: FileSystemEditor, paths?: string[]) {
         this.fsEditor = fsEditor;
