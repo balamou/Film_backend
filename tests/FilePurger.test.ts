@@ -29,7 +29,7 @@ describe('file purger tests', () => {
         //     - e
         //       - f*
         const rootNode = YAML.stringify(filePurger.root);
-        const expectedTree = new FSEditor().readFile(__dirname + '/expected_tree.yml');
+        const expectedTree = new FSEditor().readFile(__dirname + '/initialization_with_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
     });
@@ -43,7 +43,7 @@ describe('file purger tests', () => {
         const filePurger = new FilePurger(new MockFSEditor(), paths);
 
         const rootNode = YAML.stringify(filePurger.root);
-        const expectedTree = new FSEditor().readFile(__dirname + '/expected_tree.yml');
+        const expectedTree = new FSEditor().readFile(__dirname + '/initialization_with_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
     });
@@ -75,7 +75,21 @@ describe('file purger tests', () => {
         expect(rootNode).to.equal(expectedTree);
     });
 
-    it('test creating a purge list from tree', () => {
+    it('tree with branches with only one child', () => {
+        const filePurger = new FilePurger(new MockFSEditor());
+
+        filePurger.insertPath('/a/b');
+        filePurger.insertPath('/m/n/o/q');
+        filePurger.insertPath('/b/a');
+        filePurger.insertPath('/c/d/e/f');
+
+        const rootNode = YAML.stringify(filePurger.root);
+        const expectedTree = new FSEditor().readFile(__dirname + '/one_child_branches.yml');
+        
+        expect(rootNode).to.equal(expectedTree);
+    });
+
+    it('creating a purge list from tree', () => {
         const paths = ['a/b',
             'a/b/d',
             'a/b/f/h',
@@ -94,5 +108,20 @@ describe('file purger tests', () => {
         expect(filePurger.purgeList).to.eql(expectedPurgeList);
     });
 
-    
+    it('file tree with no common nodes', () => {
+        const paths = ['a/b/c',
+            'm/n/o/p',
+            'q/e/f',
+            'c',
+            'd/m'];
+
+        const filePurger = new FilePurger(new MockFSEditor(), paths);
+        const expectedPurgeList = ['/a/b/c',
+            '/m/n/o/p',
+            '/q/e/f',
+            '/c',
+            '/d/m'];
+
+        expect(filePurger.purgeList).to.eql(expectedPurgeList);
+    });
 });

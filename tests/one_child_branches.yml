@@ -1,0 +1,39 @@
+path: "*"
+markedPath: false
+nestedPaths:
+  - path: a
+    markedPath: false
+    nestedPaths:
+      - path: b
+        markedPath: true
+        nestedPaths: []
+  - path: m
+    markedPath: false
+    nestedPaths:
+      - path: n
+        markedPath: false
+        nestedPaths:
+          - path: o
+            markedPath: false
+            nestedPaths:
+              - path: q
+                markedPath: true
+                nestedPaths: []
+  - path: b
+    markedPath: false
+    nestedPaths:
+      - path: a
+        markedPath: true
+        nestedPaths: []
+  - path: c
+    markedPath: false
+    nestedPaths:
+      - path: d
+        markedPath: false
+        nestedPaths:
+          - path: e
+            markedPath: false
+            nestedPaths:
+              - path: f
+                markedPath: true
+                nestedPaths: []
