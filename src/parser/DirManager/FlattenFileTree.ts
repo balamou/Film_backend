@@ -2,6 +2,7 @@ import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
 import { FileSystemEditor, FSEditor } from '../Adapters/FSEditor';
 import Tree from '../Tree/Tree';
 import FilePurger from './FilePurger';
+import Path from 'path';
 
 export class FlattenFileTree {
     private dirTreeCreator: DirectoryTreeCreator;
@@ -45,22 +46,30 @@ export class FlattenFileTree {
         };
     }
 
-    private moveUp(files: {path: string, level: number}[]) {
+    /**
+     * @param files `files.path` has to be absolute
+     * @param desiredLevel is the level desired to move files. It is relative to the `pathToFolder`
+     */
+    private moveUp(files: {path: string, level: number}[], desiredLevel: number = 2) {
         files.forEach(file => {
-            // const components = file.split('/');
-            //                          public     /      en        /     shows      /    TheShow     /   Season_1
-            // const level4folder = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
+            const truncateTail = file.level - desiredLevel + 1;
+            const dir = file.path.split('/').filter(x => x !== '').truncate(truncateTail);
+            const finalDir = Path.join('/', ...dir);
 
-            // this.fileSystemEditor.moveFileToFolder(file, level4folder);
+            this.fileSystemEditor.moveFileToFolder(file.path, finalDir);
         });
     }
 
-    // `path` points to the series folder
+    /**
+     * Restructures and flattens the folder structure
+     * 
+     * @param pathToFolder points to the series folder (it can be relative)
+     */
     flatten(pathToFolder: string) {
-        const result = this.findMisplacedFiles(pathToFolder);
-        this.moveUp(result.moveup);
+        const filesToMove = this.findMisplacedFiles(pathToFolder);
+        this.moveUp(filesToMove.moveup);
 
-        const purger = new FilePurger(new FSEditor(), result.purge);
+        const purger = new FilePurger(new FSEditor(), filesToMove.purge);
         purger.purge(`${pathToFolder}/purge`);
     }
 }

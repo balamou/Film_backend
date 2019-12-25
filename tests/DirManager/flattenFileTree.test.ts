@@ -88,4 +88,47 @@ describe('reorginize series folders [flatten]', function () {
         expect(flatData.moveup, 'move up wrong').to.eql(moveUp);
         expect(flatData.purge, 'purge wrong').to.eql(purge);
     });
+
+    describe('Move Up', () => {
+
+        it('base test', () => {
+            const fsEditor = new MockFSEditor();
+            const result: [string, string][] = [];
+            
+            fsEditor.moveFileToFolder = (from: string, to: string) => {
+                result.push([from, to]);
+            };
+    
+            const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), fsEditor);
+            
+            const moveUp = [{ path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/South park [3x02].mkv`, level: 3},
+                            { path: `${rootFolder}/video_files_below_level_2/Season 10/nested_videos/deeply nested/South park [3x02].mkv`, level: 4},
+                            { path: `${rootFolder}/video_files_below_level_2/Season 10/nested_videos/deeply nested/South park [3x03].mp4`, level: 4},
+                            { path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/deeply nested/South park [3x03].mp4`, level: 4}];
+    
+            flattenFileTree['moveUp'](moveUp, 2);
+    
+            const expectation = [
+                [
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 12/nested_videos/South park [3x02].mkv',
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 12'
+                ],
+                [
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 10/nested_videos/deeply nested/South park [3x02].mkv',
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 10'
+                ],
+                [
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 10/nested_videos/deeply nested/South park [3x03].mp4',
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 10'
+                ],
+                [
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 12/nested_videos/deeply nested/South park [3x03].mp4',
+                  '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 12'
+                ]
+              ];
+    
+            expect(result).to.eql(expectation);
+        });
+        
+    });
 });

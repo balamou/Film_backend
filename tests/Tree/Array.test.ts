@@ -178,4 +178,25 @@ describe('Array extensions', function () {
         });
     });
 
+
+    describe('Truncate', () => {
+        it('base test', () => {
+            const test = ['Google', 'Shopify', 'Microsoft', 'Facebook', 'Netflix', 'Snapchat'];
+
+            expect(test.truncate(3)).to.eql(['Google', 'Shopify', 'Microsoft']);
+        });
+
+        it('empty array', () => {
+            const test: string[] = [];
+
+            expect(test.truncate(3)).to.eql([]);
+        });
+
+        it('singleton array', () => {
+            const test = ['Google'];
+
+            expect(test.truncate(1)).to.eql([]);
+        });
+    });
+
 });
