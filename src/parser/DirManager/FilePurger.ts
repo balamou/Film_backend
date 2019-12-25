@@ -48,17 +48,17 @@ class FilePurger {
     }
 
     get purgeList(): string[] {
-        return this.explore(this.rootNode, '');
+        return this.preoder(this.rootNode, '');
     }
 
-    explore(node: Node, currentPath: string): string[] {
+    private preoder(node: Node, currentPath: string): string[] {
         const path = node.path === '*' ? '' : `/${node.path}`;
         const resultPath = `${currentPath}${path}`;
 
         if (node.markedPath)
             return [resultPath];
         else
-            return node.nestedPaths.flatMap(x => this.explore(x, resultPath));
+            return node.nestedPaths.flatMap(x => this.preoder(x, resultPath));
     }
 
     purge(purgeDirectory: string) {

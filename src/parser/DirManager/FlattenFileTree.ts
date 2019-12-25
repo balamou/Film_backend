@@ -14,10 +14,10 @@ export class FlattenFileTree {
     }
 
     // `pathToFolder` is the path to the series folder
-    findMisplacedFiles(pathToFolder: string) {
+    private findMisplacedFiles(pathToFolder: string) {
         const directoryTree = this.dirTreeCreator.treeFrom(pathToFolder, this.exclude);
 
-        const moveUp: string[] = [];
+        const moveUp: {path: string, level: number}[] = [];
         let purge: string[] = [];
         const level1folders: Tree[] = []; // folder corresponds to a folder inside season folder
 
@@ -32,7 +32,7 @@ export class FlattenFileTree {
                 purge.push(node.path);
 
             if (level >= 3 && node.isVideo)
-                moveUp.push(node.path);
+                moveUp.push({path: node.path, level: level});
         });
 
         const level1foldersWithNoVideos = level1folders.filter(folder => !folder.contains(node => node.isVideo)).map(node => node.path);
@@ -45,20 +45,20 @@ export class FlattenFileTree {
         };
     }
 
-    private moveUp(pathToFolder: string, files: string[]) {
+    private moveUp(files: {path: string, level: number}[]) {
         files.forEach(file => {
-            const components = file.split('/');
+            // const components = file.split('/');
             //                          public     /      en        /     shows      /    TheShow     /   Season_1
-            const level4folder = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
+            // const level4folder = `${components[0]}/${components[1]}/${components[2]}/${components[3]}/${components[4]}/`;
 
-            this.fileSystemEditor.moveFileToFolder(file, level4folder);
+            // this.fileSystemEditor.moveFileToFolder(file, level4folder);
         });
     }
 
     // `path` points to the series folder
     flatten(pathToFolder: string) {
         const result = this.findMisplacedFiles(pathToFolder);
-        this.moveUp(pathToFolder, result.moveup);
+        this.moveUp(result.moveup);
 
         const purger = new FilePurger(new FSEditor(), result.purge);
         purger.purge(`${pathToFolder}/purge`);
