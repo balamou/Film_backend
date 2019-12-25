@@ -1,6 +1,7 @@
 import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
 import { FileSystemEditor } from '../Adapters/FSEditor';
 import Tree from '../Tree/Tree';
+import Path from 'path';
 
 export class FlattenFileTree {
     private dirTreeCreator: DirectoryTreeCreator;
@@ -55,9 +56,9 @@ export class FlattenFileTree {
     }
 
     // `path` points to the series folder
-    flatten(path: string) {
-        const result = this.findMisplacedFiles(path);
-        const purgeFolder = `${path}/purge`;
+    flatten(pathToFolder: string) {
+        const result = this.findMisplacedFiles(pathToFolder);
+        const purgeFolder = `${pathToFolder}/purge`;
 
         this.moveUp(result.moveup);
 
