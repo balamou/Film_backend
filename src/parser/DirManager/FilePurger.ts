@@ -57,8 +57,8 @@ class FilePurger {
             return node.nestedPaths.flatMap(x => this.explore(x, resultPath));
     }
 
-    purge() {
-
+    purge(purgeDirectory: string) {
+        this.purgeList.forEach(path => this.fsEditor.moveFileToFolder(path, purgeDirectory));
     }
 
     get root(): Node { // defined for test access

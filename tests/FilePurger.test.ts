@@ -2,10 +2,11 @@ import { expect } from 'chai';
 import FilePurger from '../src/parser/DirManager/FilePurger';
 import MockFSEditor from './stub/MockFSEditor';
 import YAML from 'yaml';
-import { FSEditor } from '../src/parser/Adapters/FSEditor';
+import { FSEditor, FileSystemEditor } from '../src/parser/Adapters/FSEditor';
+import MockDirTreeCreator from './stub/MockDirTreeCreator';
 
 describe('file purger tests', () => {
-    const dirToTreeSnapshots = __dirname;
+    const dirToTreeSnapshots = `${__dirname}/expected`;
     const readFile = (path: string) => new FSEditor().readFile(`${dirToTreeSnapshots}/${path}`);
 
     it('node insertion', () => {
@@ -125,5 +126,23 @@ describe('file purger tests', () => {
             '/d/m'];
 
         expect(filePurger.purgeList).to.eql(expectedPurgeList);
+    });
+
+    it('moving purging files to a folder (making sure it calls the move method)', () => {
+        const mockFSEditor = new MockFSEditor();
+        const result: [string, string][] = [];
+        mockFSEditor.moveFileToFolder = (from: string, to: string) => {
+            result.push([from, to]);
+        };
+
+        const filePurger = new FilePurger(mockFSEditor);
+
+        filePurger.insertPath('/a/b/c');
+        filePurger.insertPath('/a/d');
+        filePurger.insertPath('/a/b/c/e');
+        filePurger.insertPath('/a/b/c/f');
+
+        filePurger.purge('/purge');
+        expect(result).to.eql([['/a/b/c', '/purge'], ['/a/d', '/purge']]);
     });
 });
