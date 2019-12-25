@@ -6,6 +6,8 @@ import { FSEditor } from '../src/parser/Adapters/FSEditor';
 import { filter } from 'bluebird';
 
 describe('file purger tests', () => {
+    const readFile = new FSEditor().readFile;
+
     it('node insertion', () => {
         const filePurger = new FilePurger(new MockFSEditor());
 
@@ -29,7 +31,7 @@ describe('file purger tests', () => {
         //     - e
         //       - f*
         const rootNode = YAML.stringify(filePurger.root);
-        const expectedTree = new FSEditor().readFile(__dirname + '/initialization_with_paths.yml');
+        const expectedTree = readFile(__dirname + '/initialization_with_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
     });
@@ -43,7 +45,7 @@ describe('file purger tests', () => {
         const filePurger = new FilePurger(new MockFSEditor(), paths);
 
         const rootNode = YAML.stringify(filePurger.root);
-        const expectedTree = new FSEditor().readFile(__dirname + '/initialization_with_paths.yml');
+        const expectedTree = readFile(__dirname + '/initialization_with_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
     });
@@ -58,7 +60,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('d/m/h');
 
         const rootNode = YAML.stringify(filePurger.root);
-        const expectedTree = new FSEditor().readFile(__dirname + '/path_part_of_another.yml');
+        const expectedTree = readFile(__dirname + '/path_part_of_another.yml');
         
         expect(rootNode).to.equal(expectedTree);
     });
@@ -70,7 +72,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('/d/e//f///');
 
         const rootNode = YAML.stringify(filePurger.root);
-        const expectedTree = new FSEditor().readFile(__dirname + '/extra_slashes.yml');
+        const expectedTree = readFile(__dirname + '/extra_slashes.yml');
         
         expect(rootNode).to.equal(expectedTree);
     });
@@ -84,7 +86,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('/c/d/e/f');
 
         const rootNode = YAML.stringify(filePurger.root);
-        const expectedTree = new FSEditor().readFile(__dirname + '/one_child_branches.yml');
+        const expectedTree = readFile(__dirname + '/one_child_branches.yml');
         
         expect(rootNode).to.equal(expectedTree);
     });
