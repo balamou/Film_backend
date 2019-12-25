@@ -80,6 +80,35 @@ describe('file purger tests', () => {
         expect(rootNode).to.equal(expectedTree);
     });
 
+    it('insert single paths', () => {
+        const filePurger = new FilePurger(new MockFSEditor());
+
+        filePurger.insertPath('d');
+        filePurger.insertPath('a');
+        filePurger.insertPath('e');
+        filePurger.insertPath('f');
+
+        const rootNode = YAML.stringify(filePurger.root);
+        const expectedTree = readFile('single_paths.yml');
+        
+        expect(rootNode).to.equal(expectedTree);
+    });
+
+    it('insert duplicate paths', () => {
+        const filePurger = new FilePurger(new MockFSEditor());
+
+        filePurger.insertPath('d');
+        filePurger.insertPath('a/b/c');
+        filePurger.insertPath('e/f');
+        filePurger.insertPath('a/b/c');
+        filePurger.insertPath('e/f');
+
+        const rootNode = YAML.stringify(filePurger.root);
+        const expectedTree = readFile('duplicate_paths.yml');
+        
+        expect(rootNode).to.equal(expectedTree);
+    });
+
     it('test inserting a path with extra slashes in path', () => {
         const filePurger = new FilePurger(new MockFSEditor());
 

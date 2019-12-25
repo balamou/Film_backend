@@ -1,0 +1,15 @@
+path: "*"
+markedPath: false
+nestedPaths:
+  - path: d
+    markedPath: true
+    nestedPaths: []
+  - path: a
+    markedPath: true
+    nestedPaths: []
+  - path: e
+    markedPath: true
+    nestedPaths: []
+  - path: f
+    markedPath: true
+    nestedPaths: []
