@@ -31,7 +31,7 @@ describe('file purger tests', () => {
         //   - p*
         //     - e
         //       - f*
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('initialization_with_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
@@ -45,7 +45,7 @@ describe('file purger tests', () => {
             'm/p/e/f'];
         const filePurger = new FilePurger(new MockFSEditor(), paths);
 
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('initialization_with_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
@@ -59,7 +59,7 @@ describe('file purger tests', () => {
 
         filePurger.insertPaths(['m/n/q', 'm/p', 'm/p/e/f']);
 
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('initialization_with_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
@@ -74,7 +74,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('d/m/h/z/f');
         filePurger.insertPath('d/m/h');
 
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('path_part_of_another.yml');
         
         expect(rootNode).to.equal(expectedTree);
@@ -88,7 +88,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('e');
         filePurger.insertPath('f');
 
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('single_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
@@ -103,7 +103,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('a/b/c');
         filePurger.insertPath('e/f');
 
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('duplicate_paths.yml');
         
         expect(rootNode).to.equal(expectedTree);
@@ -115,7 +115,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('/a/b/c/');
         filePurger.insertPath('/d/e//f///');
 
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('extra_slashes.yml');
         
         expect(rootNode).to.equal(expectedTree);
@@ -129,7 +129,7 @@ describe('file purger tests', () => {
         filePurger.insertPath('/b/a');
         filePurger.insertPath('/c/d/e/f');
 
-        const rootNode = YAML.stringify(filePurger.root);
+        const rootNode = YAML.stringify(filePurger['rootNode']);
         const expectedTree = readFile('one_child_branches.yml');
         
         expect(rootNode).to.equal(expectedTree);

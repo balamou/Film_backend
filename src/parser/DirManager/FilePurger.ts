@@ -65,10 +65,6 @@ class FilePurger {
         this.fsEditor.makeDirectory(purgeDirectory);
         this.purgeList.forEach(path => this.fsEditor.moveFileToFolder(path, purgeDirectory));
     }
-
-    get root(): Node { // defined for test access
-        return this.rootNode;
-    }
 }
 
 export default FilePurger;
