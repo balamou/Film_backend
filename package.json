@@ -9,6 +9,10 @@
     "generate": "ts-node tests/ExampleTrees/generate.ts",
     "start": "ts-node ./src/app.ts"
   },
+  "nyc": {
+    "include": "src",
+    "exclude": "tests/**/*.test.ts" 
+  },
   "author": "Michel Balamou",
   "license": "ISC",
   "devDependencies": {
