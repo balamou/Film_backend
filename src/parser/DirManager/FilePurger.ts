@@ -1,4 +1,5 @@
 import { FileSystemEditor } from '../Adapters/FSEditor';
+import '../Tree/Array';
 
 type Node = {path: string, markedPath: boolean, nestedPaths: Node[]};
 
@@ -16,7 +17,7 @@ class FilePurger {
     }
 
     insertPath(path: string) {
-        const components = path.split('/');
+        const components = path.split('/').filter(x => x !== '');
 
         this.insertNode(this.rootNode, components, 0);
     }
@@ -42,8 +43,18 @@ class FilePurger {
         }
     }
 
-    createPurgeList(): string[] {
-        return [];
+    get purgeList(): string[] {
+        return this.explore(this.rootNode, '');
+    }
+
+    explore(node: Node, currentPath: string): string[] {
+        const path = node.path === '*' ? '' : `/${node.path}`;
+        const resultPath = `${currentPath}${path}`;
+
+        if (node.markedPath)
+            return [resultPath];
+        else
+            return node.nestedPaths.flatMap(x => this.explore(x, resultPath));
     }
 
     purge() {

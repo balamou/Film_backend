@@ -3,6 +3,8 @@ declare global {
         doesInclude<T>(this: T[], rhs: T, comparator: (lhs: T, rhs: T) => boolean): boolean;
         intersect<T>(this: T[], rhs: T[], comparator: (lhs: T, rhs: T) => boolean): [T, T][];
         butNotIn<T>(this: T[], rhs: T[], comparator: (lhs: T, rhs: T) => boolean): T[];
+            
+        flatMap<T, U>(this: T[], callbackfn: (value: T) => U[]): U[] 
     }
 }
 
@@ -40,8 +42,13 @@ function butNotIn<T>(this: T[], rhs: T[], comparator: (lhs: T, rhs: T) => boolea
     return this.filter(obj => !rhs.doesInclude(obj, comparator));
 }
 
+function flatMap<T, U>(this: T[], callbackfn: (value: T) => U[]): U[] {
+    return Array.prototype.concat(...this.map(callbackfn));
+}
+
 Array.prototype.doesInclude = doesInclude;
 Array.prototype.intersect = intersect;
 Array.prototype.butNotIn = butNotIn;
+Array.prototype.flatMap = flatMap;
 
 export {};
