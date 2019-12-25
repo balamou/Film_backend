@@ -22,6 +22,10 @@ class FilePurger {
         this.insertNode(this.rootNode, components, 0);
     }
 
+    insertPaths(paths: string[]) {
+        paths.forEach(path => this.insertPath(path));
+    }
+
     private insertNode(node: Node, pathComponents: string[], currentComponent: number) {
         const target = node.nestedPaths.find(x => x.path === pathComponents[currentComponent]);
 
@@ -58,6 +62,7 @@ class FilePurger {
     }
 
     purge(purgeDirectory: string) {
+        this.fsEditor.makeDirectory(purgeDirectory);
         this.purgeList.forEach(path => this.fsEditor.moveFileToFolder(path, purgeDirectory));
     }
 

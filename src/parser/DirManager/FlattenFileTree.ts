@@ -1,7 +1,7 @@
 import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
-import { FileSystemEditor } from '../Adapters/FSEditor';
+import { FileSystemEditor, FSEditor } from '../Adapters/FSEditor';
 import Tree from '../Tree/Tree';
-import Path from 'path';
+import FilePurger from './FilePurger';
 
 export class FlattenFileTree {
     private dirTreeCreator: DirectoryTreeCreator;
@@ -45,7 +45,7 @@ export class FlattenFileTree {
         };
     }
 
-    private moveUp(files: string[]) {
+    private moveUp(pathToFolder: string, files: string[]) {
         files.forEach(file => {
             const components = file.split('/');
             //                          public     /      en        /     shows      /    TheShow     /   Season_1
@@ -58,13 +58,9 @@ export class FlattenFileTree {
     // `path` points to the series folder
     flatten(pathToFolder: string) {
         const result = this.findMisplacedFiles(pathToFolder);
-        const purgeFolder = `${pathToFolder}/purge`;
+        this.moveUp(pathToFolder, result.moveup);
 
-        this.moveUp(result.moveup);
-
-        this.fileSystemEditor.makeDirectory(purgeFolder); // create purge folder
-        result.purge.forEach(file => {
-            this.fileSystemEditor.moveFileToFolder(file, purgeFolder);
-        });
+        const purger = new FilePurger(new FSEditor(), result.purge);
+        purger.purge(`${pathToFolder}/purge`);
     }
 }

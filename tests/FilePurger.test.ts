@@ -2,12 +2,12 @@ import { expect } from 'chai';
 import FilePurger from '../src/parser/DirManager/FilePurger';
 import MockFSEditor from './stub/MockFSEditor';
 import YAML from 'yaml';
-import { FSEditor, FileSystemEditor } from '../src/parser/Adapters/FSEditor';
-import MockDirTreeCreator from './stub/MockDirTreeCreator';
+import { FSEditor } from '../src/parser/Adapters/FSEditor';
 
 describe('file purger tests', () => {
     const dirToTreeSnapshots = `${__dirname}/expected`;
-    const readFile = (path: string) => new FSEditor().readFile(`${dirToTreeSnapshots}/${path}`);
+    const readFile = (path: string) => new FSEditor().readFile(`${dirToTreeSnapshots}/${path}`); // used to retrieve snapshots
+    const writeToFile = (path: string, data: string) => new FSEditor().writeToFile(`${dirToTreeSnapshots}/${path}`, data); // used for saving snapshots
 
     it('node insertion', () => {
         const filePurger = new FilePurger(new MockFSEditor());
@@ -44,6 +44,20 @@ describe('file purger tests', () => {
             'm/p',
             'm/p/e/f'];
         const filePurger = new FilePurger(new MockFSEditor(), paths);
+
+        const rootNode = YAML.stringify(filePurger.root);
+        const expectedTree = readFile('initialization_with_paths.yml');
+        
+        expect(rootNode).to.equal(expectedTree);
+    });
+
+    it('insert a bulk of paths', () => {
+        const filePurger = new FilePurger(new MockFSEditor());
+        
+        filePurger.insertPath('a/b/c');
+        filePurger.insertPath('a/b/c/d/e');
+
+        filePurger.insertPaths(['m/n/q', 'm/p', 'm/p/e/f']);
 
         const rootNode = YAML.stringify(filePurger.root);
         const expectedTree = readFile('initialization_with_paths.yml');
@@ -133,6 +147,10 @@ describe('file purger tests', () => {
         const result: [string, string][] = [];
         mockFSEditor.moveFileToFolder = (from: string, to: string) => {
             result.push([from, to]);
+        };
+
+        mockFSEditor.makeDirectory = (dirName: string) => {
+            expect(dirName).to.equal('/purge');
         };
 
         const filePurger = new FilePurger(mockFSEditor);
