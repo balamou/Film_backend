@@ -53,6 +53,9 @@ function flatMap<T, U>(this: T[], callbackfn: (value: T) => U[]): U[] {
 }
 
 function truncate<T>(this: T[], remove: number): T[] {
+    if (remove < 0 || remove > this.length) 
+        throw new Error('Truncation out of range');
+
     return this.slice(0, this.length - remove);
 }
 

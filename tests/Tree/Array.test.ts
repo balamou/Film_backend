@@ -189,7 +189,7 @@ describe('Array extensions', function () {
         it('empty array', () => {
             const test: string[] = [];
 
-            expect(test.truncate(3)).to.eql([]);
+            expect(() => test.truncate(3)).to.throw('Truncation out of range');
         });
 
         it('singleton array', () => {
@@ -197,6 +197,31 @@ describe('Array extensions', function () {
 
             expect(test.truncate(1)).to.eql([]);
         });
+
+        it('negative truncation', () => {
+            const test = ['Google', 'Facebook'];
+
+            expect(() => test.truncate(-1)).to.throw('Truncation out of range');
+        });
+
+        it('truncation greater than length', () => {
+            const test: number[] = [2, 3, 4];
+
+            expect(() => test.truncate(4)).to.throw('Truncation out of range');
+        });
+
+        it('truncation equal to length', () => {
+            const test: number[] = [2, 3, 4];
+
+            expect(test.truncate(3)).to.eql([]);
+        });
+
+        it('truncate 0 elements', () => {
+            const test: number[] = [2, 3, 4];
+
+            expect(test.truncate(0)).to.eql([2, 3, 4]);
+        });
+
     });
 
 });
