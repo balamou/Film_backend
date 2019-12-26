@@ -24,13 +24,11 @@ class Tree {
 
             for (let i = 0; i < size; i++) {
                 const currNode = queue.shift(); // `shift` is the same as `dequeue` in a queue
-                if (!currNode) continue;
-                const children = currNode.children;
-
-                onEach(currNode, level);
-
-                if (children)
-                    children.forEach(item => queue.push(item));
+                
+                if (currNode) {
+                    onEach(currNode, level);
+                    currNode.children.forEach(node => queue.push(node));
+                }
             }
 
             level++;
@@ -43,13 +41,11 @@ class Tree {
 
         while(queue.length > 0) {
             const currNode = queue.shift(); // `shift` is the same as `dequeue` in a queue
-            if (!currNode) continue;
-            const children = currNode.children;
 
-            if (predicate(currNode)) return true;
-            if (!children) continue;
-
-            children.forEach((item: any) => queue.push(item));
+            if (currNode) {
+                if (predicate(currNode)) return true;
+                currNode.children.forEach(node => queue.push(node));
+            }
         }
         return false;
     };
@@ -104,13 +100,9 @@ class Tree {
     }
 
     static instanciateFromJSON(tree: Tree): Tree {
-        const children = tree.children;
-        let newChildren: Tree[] = [];
+        let children = tree.children.map(child => this.instanciateFromJSON(child));
 
-        if (children)
-            newChildren = children.map(child => this.instanciateFromJSON(child));
-
-        return new Tree(tree.path, tree.name, tree.type, tree.extension, newChildren);
+        return new Tree(tree.path, tree.name, tree.type, tree.extension, children);
     }   
 }
 
