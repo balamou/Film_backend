@@ -12,13 +12,31 @@ export default class FlattenFileTree {
     private readonly exclude = /.DS_Store|purge|rejected/;
     private readonly purgeFolder = 'purge';
 
-    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor, purger: FilePurger = new FilePurger(new FSEditor())) {
+    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor)
+    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor, purger?: FilePurger) {
         this.dirTreeCreator = dirTreeCreator;
         this.fileSystemEditor = fileSystemEditor;
-        this.purger = purger;
+        this.purger = purger ?? new FilePurger(new FSEditor());
+    }
+    
+    /**
+     * Restructures and flattens the folder structure
+     * 
+     * @param pathToFolder [Relative|Absolute] points to the series folder
+     */
+    flatten(pathToFolder: string) {
+        const filesToMove = this.findMisplacedFiles(pathToFolder);
+ 
+        this.moveFilesToLevel(filesToMove.moveup, 2);
+        this.purger.insertPaths(filesToMove.purge);
+        this.purger.purge(`${pathToFolder}/${this.purgeFolder}`);
     }
 
-    // `pathToFolder` [RELATIVE|ABSOLUTE] is the path to the series folder
+    /**
+     * Parses the directory tree to find paths that have to be moved higher up or are to be purged
+     * 
+     * @param pathToFolder [RELATIVE|ABSOLUTE] is the path to the series folder
+    */
     private findMisplacedFiles(pathToFolder: string) {
         const directoryTree = this.dirTreeCreator.treeFrom(pathToFolder, this.exclude);
 
@@ -51,9 +69,9 @@ export default class FlattenFileTree {
     }
 
     /**
-     * Moves files to specified level
+     * Moves files to up the directory tree to a desired level
      * 
-     * @param files [RELATIVE|ABSOLUTE] `files.path`
+     * @param files [Relative|Absolute] `files.path`
      * @param desiredLevel is the level desired to move files. It is relative to the `pathToFolder`
      */
     private moveFilesToLevel(files: {path: string, level: number}[], desiredLevel: number) {
@@ -68,6 +86,8 @@ export default class FlattenFileTree {
      * 
      * Example the path `a/b/c/d/e` after removing 2 levels becomes `a/b/c`.
      * This function preserves the type of the path, relative or absolute.
+     * 
+     * @param path relative or absolute path
     */
     private removeSubpaths(path: string, levelsToRemove: number) {
         const pathComponents = path.split('/').filter(x => x !== '');
@@ -76,16 +96,4 @@ export default class FlattenFileTree {
         return Path.isAbsolute(path) ? Path.join('/', ...dir) : Path.join(...dir);
     }
 
-    /**
-     * Restructures and flattens the folder structure
-     * 
-     * @param pathToFolder [RELATIVE|ABSOLUTE] points to the series folder (it can be relative)
-     */
-    flatten(pathToFolder: string) {
-        const filesToMove = this.findMisplacedFiles(pathToFolder);
-
-        this.moveFilesToLevel(filesToMove.moveup, 2);
-        this.purger.insertPaths(filesToMove.purge);
-        this.purger.purge(`${pathToFolder}/${this.purgeFolder}`);
-    }
 }
