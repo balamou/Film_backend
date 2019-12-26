@@ -137,6 +137,36 @@ describe('File purger tests', () => {
             expect(rootNode).to.equal(expectedTree);
         });
 
+
+        it('all absolute paths, ignores relative path', () => {
+            const filePurger = new FilePurger(new MockFSEditor());
+    
+            filePurger.insertPath('/a/b/c');
+            filePurger.insertPath('/a/b/c/d/e');
+            filePurger.insertPath('a/b/k');
+            filePurger.insertPath('/d/m/h/z/f');
+            filePurger.insertPath('/d/m/h');
+
+            const rootNode = YAML.stringify(filePurger['rootNode']);
+            const expectedTree = readFile('all_absolute_one_relative.yml');
+            
+            expect(rootNode).to.equal(expectedTree);
+        });
+
+        it('all relative paths, ignores absolute path', () => {
+            const filePurger = new FilePurger(new MockFSEditor());
+    
+            filePurger.insertPath('a/b/c');
+            filePurger.insertPath('a/b/c/d/e');
+            filePurger.insertPath('/a/b/k');
+            filePurger.insertPath('d/m/h/z/f');
+            filePurger.insertPath('d/m/h');
+
+            const rootNode = YAML.stringify(filePurger['rootNode']);
+            const expectedTree = readFile('all_relative_one_absolute.yml');
+            
+            expect(rootNode).to.equal(expectedTree);
+        });
     });
 
     describe('Generate purge list', () => {
@@ -177,6 +207,25 @@ describe('File purger tests', () => {
             expect(filePurger.purgeList).to.eql(expectedPurgeList);
         });
 
+        it('absolute paths generate absolute path lists', () => {
+            const paths = ['/a/b',
+            '/a/b/d',
+            '/a/b/f/h',
+            '/a/b/g/m',
+            '/a/c',
+            '/a/e/m/o',
+            '/a/e/m/p',
+            '/a/e/h/q/n',
+            '/a/e/h/f/c',
+            '/a/e/h/h',
+            '/a/e/h'];
+
+            const filePurger = new FilePurger(new MockFSEditor(), paths);
+            const expectedPurgeList = [ '/a/b', '/a/c', '/a/e/m/o', '/a/e/m/p', '/a/e/h' ];
+
+            expect(filePurger.purgeList).to.eql(expectedPurgeList);
+        });
+
     });
 
     describe('Moving purge files', () => {
@@ -200,7 +249,7 @@ describe('File purger tests', () => {
             filePurger.insertPath('/a/b/c/f');
 
             filePurger.purge('/purge');
-            expect(result).to.eql([['a/b/c', '/purge'], ['a/d', '/purge']]);
+            expect(result).to.eql([['/a/b/c', '/purge'], ['/a/d', '/purge']]);
         });
    
     });

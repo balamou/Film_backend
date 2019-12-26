@@ -371,8 +371,14 @@ describe('Flatten File Tree', function () {
 
             flattenFileTree.flatten('absolute_mess');
 
-            console.log(misplacedFiles);
-            console.log(purger.purgeList);
+            const expectedPurgeList = ['/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/source.txt',
+                '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/thumbnail.jpeg',
+                '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested',
+                '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season 1/hello',
+                '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season 2/nested',
+                '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season4'];
+
+            expect(purger.purgeList).to.eql(expectedPurgeList);
         });
     });
 });

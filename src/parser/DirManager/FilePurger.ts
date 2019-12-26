@@ -1,5 +1,6 @@
 import { FileSystemEditor } from '../Adapters/FSEditor';
 import '../Tree/Array';
+import Path from 'path';
 
 type Node = { path: string, markedPath: boolean, nestedPaths: Node[] };
 
@@ -9,6 +10,7 @@ type Node = { path: string, markedPath: boolean, nestedPaths: Node[] };
 class FilePurger {
     private readonly fsEditor: FileSystemEditor;
     private rootNode: Node = { path: '*', markedPath: false, nestedPaths: [] };
+    private isAbsolutePath?: boolean;
 
     constructor(fsEditor: FileSystemEditor, paths?: string[]) {
         this.fsEditor = fsEditor;
@@ -17,6 +19,13 @@ class FilePurger {
     }
 
     insertPath(path: string) {
+        if (this.isAbsolutePath === undefined) {
+            this.isAbsolutePath = Path.isAbsolute(path);
+        } else {
+            if (this.isAbsolutePath !== Path.isAbsolute(path)) 
+                return; // ignore this path
+        }
+
         const components = path.split('/').filter(x => x !== '');
 
         this.insertNode(this.rootNode, components, 0);
@@ -55,10 +64,12 @@ class FilePurger {
         const path = node.path === '*' ? '' : `/${node.path}`;
         const resultPath = `${currentPath}${path}`;
 
-        if (node.markedPath)
-            return [resultPath.substring(1)]; // remove front slash
-        else
+        if (node.markedPath) {
+            const isAbsolutePath = this.isAbsolutePath!;
+            return [isAbsolutePath ? resultPath : resultPath.substring(1)];
+        } else {
             return node.nestedPaths.flatMap(x => this.preoder(x, resultPath));
+        }
     }
 
     purge(purgeDirectory: string) {
