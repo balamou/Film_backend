@@ -14,7 +14,7 @@ export class FlattenFileTree {
         this.fileSystemEditor = fileSystemEditor;
     }
 
-    // `pathToFolder` is the path to the series folder
+    // `pathToFolder` [RELATIVE|ABSOLUTE] is the path to the series folder
     private findMisplacedFiles(pathToFolder: string) {
         const directoryTree = this.dirTreeCreator.treeFrom(pathToFolder, this.exclude);
 
@@ -47,27 +47,32 @@ export class FlattenFileTree {
     }
 
     /**
-     * @param files `files.path` has to be absolute
+     * @param files [ABSOLUTE] `files.path` has to be absolute
      * @param desiredLevel is the level desired to move files. It is relative to the `pathToFolder`
      */
-    private moveUp(files: {path: string, level: number}[], desiredLevel: number = 2) {
+    private moveUp(files: {path: string, level: number}[], desiredLevel: number) {
         files.forEach(file => {
-            const truncateTail = file.level - desiredLevel + 1;
-            const dir = file.path.split('/').filter(x => x !== '').truncate(truncateTail);
-            const finalDir = Path.join('/', ...dir);
-
+            const finalDir = this.folderAtDesiredLevel(file.path, file.level, desiredLevel);
             this.fileSystemEditor.moveFileToFolder(file.path, finalDir);
         });
+    }
+
+    private folderAtDesiredLevel(path: string, level: number, desiredLevel: number) {
+        const truncateTail = level - desiredLevel + 1;
+        const pathComponents = path.split('/').filter(x => x !== '');
+        const dir = pathComponents.truncate(truncateTail);
+        
+        return Path.join('/', ...dir);
     }
 
     /**
      * Restructures and flattens the folder structure
      * 
-     * @param pathToFolder points to the series folder (it can be relative)
+     * @param pathToFolder [RELATIVE|ABSOLUTE] points to the series folder (it can be relative)
      */
     flatten(pathToFolder: string) {
         const filesToMove = this.findMisplacedFiles(pathToFolder);
-        this.moveUp(filesToMove.moveup);
+        this.moveUp(filesToMove.moveup, 2);
 
         const purger = new FilePurger(new FSEditor(), filesToMove.purge);
         purger.purge(`${pathToFolder}/purge`);

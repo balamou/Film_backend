@@ -4,7 +4,7 @@ import '../Tree/Array';
 type Node = { path: string, markedPath: boolean, nestedPaths: Node[] };
 
 /**
- * Using a Trie data structure
+ * File purger implemented using a Trie data structure
 */
 class FilePurger {
     private readonly fsEditor: FileSystemEditor;
