@@ -137,4 +137,36 @@ describe('Tree tests', function () {
 
     });
 
+    describe('Tree hashing', () => {
+
+        it('base test', () => {
+            const node5 = new Tree('a/b/c/d/e/g', 'g', 'directory', undefined, []);
+            const node4 = new Tree('a/b/c/d/e/f.mp4', 'f.mp4', 'file', '.mp4', []);
+            const node3 = new Tree('a/b/c/d/e', 'e', 'directory', undefined, [node4, node5]);
+            const node2 = new Tree('a/b/c/d', 'd', 'directory', undefined, [node3]);
+            const node1 = new Tree('a/b/c', 'c', 'directory', undefined, [node2]);
+            const tree = node1;
+
+            const hash = tree.hash();
+            expect(hash).to.equal(-712706860);
+        });
+
+        it('tree change', () => {
+            const node5 = new Tree('a/b/c/d/e/g', 'g', 'directory', undefined, []);
+            const node4 = new Tree('a/b/c/d/e/f.mp4', 'f.mp4', 'file', '.mp4', []);
+            const node3 = new Tree('a/b/c/d/e', 'e', 'directory', undefined, [node4, node5]);
+            const node2 = new Tree('a/b/c/d', 'd', 'directory', undefined, [node3]);
+            const node1 = new Tree('a/b/c', 'c', 'directory', undefined, [node2]);
+            let tree = node1;
+
+            const firstHash = tree.hash();
+            
+            tree = new Tree('a/b/m', 'm', 'directory', undefined, [node2]);
+            const secondHash = tree.hash();
+            
+            expect(firstHash).to.not.equal(secondHash);
+        });
+
+    });
+
 });
