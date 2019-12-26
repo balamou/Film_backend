@@ -65,7 +65,7 @@ describe('Flatten File Tree', function () {
 
         it('relative path', () => {
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
-            const flatData = flattenFileTree['findMisplacedFiles']('flatten');
+            const flatData = flattenFileTree['findMisplacedFiles']('relative_paths');
             
             const purge = ["public/en/shows/game_of_thrones/source.txt",
                 "public/en/shows/game_of_thrones/thumbnail.jpeg",
@@ -327,7 +327,7 @@ describe('Flatten File Tree', function () {
 
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), fsEditor, purger);
 
-            flattenFileTree.flatten('flatten');
+            flattenFileTree.flatten('relative_paths');
 
             const purgeList = ['public/en/shows/game_of_thrones/source.txt',
             'public/en/shows/game_of_thrones/thumbnail.jpeg',

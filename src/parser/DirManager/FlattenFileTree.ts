@@ -4,7 +4,7 @@ import Tree from '../Tree/Tree';
 import FilePurger from './FilePurger';
 import Path from 'path';
 
-export default class FlattenFileTree {
+class FlattenFileTree {
     private readonly dirTreeCreator: DirectoryTreeCreator;
     private readonly fileSystemEditor: FileSystemEditor;
     private readonly purger: FilePurger;
@@ -99,3 +99,5 @@ export default class FlattenFileTree {
     }
 
 }
+
+export default FlattenFileTree;
