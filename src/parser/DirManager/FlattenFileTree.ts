@@ -9,14 +9,18 @@ export default class FlattenFileTree {
     private readonly fileSystemEditor: FileSystemEditor;
     private readonly purger: FilePurger;
 
-    private readonly exclude = /.DS_Store|purge|rejected/;
-    private readonly purgeFolder = 'purge';
+    private readonly exclude: RegExp;
+    private readonly purgeFolder: string;
 
     constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor)
-    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor, purger?: FilePurger) {
+    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor, purger?: FilePurger)
+    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor, purger?: FilePurger, exclude?: RegExp, purgeFolder?: string) {
         this.dirTreeCreator = dirTreeCreator;
         this.fileSystemEditor = fileSystemEditor;
         this.purger = purger ?? new FilePurger(new FSEditor());
+
+        this.exclude = exclude ?? /.DS_Store|purge|rejected/
+        this.purgeFolder = purgeFolder ?? 'purge';
     }
     
     /**
@@ -60,11 +64,9 @@ export default class FlattenFileTree {
 
         const level1foldersWithNoVideos = level1folders.filter(folder => !folder.contains(node => node.isVideo)).map(node => node.path);
 
-        purge = purge.concat(level1foldersWithNoVideos);
-        
         return {
             moveup: moveUp,
-            purge: purge
+            purge: [...purge, ...level1foldersWithNoVideos]
         };
     }
 

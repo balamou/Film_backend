@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import FlattenFileTree from '../../src/parser/DirManager/FlattenFileTree';
 import MockDirTreeCreator from '../stub/MockDirTreeCreator';
 import MockFSEditor from '../stub/MockFSEditor';
+import FilePurger from '../../src/parser/DirManager/FilePurger';
 
 describe('Flatten File Tree', function () {
     const rootFolder = '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders';
@@ -13,8 +14,8 @@ describe('Flatten File Tree', function () {
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
             const flatData = flattenFileTree['findMisplacedFiles']('well_orginized_show');
             
-            expect(flatData.moveup).to.eql([]);
             expect(flatData.purge).to.eql([]);
+            expect(flatData.moveup).to.eql([]);
         });
 
         it('extra non-video files in series top level', () => {
@@ -24,8 +25,8 @@ describe('Flatten File Tree', function () {
             const purge = [ `${rootFolder}/extra_files_in_top_level/movie_description.txt`,
                             `${rootFolder}/extra_files_in_top_level/poster.jpeg` ];
 
-            expect(flatData.moveup).to.eql([]);
             expect(flatData.purge).to.eql(purge);
+            expect(flatData.moveup).to.eql([]);
         });
 
         it('empty folders in series top level', () => {
@@ -35,8 +36,8 @@ describe('Flatten File Tree', function () {
             const purge =[ `${rootFolder}/empty_folders_in_top_level/S3`,
                             `${rootFolder}/empty_folders_in_top_level/information` ];
 
-            expect(flatData.moveup).to.eql([]);
             expect(flatData.purge).to.eql(purge);
+            expect(flatData.moveup).to.eql([]);
         });
 
         it('folders with no video files in series top level', () => {
@@ -47,8 +48,8 @@ describe('Flatten File Tree', function () {
                             `${rootFolder}/folders_with_no_video_files_in_top_level/S3/some_picture.jpeg`,
                             `${rootFolder}/folders_with_no_video_files_in_top_level/S3` ];
 
-            expect(flatData.moveup).to.eql([]);
             expect(flatData.purge).to.eql(purge);
+            expect(flatData.moveup).to.eql([]);
         });
 
         it('folders and non-video files at depth 2', () => {
@@ -58,8 +59,52 @@ describe('Flatten File Tree', function () {
             const purge = [`${rootFolder}/folders_and_non_video_files_at_depth_2/S1/depth_1_folder`,
                             `${rootFolder}/folders_and_non_video_files_at_depth_2/S2/depth_1_folder`];
 
-            expect(flatData.moveup).to.eql([]);
             expect(flatData.purge).to.eql(purge);
+            expect(flatData.moveup).to.eql([]);
+        });
+
+        it('relative path', () => {
+            const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
+            const flatData = flattenFileTree['findMisplacedFiles']('flatten');
+            
+            const purge = ["public/en/shows/game_of_thrones/source.txt",
+                "public/en/shows/game_of_thrones/thumbnail.jpeg",
+                "public/en/shows/game_of_thrones/S3/nested",
+                "public/en/shows/game_of_thrones/Season 1/hello",
+                "public/en/shows/game_of_thrones/Season 2/nested",
+                "public/en/shows/game_of_thrones/Season4/no_videos",
+                "public/en/shows/game_of_thrones/Season4/subtitles.srt.txt",
+                "public/en/shows/game_of_thrones/Season4"];
+            
+            const moveup = [
+                {
+                    level: 3,
+                    path: "public/en/shows/game_of_thrones/Season 2/nested/E12.mkv"
+                },
+                {
+                    level: 3,
+                    path: "public/en/shows/game_of_thrones/Season 2/nested/E13.mkv"
+                },
+                {
+                    level: 3,
+                    path: "public/en/shows/game_of_thrones/Season 2/nested/E14.mkv"
+                },
+                {
+                    level: 4,
+                    path: "public/en/shows/game_of_thrones/S3/nested/nested/E12.mkv"
+                },
+                {
+                    level: 4,
+                   path: "public/en/shows/game_of_thrones/S3/nested/nested/E13.mkv"
+                },
+                {
+                    level: 4,
+                    path: "public/en/shows/game_of_thrones/S3/nested/nested/E14.mkv"
+                }
+            ];
+
+            expect(flatData.purge).to.eql(purge);
+            expect(flatData.moveup).to.eql(moveup);
         });
 
     });
@@ -266,5 +311,68 @@ describe('Flatten File Tree', function () {
         });
 
 
+    });
+
+    describe('Flatten', () => {
+
+        it('relative paths', () => {
+            const purger = new FilePurger(new MockFSEditor());
+            const fsEditor = new MockFSEditor();
+            let calledPurge = false;
+            let calledMove = false;
+
+            purger.purge = (purgeDirectory: string) => calledPurge = true;
+                
+            fsEditor.moveFileToFolder = (from: string, to: string) => calledMove = true;
+
+            const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), fsEditor, purger);
+
+            flattenFileTree.flatten('flatten');
+
+            const purgeList = ['public/en/shows/game_of_thrones/source.txt',
+            'public/en/shows/game_of_thrones/thumbnail.jpeg',
+            'public/en/shows/game_of_thrones/S3/nested',
+            'public/en/shows/game_of_thrones/Season 1/hello',
+            'public/en/shows/game_of_thrones/Season 2/nested',
+            'public/en/shows/game_of_thrones/Season4'];
+
+            expect(calledPurge).to.be.true;
+            expect(calledMove).to.be.true;
+
+            expect(purger.purgeList).to.eql(purgeList);
+        });
+
+        it('absolute paths', () => {
+            const purger = new FilePurger(new MockFSEditor());
+            const fsEditor = new MockFSEditor();
+            let calledPurge = false;
+            let calledMove = false;
+
+            purger.purge = (purgeDirectory: string) => calledPurge = true;
+                
+            fsEditor.moveFileToFolder = (from: string, to: string) => calledMove = true;
+
+            const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), fsEditor, purger);
+            let misplacedFiles: {
+                moveup: {
+                    path: string;
+                    level: number;
+                }[];
+                purge: string[]
+            } | undefined;
+
+            // This extends the original method and avoids infinite recursion
+            const originalFunction = flattenFileTree['findMisplacedFiles'].bind(flattenFileTree);
+            flattenFileTree['findMisplacedFiles'] = ((pathToFolder: string) => {
+                misplacedFiles = originalFunction(pathToFolder);
+                return misplacedFiles;
+            }).bind(flattenFileTree);
+            //------
+
+            flattenFileTree.flatten('absolute_mess');
+
+            console.log(misplacedFiles);
+            console.log(purger.purgeList);
+        });
     });
 });
