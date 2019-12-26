@@ -2,7 +2,7 @@ class Tree {
     readonly path: string;
     readonly name: string;
     readonly type: string;
-    readonly extension: string | undefined;
+    readonly extension?: string;
     readonly children: Tree[];
 
     private readonly FILE = 'file';
@@ -23,12 +23,10 @@ class Tree {
             const size = queue.length;
 
             for (let i = 0; i < size; i++) {
-                const currNode = queue.shift(); // `shift` is the same as `dequeue` in a queue
+                const currNode = queue.shift()!; // `shift` is the same as `dequeue` in a queue
                 
-                if (currNode) {
-                    onEach(currNode, level);
-                    currNode.children.forEach(node => queue.push(node));
-                }
+                onEach(currNode, level);
+                currNode.children.forEach(node => queue.push(node));
             }
 
             level++;
@@ -43,7 +41,9 @@ class Tree {
             const currNode = queue.shift(); // `shift` is the same as `dequeue` in a queue
 
             if (currNode) {
-                if (predicate(currNode)) return true;
+                if (predicate(currNode)) {
+                    return true;
+                }
                 currNode.children.forEach(node => queue.push(node));
             }
         }
@@ -59,8 +59,10 @@ class Tree {
     };
 
     get isVideo(): boolean {
-        if (!this.extension) return false;
-        return this.isVideoFormat(this.extension);
+        if (this.extension) {
+            return this.isVideoFormat(this.extension);
+        }
+        return false;
     };
     
     private isVideoFormat = (extension: string) => {

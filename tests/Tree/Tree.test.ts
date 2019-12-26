@@ -88,6 +88,53 @@ describe('Tree tests', function () {
             expect(result).to.eql(expectedLevelOrderTraversal);
         });
 
+        it('tree with one child for each node', () => {
+            const node4 = new Tree('a/b/c/d/e/f.mp4', 'f.mp4', 'file', 'mp4', []);
+            const node3 = new Tree('a/b/c/d/e', 'e', 'directory', undefined, [node4]);
+            const node2 = new Tree('a/b/c/d', 'd', 'directory', undefined, [node3]);
+            const node1 = new Tree('a/b/c', 'c', 'directory', undefined, [node2]);
+            
+            const traversal: {node: Tree, level: number}[] = [];
+
+            node1.levelOrderTraversal((node, level) => {
+                traversal.push({node: node, level: level});
+            });
+
+            const expectedResult = [{ node: node1, level: 0 },
+                { node: node2, level: 1 },
+                { node: node3, level: 2 },
+                { node: node4, level: 3 }];
+
+            expect(traversal).to.eql(expectedResult);
+        });
+
+    });
+
+    describe('Check if tree contains a node', () => {
+
+        it('base test', () => { 
+            const node4 = new Tree('a/b/c/d/e/f.mp4', 'f.mp4', 'file', 'mp4', []);
+            const node3 = new Tree('a/b/c/d/e', 'e', 'directory', undefined, [node4]);
+            const node2 = new Tree('a/b/c/d', 'd', 'directory', undefined, [node3]);
+            const node1 = new Tree('a/b/c', 'c', 'directory', undefined, [node2]);
+            const tree = node1;
+
+            expect(tree.contains(node => node.name === 'e')).to.be.true;
+            expect(tree.contains(node => node.name === 'k')).to.be.false;
+        });
+
+        it('does not contains a file that is not a video', () => { 
+            const node5 = new Tree('a/b/c/d/e/g', 'g', 'directory', undefined, []);
+            const node4 = new Tree('a/b/c/d/e/f.mp4', 'f.mp4', 'file', '.mp4', []);
+            const node3 = new Tree('a/b/c/d/e', 'e', 'directory', undefined, [node4, node5]);
+            const node2 = new Tree('a/b/c/d', 'd', 'directory', undefined, [node3]);
+            const node1 = new Tree('a/b/c', 'c', 'directory', undefined, [node2]);
+            const tree = node1;
+
+            const contains = tree.contains(node => node.isFile && !node.isVideo);
+            expect(contains).to.be.false;
+        });
+
     });
 
 });
