@@ -5,13 +5,17 @@ import FilePurger from './FilePurger';
 import Path from 'path';
 
 export class FlattenFileTree {
-    private dirTreeCreator: DirectoryTreeCreator;
-    private fileSystemEditor: FileSystemEditor;
-    private readonly exclude = /.DS_Store|purge|rejected/;
+    private readonly dirTreeCreator: DirectoryTreeCreator;
+    private readonly fileSystemEditor: FileSystemEditor;
+    private readonly purger: FilePurger;
 
-    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor) {
+    private readonly exclude = /.DS_Store|purge|rejected/;
+    private readonly purgeFolder = 'purge';
+
+    constructor(dirTreeCreator: DirectoryTreeCreator, fileSystemEditor: FileSystemEditor, purger: FilePurger = new FilePurger(new FSEditor())) {
         this.dirTreeCreator = dirTreeCreator;
         this.fileSystemEditor = fileSystemEditor;
+        this.purger = purger;
     }
 
     // `pathToFolder` [RELATIVE|ABSOLUTE] is the path to the series folder
@@ -47,10 +51,12 @@ export class FlattenFileTree {
     }
 
     /**
-     * @param files [ABSOLUTE] `files.path` has to be absolute
+     * Moves files to specified level
+     * 
+     * @param files [RELATIVE|ABSOLUTE] `files.path`
      * @param desiredLevel is the level desired to move files. It is relative to the `pathToFolder`
      */
-    private moveUp(files: {path: string, level: number}[], desiredLevel: number) {
+    private moveFilesToLevel(files: {path: string, level: number}[], desiredLevel: number) {
         files.forEach(file => {
             const finalDir = this.folderAtDesiredLevel(file.path, file.level, desiredLevel);
             this.fileSystemEditor.moveFileToFolder(file.path, finalDir);
@@ -62,7 +68,7 @@ export class FlattenFileTree {
         const pathComponents = path.split('/').filter(x => x !== '');
         const dir = pathComponents.truncate(truncateTail);
         
-        return Path.join('/', ...dir);
+        return Path.isAbsolute(path) ? Path.join('/', ...dir) : Path.join(...dir);
     }
 
     /**
@@ -72,9 +78,9 @@ export class FlattenFileTree {
      */
     flatten(pathToFolder: string) {
         const filesToMove = this.findMisplacedFiles(pathToFolder);
-        this.moveUp(filesToMove.moveup, 2);
-
-        const purger = new FilePurger(new FSEditor(), filesToMove.purge);
-        purger.purge(`${pathToFolder}/purge`);
+        
+        this.moveFilesToLevel(filesToMove.moveup, 2);
+        this.purger.insertPaths(filesToMove.purge);
+        this.purger.purge(`${pathToFolder}/${this.purgeFolder}`);
     }
 }

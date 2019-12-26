@@ -56,7 +56,7 @@ class FilePurger {
         const resultPath = `${currentPath}${path}`;
 
         if (node.markedPath)
-            return [resultPath];
+            return [resultPath.substring(1)]; // remove front slash
         else
             return node.nestedPaths.flatMap(x => this.preoder(x, resultPath));
     }

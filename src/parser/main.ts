@@ -9,7 +9,7 @@ import ExecuteDifference from './ExecuteDifference';
 const factory = new Factory();
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
 const NETWORK_ENABLED = true;
-const DATABASE_ENABLED = true;
+const DATABASE_ENABLED = false;
 
 const paths = [{ language: 'en', type: 'shows', path: '/public/en/shows' },
                 { language: 'en', type: 'movies', path: '/public/en/movies' },
@@ -106,7 +106,7 @@ function orginizeAllSeries(path: string) {
 function orginizeSeriesFolder(path: string) {
     const flatten = factory.createFlattenFileTree();
     flatten.flatten(path);
-
+    return;
     // Separate
     const directoryTree = getDirTree(path, GLOBAL_EXCLUDE);
 

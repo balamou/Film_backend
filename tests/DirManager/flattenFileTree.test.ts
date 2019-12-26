@@ -137,7 +137,7 @@ describe('Flatten File Tree', function () {
 
     });
 
-    describe('Move Up', () => {
+    describe('Move files to level', () => {
 
         it('base test', () => {
             const fsEditor = new MockFSEditor();
@@ -154,7 +154,7 @@ describe('Flatten File Tree', function () {
                             { path: `${rootFolder}/video_files_below_level_2/Season 10/nested_videos/deeply nested/South park [3x03].mp4`, level: 4},
                             { path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/deeply nested/South park [3x03].mp4`, level: 4}];
     
-            flattenFileTree['moveUp'](moveUp, 2);
+            flattenFileTree['moveFilesToLevel'](moveUp, 2);
     
             const expectation = [
                 [
@@ -193,7 +193,7 @@ describe('Flatten File Tree', function () {
                             { path: `${rootFolder}/video_files_below_level_2/Season 10/nested_videos/deeply nested/South park [3x03].mp4`, level: 4},
                             { path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/deeply nested/South park [3x03].mp4`, level: 4}];
     
-            flattenFileTree['moveUp'](moveUp, 3);
+            flattenFileTree['moveFilesToLevel'](moveUp, 3);
     
             const expectation = [
                 [
@@ -232,7 +232,7 @@ describe('Flatten File Tree', function () {
                             { path: `${rootFolder}/video_files_below_level_2/Season 10/nested_videos/deeply nested/South park [3x03].mp4`, level: 4},
                             { path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/deeply nested/South park [3x03].mp4`, level: 4}];
     
-            flattenFileTree['moveUp'](moveUp, 0);
+            flattenFileTree['moveFilesToLevel'](moveUp, 0);
     
             const expectation = [
                 [

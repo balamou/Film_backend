@@ -155,7 +155,7 @@ describe('File purger tests', () => {
                 'a/e/h'];
     
             const filePurger = new FilePurger(new MockFSEditor(), paths);
-            const expectedPurgeList = [ '/a/b', '/a/c', '/a/e/m/o', '/a/e/m/p', '/a/e/h' ];
+            const expectedPurgeList = [ 'a/b', 'a/c', 'a/e/m/o', 'a/e/m/p', 'a/e/h' ];
     
             expect(filePurger.purgeList).to.eql(expectedPurgeList);
         });
@@ -168,11 +168,11 @@ describe('File purger tests', () => {
                 'd/m'];
     
             const filePurger = new FilePurger(new MockFSEditor(), paths);
-            const expectedPurgeList = ['/a/b/c',
-                '/m/n/o/p',
-                '/q/e/f',
-                '/c',
-                '/d/m'];
+            const expectedPurgeList = ['a/b/c',
+                'm/n/o/p',
+                'q/e/f',
+                'c',
+                'd/m'];
     
             expect(filePurger.purgeList).to.eql(expectedPurgeList);
         });
@@ -200,7 +200,7 @@ describe('File purger tests', () => {
             filePurger.insertPath('/a/b/c/f');
 
             filePurger.purge('/purge');
-            expect(result).to.eql([['/a/b/c', '/purge'], ['/a/d', '/purge']]);
+            expect(result).to.eql([['a/b/c', '/purge'], ['a/d', '/purge']]);
         });
    
     });
