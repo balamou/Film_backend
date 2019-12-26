@@ -4,7 +4,7 @@ import Tree from '../Tree/Tree';
 import FilePurger from './FilePurger';
 import Path from 'path';
 
-export class FlattenFileTree {
+export default class FlattenFileTree {
     private readonly dirTreeCreator: DirectoryTreeCreator;
     private readonly fileSystemEditor: FileSystemEditor;
     private readonly purger: FilePurger;
@@ -58,15 +58,20 @@ export class FlattenFileTree {
      */
     private moveFilesToLevel(files: {path: string, level: number}[], desiredLevel: number) {
         files.forEach(file => {
-            const finalDir = this.folderAtDesiredLevel(file.path, file.level, desiredLevel);
+            const finalDir = this.removeSubpaths(file.path, file.level - desiredLevel + 1);
             this.fileSystemEditor.moveFileToFolder(file.path, finalDir);
         });
     }
 
-    private folderAtDesiredLevel(path: string, level: number, desiredLevel: number) {
-        const truncateTail = level - desiredLevel + 1;
+    /**
+     * Removes subpaths from the end of a path.
+     * 
+     * Example the path `a/b/c/d/e` after removing 2 levels becomes `a/b/c`.
+     * This function preserves the type of the path, relative or absolute.
+    */
+    private removeSubpaths(path: string, levelsToRemove: number) {
         const pathComponents = path.split('/').filter(x => x !== '');
-        const dir = pathComponents.truncate(truncateTail);
+        const dir = pathComponents.truncate(levelsToRemove);
         
         return Path.isAbsolute(path) ? Path.join('/', ...dir) : Path.join(...dir);
     }
@@ -78,7 +83,7 @@ export class FlattenFileTree {
      */
     flatten(pathToFolder: string) {
         const filesToMove = this.findMisplacedFiles(pathToFolder);
-        
+
         this.moveFilesToLevel(filesToMove.moveup, 2);
         this.purger.insertPaths(filesToMove.purge);
         this.purger.purge(`${pathToFolder}/${this.purgeFolder}`);

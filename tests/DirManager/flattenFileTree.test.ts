@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { FlattenFileTree } from '../../src/parser/DirManager/FlattenFileTree';
+import FlattenFileTree from '../../src/parser/DirManager/FlattenFileTree';
 import MockDirTreeCreator from '../stub/MockDirTreeCreator';
 import MockFSEditor from '../stub/MockFSEditor';
 
@@ -97,13 +97,13 @@ describe('Flatten File Tree', function () {
 
     });
 
-    describe('Find folder at desired level', () => {
+    describe('Remove subpaths', () => {
 
         it('base test', () => {
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
             const path = '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 12/nested_videos/South park [3x02].mkv';
 
-            const finalDir = flattenFileTree['folderAtDesiredLevel'](path, 3, 2);
+            const finalDir = flattenFileTree['removeSubpaths'](path, 2);
 
             expect(finalDir).to.equal('/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 12');
         });
@@ -112,7 +112,7 @@ describe('Flatten File Tree', function () {
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
             const path = '/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_below_level_2/Season 12/nested_videos/South park [3x02].mkv';
 
-            const finalDir = flattenFileTree['folderAtDesiredLevel'](path, 5, 2);
+            const finalDir = flattenFileTree['removeSubpaths'](path, 4);
 
             expect(finalDir).to.equal('/Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders');
         });
@@ -121,7 +121,7 @@ describe('Flatten File Tree', function () {
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
             const path = '/a/b/c/d/video.mkv';
 
-            const finalDir = flattenFileTree['folderAtDesiredLevel'](path, 2, 1);
+            const finalDir = flattenFileTree['removeSubpaths'](path, 2);
 
             expect(finalDir).to.equal('/a/b/c');
         });
@@ -130,9 +130,18 @@ describe('Flatten File Tree', function () {
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
             const path = '/a/b/c/d/video.mkv';
 
-            const finalDir = flattenFileTree['folderAtDesiredLevel'](path, 4, 0);
+            const finalDir = flattenFileTree['removeSubpaths'](path, 5);
 
             expect(finalDir).to.equal('/');
+        });
+
+        it('relative path', () => {
+            const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), new MockFSEditor());
+            const path = 'a/b/c/d/video.mkv';
+
+            const finalDir = flattenFileTree['removeSubpaths'](path, 3);
+
+            expect(finalDir).to.equal('a/b');
         });
 
     });
