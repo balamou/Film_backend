@@ -73,8 +73,11 @@ class FilePurger {
     }
 
     purge(purgeDirectory: string) {
+        if (this.rootNode.nestedPaths.length === 0) return;
+
         this.fsEditor.makeDirectory(purgeDirectory);
         this.purgeList.forEach(path => this.fsEditor.moveFileToFolder(path, purgeDirectory));
+        this.rootNode.nestedPaths = []; // clear the tree
     }
 }
 

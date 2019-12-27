@@ -14,7 +14,7 @@ export class TitleParserAdapter implements TitleParser {
         
         // fallback regex
         if (!episode) {
-            const result = fileName.match(/(E|e)(\d+)/);
+            const result = fileName.match(/(Episode|episode|Ep|ep|E|e)\D*(\d+)/);
             if (result)
                 episode = parseInt(result[2]); // grab second group
         }

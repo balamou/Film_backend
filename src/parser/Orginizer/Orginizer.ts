@@ -62,7 +62,7 @@ class Orginizer {
         const { folders, files } = this.separateFoldersFromFiles(path);
         
         const vtBuilder = this.factory.createVirtualTreeBuilder();
-        vtBuilder.buildVirtualTree(files);
+        vtBuilder.buildVirtualTreeFromFiles(files);
         vtBuilder.buildVirtualTreeFromFolders(folders);
         vtBuilder.commit(path);
         

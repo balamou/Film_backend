@@ -67,7 +67,4 @@ export class Episode {
         this.file = file;
         this.path = file.path;
     }
-
-    getNewEpisodeName = () => `E${this.episodeNum}${this.file.extension}`;
-    getFullPath = () => this.file.path;
 }

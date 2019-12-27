@@ -4,6 +4,7 @@ import { VirtualTree, Episode } from './VirtualTree';
 import { TitleParser } from '../../Adapters/TitleParser';
 import { FileSystemEditor } from '../../Adapters/FSEditor';
 import { DirectoryTreeCreator } from '../../Adapters/DirTreeCreator';
+import FilePurger from '../../DirManager/FilePurger';
 
 export class VirtualTreeBuilder {
     private titleParser: TitleParser;
@@ -19,13 +20,13 @@ export class VirtualTreeBuilder {
         this.dirTree = dirTree;
     }
 
-    buildVirtualTree(files: Tree[]) {
+    buildVirtualTreeFromFiles(files: Tree[]) {
         files.forEach(file => {
-            const info = this.titleParser.parse(file.name);
+            const { season, episode } = this.titleParser.parse(file.name);
 
-            if (info.season && info.episode) {
+            if (season && episode) {
                 try {
-                    this.virtualTree.addEpisode(info.season, new Episode(info.episode, file));
+                    this.virtualTree.addEpisode(season, new Episode(episode, file));
                 } catch (error) {
                     this.rejected.push(file);
                 }
@@ -52,48 +53,44 @@ export class VirtualTreeBuilder {
         });
     }
 
+    commit(path: string) {
+        this.virtualTree.forEach( (season, episode) => {
+            const newFolder = `S${season.seasonNum}`;
+            const newEpisode = `E${episode.episodeNum}${episode.file.extension}`;
+            
+            this.fileSystemEditor.makeDirectory(`${path}/${newFolder}`);
+            this.fileSystemEditor.moveAndRename(episode.file.path, `${path}/${newFolder}/${newEpisode}`);
+            season.path = `${path}/${newFolder}`;
+            episode.path = `${path}/${newFolder}/${newEpisode}`;
+        });
+        
+        this.cleanup(path);
+    }
+    
+    private cleanup(path: string) {
+        this.cleanRejectFolder(path);
+        const tree = this.dirTree.treeFrom(path, /.DS_Store|purge|rejected/);
+        this.rejected = tree.children.filter(child => child.isFolder && !child.contains(node => node.isVideo));
+        this.cleanRejectFolder(path);
+        
+        this.fileSystemEditor.deleteFile(`${path}/.DS_Store`);
+    }
+    
+    private cleanRejectFolder(path: string) {
+        const purger = new FilePurger(this.fileSystemEditor);
+        const paths = this.rejected.map(node => node.path);
+        purger.insertPaths(paths);
+        purger.purge(`${path}/rejected`);
+        this.rejected = [];
+    }
+
+    // --------------------------------------------------------------------------------
+    // Mark: Utility methods
+    // --------------------------------------------------------------------------------
     private traverseFilesIn(folders: Tree[], apply: (folder: Tree, file: Tree) => void) {
         folders.forEach(folder => {
             folder.children.forEach(file => apply(folder, file));
         });
-    }
-
-    commit(path: string) {
-        this.virtualTree.forEach( (season, episode) => {
-            const newFolder = `S${season.seasonNum}`;
-            const newEpisode = episode.getNewEpisodeName();
-
-            this.fileSystemEditor.makeDirectory(`${path}/${newFolder}`);
-            this.fileSystemEditor.moveAndRename(episode.file.path, `${path}/${newFolder}/${newEpisode}`);
-            episode.path = `${path}/${newFolder}/${newEpisode}`;
-            season.path = `${path}/${newFolder}`;
-        });
-
-        this.cleanup(path);
-    }
-
-    private cleanup(path: string) {
-        this.cleanRejectFolder(path);
-
-        // collect all empty folders
-        const tree = this.dirTree.treeFrom(path, /.DS_Store|purge|rejected/);
-        tree.children.forEach(child => {
-            if (child.isFolder && !child.contains(node => node.isVideo))
-                this.rejected.push(child);
-        });
-
-        this.cleanRejectFolder(path);
-
-        this.fileSystemEditor.deleteFile(`${path}/.DS_Store`);
-    }
-
-    private cleanRejectFolder(path: string) {
-        if (this.rejected.length === 0) return;
-
-        const rejected = `${path}/rejected`;
-        this.fileSystemEditor.makeDirectory(rejected);
-        this.rejected.forEach(file => this.fileSystemEditor.moveFileToFolder(file.path, rejected));
-        this.rejected = [];
     }
 }
 
