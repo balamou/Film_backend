@@ -38,14 +38,12 @@ class Tree {
         const queue = [this as Tree];
 
         while(queue.length > 0) {
-            const currNode = queue.shift(); // `shift` is the same as `dequeue` in a queue
+            const currNode = queue.shift()!; // `shift` is the same as `dequeue` in a queue
 
-            if (currNode) {
-                if (predicate(currNode)) {
-                    return true;
-                }
-                currNode.children.forEach(node => queue.push(node));
+            if (predicate(currNode)) {
+                return true;
             }
+            currNode.children.forEach(node => queue.push(node));
         }
         return false;
     };
