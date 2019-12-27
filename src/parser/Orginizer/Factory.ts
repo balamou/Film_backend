@@ -3,12 +3,12 @@ import { DirTree, DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
 import { FSEditor } from '../Adapters/FSEditor';
 
 import { TitleParserAdapter } from '../Adapters/TitleParser';
-import { VirtualTreeBuilder } from '../VirtualTree/VirtualTreeBuilder';
-import { VirtualTreeParser } from '../VirtualTree/VirtualTreeParser';
+import { VirtualTreeBuilder } from './VirtualTree/VirtualTreeBuilder';
+import { VirtualTreeParser } from './VirtualTree/VirtualTreeParser';
 
 import { EnglishFetcher } from '../FilmScrapper/omdb';
 import RussianFetcher from '../FilmScrapper/russian/RussianFetcher';
-import DatabaseManager from '../DatabaseManager/DatabaseManager';
+import DatabaseManager from './VirtualTree/DatabaseManager';
 import FilePurger from '../DirManager/FilePurger';
 
 export interface AbstractFactory {

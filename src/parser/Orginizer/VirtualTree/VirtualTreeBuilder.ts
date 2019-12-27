@@ -1,9 +1,9 @@
-import Tree from '../Tree/Tree';
+import Tree from '../../Tree/Tree';
 
 import { VirtualTree, Episode } from './VirtualTree';
-import { TitleParser } from '../Adapters/TitleParser';
-import { FileSystemEditor } from '../Adapters/FSEditor';
-import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
+import { TitleParser } from '../../Adapters/TitleParser';
+import { FileSystemEditor } from '../../Adapters/FSEditor';
+import { DirectoryTreeCreator } from '../../Adapters/DirTreeCreator';
 
 export class VirtualTreeBuilder {
     private titleParser: TitleParser;

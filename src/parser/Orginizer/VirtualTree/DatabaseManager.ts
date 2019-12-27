@@ -1,4 +1,4 @@
-import CreationManager from '../../database/CreationManager';
+import CreationManager from '../../../database/CreationManager';
 import { SeriesData } from '../VirtualTree/VirtualTreeParser';
 
 export default class DatabaseManager {

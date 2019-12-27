@@ -1,9 +1,9 @@
 import { VirtualTree } from './VirtualTree';
-import Fetcher from '../FilmScrapper/fetcher';
-import { FileSystemEditor } from '../Adapters/FSEditor';
+import Fetcher from '../../FilmScrapper/fetcher';
+import { FileSystemEditor } from '../../Adapters/FSEditor';
 
-import ffmpeg from '../Adapters/ffmpeg';
-import { download } from '../Adapters/HTTPReq';
+import ffmpeg from '../../Adapters/ffmpeg';
+import { download } from '../../Adapters/HTTPReq';
 
 class VideoInfo {
     season: number;
