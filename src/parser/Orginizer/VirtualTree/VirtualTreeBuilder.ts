@@ -41,8 +41,8 @@ export class VirtualTreeBuilder {
 
     buildVirtualTreeFromFolders(folders: Tree[]) {
         this.traverseFilesIn(folders, (folder, file) => {
-            const seasonNumber = this.titleParser.parseSeasonFrom(folder.name);
-            const episodeNumber = this.titleParser.parse(file.name).episode;
+            const {season, episode: episodeNumber } = this.titleParser.parse(file.name);
+            const seasonNumber = season ?? this.titleParser.parseSeasonFrom(folder.name);
 
             if (episodeNumber && seasonNumber) {
                 try {
