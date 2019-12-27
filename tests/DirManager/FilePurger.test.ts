@@ -251,6 +251,48 @@ describe('File purger tests', () => {
             filePurger.purge('/purge');
             expect(result).to.eql([['/a/b/c', '/purge'], ['/a/d', '/purge']]);
         });
+
+        it('no paths added does not trigger move ot makeDir', () => {
+            const mockFSEditor = new MockFSEditor();
+            let isMoveCalled = false;
+            let isMakeDirCalled = false;
+
+            mockFSEditor.moveFileToFolder = (from: string, to: string) => {
+                isMoveCalled = true;
+            };
+
+            mockFSEditor.makeDirectory = (dirName: string) => {
+                isMakeDirCalled = true;
+            };
+
+            const filePurger = new FilePurger(mockFSEditor);
+            filePurger.purge('/purge');
+
+            expect(isMoveCalled).to.be.false;
+            expect(isMakeDirCalled).to.be.false;
+        });
+
+        it('empty paths after purge called', () => {
+            const mockFSEditor = new MockFSEditor();
+
+            mockFSEditor.moveFileToFolder = (from: string, to: string) => {
+            };
+
+            mockFSEditor.makeDirectory = (dirName: string) => {
+            };
+
+            const filePurger = new FilePurger(mockFSEditor);
+
+            filePurger.insertPath('/a/b/c');
+            filePurger.insertPath('/a/d');
+            filePurger.insertPath('/d/b/c/e');
+            filePurger.insertPath('/d/b/c/f');
+
+            filePurger.purge('/purge');
+
+            expect(filePurger['rootNode'].nestedPaths).to.eql([]);
+            expect(filePurger['rootNode'].nestedPaths.length).to.equal(0);
+        });
    
     });
 });

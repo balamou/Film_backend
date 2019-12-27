@@ -10,7 +10,8 @@ export class VirtualTreeBuilder {
     private titleParser: TitleParser;
     private fileSystemEditor: FileSystemEditor;
     private dirTree: DirectoryTreeCreator;
-
+    private purger: FilePurger;
+    
     private rejected: Tree[] = [];
     readonly virtualTree = new VirtualTree();
 
@@ -18,6 +19,8 @@ export class VirtualTreeBuilder {
         this.titleParser = titleParser;
         this.fileSystemEditor = fileSystemEditor;
         this.dirTree = dirTree;
+
+        this.purger = new FilePurger(this.fileSystemEditor);
     }
 
     buildVirtualTreeFromFiles(files: Tree[]) {
@@ -77,10 +80,9 @@ export class VirtualTreeBuilder {
     }
     
     private cleanRejectFolder(path: string) {
-        const purger = new FilePurger(this.fileSystemEditor);
         const paths = this.rejected.map(node => node.path);
-        purger.insertPaths(paths);
-        purger.purge(`${path}/rejected`);
+        this.purger.insertPaths(paths);
+        this.purger.purge(`${path}/rejected`);
         this.rejected = [];
     }
 
