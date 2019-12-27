@@ -10,7 +10,7 @@ export class VirtualTreeBuilder {
     private fileSystemEditor: FileSystemEditor;
     private dirTree: DirectoryTreeCreator;
 
-    private rejected = new Array<Tree>();
+    private rejected: Tree[] = [];
     readonly virtualTree = new VirtualTree();
 
     constructor(titleParser: TitleParser, fileSystemEditor: FileSystemEditor, dirTree: DirectoryTreeCreator) {
