@@ -91,7 +91,11 @@ export class VirtualTreeBuilder {
     // --------------------------------------------------------------------------------
     private traverseFilesIn(folders: Tree[], apply: (folder: Tree, file: Tree) => void) {
         folders.forEach(folder => {
-            folder.children.forEach(file => apply(folder, file));
+            folder.children.forEach(node => { 
+                if (node.isFile) {
+                    apply(folder, node);
+                }
+            })
         });
     }
 }

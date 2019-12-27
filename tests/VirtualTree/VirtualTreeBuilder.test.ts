@@ -72,6 +72,24 @@ describe('Virtual Tree Builder', function () {
             expect(virtualTreeBuilder['rejected'].length).to.eql(1);
         });
 
+        it('reject duplicate episodes', () => {
+            const virtualTreeBuilder = new VirtualTreeBuilder(new TitleParserAdapter(), new MockFSEditor(), new MockDirTreeCreator());
+            
+            const file1 = new Tree('/a/b/Season3_episode2.mkv', 'Season3_episode2.mkv', 'file', '.mkv', []);
+            const file2 = new Tree('/a/b/Season3_episode3.mkv', 'Season3_episode3.mkv', 'file', '.mkv', []);
+            const file3 = new Tree('/a/b/Season2_episode4.mkv', 'Season2_episode4.mkv', 'file', '.mkv', []);
+            const duplicate = new Tree('/a/b/Season2_episode4.mkv', 'Season2_episode4.mkv', 'file', '.mkv', []);
+            const file5 = new Tree('/a/b/Season1_episode4.mkv', 'Season1_episode4.mkv', 'file', '.mkv', []);
+            const file6 = new Tree('/a/b/Season1_episode6.mkv', 'Season1_episode6.mkv', 'file', '.mkv', []);
+
+            const files = [file1, file2, file3, duplicate, file5, file6];
+            
+            virtualTreeBuilder.buildVirtualTreeFromFiles(files);
+            
+            expect(virtualTreeBuilder['rejected'][0].name).to.eql('Season2_episode4.mkv');
+            expect(virtualTreeBuilder['rejected'].length).to.eql(1);
+        });
+
     });
 
     describe('build virtual tree from folders', () => {
@@ -111,8 +129,6 @@ describe('Virtual Tree Builder', function () {
             
             virtualTreeBuilder.buildVirtualTreeFromFolders([folder1, folder2]);
             
-            snapshot('intertwined_seasons', virtualTreeBuilder.virtualTree);
-
             const expectedTree = readFile('intertwined_seasons');
 
             expect(convertToYaml(virtualTreeBuilder.virtualTree)).to.be.equal(expectedTree);
@@ -139,6 +155,90 @@ describe('Virtual Tree Builder', function () {
             const expectedTree = readFile('intertwined_seasons_no_season_info_in_episode');
 
             expect(convertToYaml(virtualTreeBuilder.virtualTree)).to.be.equal(expectedTree);
+        });
+
+
+        it('accidentally left directory in folder', () => {
+            const virtualTreeBuilder = new VirtualTreeBuilder(new TitleParserAdapter(), new MockFSEditor(), new MockDirTreeCreator());
+            
+            const file1_1 = new Tree('/a/b/Season 1/Season1_episode1.mkv', 'Season1_episode1.mkv', 'file', '.mkv', []);
+            const file1_2 = new Tree('/a/b/Season 1/Season3_episode2.mkv', 'Season3_episode2.mkv', 'file', '.mkv', []);
+            const file1_3 = new Tree('/a/b/Season 1/Season3_episode3.mkv', 'Season3_episode3.mkv', 'file', '.mkv', []);
+            
+            const file2_1 = new Tree('/a/b/Season 2/Season2_episode4.mkv', 'Season2_episode4.mkv', 'file', '.mkv', []);
+            const file2_2 = new Tree('/a/b/Season 2/Season1_episode5.mkv', 'Season1_episode5.mkv', 'file', '.mkv', []);
+            const mutation = new Tree('/a/b/Season 2/Season 5', 'Season 5', 'directory', undefined, []);
+            const file2_3 = new Tree('/a/b/Season 2/episode3.mkv', 'episode3.mkv', 'file', '.mkv', []);
+            const file2_4 = new Tree('/a/b/Season 2/episode6.mkv', 'episode6.mkv', 'file', '.mkv', []);
+            const file2_5 = new Tree('/a/b/Season 2/episode8.mkv', 'episode8.mkv', 'file', '.mkv', []);
+            
+            const folder1 = new Tree('/a/b/Season 1', 'Season 1', 'directory', undefined, [file1_1, file1_2, file1_3]);
+            const folder2 = new Tree('/a/b/Season 2', 'Season 2', 'directory', undefined, [file2_1, file2_2, file2_3, mutation, file2_4, file2_5]);
+            
+            virtualTreeBuilder.buildVirtualTreeFromFolders([folder1, folder2]);
+            
+            const expectedTree = readFile('intertwined_seasons_no_season_info_in_episode');
+
+            expect(convertToYaml(virtualTreeBuilder.virtualTree)).to.be.equal(expectedTree);
+        });
+
+        it('reject duplicate episode', () => {
+            const virtualTreeBuilder = new VirtualTreeBuilder(new TitleParserAdapter(), new MockFSEditor(), new MockDirTreeCreator());
+            
+            const file1_1 = new Tree('/a/b/Season 1/Season1_episode1.mkv', 'Season1_episode1.mkv', 'file', '.mkv', []);
+            const file1_2 = new Tree('/a/b/Season 1/Season1_episode2.mkv', 'Season1_episode2.mkv', 'file', '.mkv', []);
+            const file1_3 = new Tree('/a/b/Season 1/Season1_episode3.mkv', 'Season1_episode3.mkv', 'file', '.mkv', []);
+            const duplicate = new Tree('/a/b/Season 1/Season1_episode3.mkv', 'Season1_episode3.mkv', 'file', '.mkv', []);
+            
+            const file2_1 = new Tree('/a/b/Season 2/Season2_episode4.mkv', 'Season2_episode4.mkv', 'file', '.mkv', []);
+            const duplicate2 = new Tree('/a/b/Season 2/Season1_episode1.mkv', 'Season1_episode1.mkv', 'file', '.mkv', []);
+            const file2_2 = new Tree('/a/b/Season 2/Season2_episode5.mkv', 'Season2_episode5.mkv', 'file', '.mkv', []);
+            
+            const folder1 = new Tree('/a/b/Season 1', 'Season 1', 'directory', undefined, [file1_1, file1_2, file1_3, duplicate]);
+            const folder2 = new Tree('/a/b/Season 2', 'Season 2', 'directory', undefined, [file2_1, file2_2, duplicate2]);
+            
+            virtualTreeBuilder.buildVirtualTreeFromFolders([folder1, folder2]);
+
+            const expectedTree = readFile('build_vtTree_from_folders');
+
+            expect(convertToYaml(virtualTreeBuilder.virtualTree)).to.be.equal(expectedTree);
+            expect(virtualTreeBuilder['rejected'][0].name).to.eql('Season1_episode3.mkv');
+            expect(virtualTreeBuilder['rejected'][1].name).to.eql('Season1_episode1.mkv');
+        });
+
+        it('reject non parsable season and episode numbers', () => {
+            const virtualTreeBuilder = new VirtualTreeBuilder(new TitleParserAdapter(), new MockFSEditor(), new MockDirTreeCreator());
+            
+            const file1_1 = new Tree('/a/b/Season 1/Season1_episode1.mkv', 'Season1_episode1.mkv', 'file', '.mkv', []);
+            const file1_2 = new Tree('/a/b/Season 1/Season3_episode2.mkv', 'Season3_episode2.mkv', 'file', '.mkv', []);
+            const file1_3 = new Tree('/a/b/Season 1/Season3_episode3.mkv', 'Season3_episode3.mkv', 'file', '.mkv', []);
+            
+            const file2_1 = new Tree('/a/b/Season 2/Season2_episode4.mkv', 'Season2_episode4.mkv', 'file', '.mkv', []);
+            const file2_2 = new Tree('/a/b/Season 2/Season1_episode5.mkv', 'Season1_episode5.mkv', 'file', '.mkv', []);
+            const mutation = new Tree('/a/b/Season 2/random_video.mp4', 'random_video.mp4', 'file', '.mp4', []);
+            const file2_3 = new Tree('/a/b/Season 2/episode3.mkv', 'episode3.mkv', 'file', '.mkv', []);
+            const file2_4 = new Tree('/a/b/Season 2/episode6.mkv', 'episode6.mkv', 'file', '.mkv', []);
+            const file2_5 = new Tree('/a/b/Season 2/episode8.mkv', 'episode8.mkv', 'file', '.mkv', []);
+            
+            const folder1 = new Tree('/a/b/Season 1', 'Season 1', 'directory', undefined, [file1_1, file1_2, file1_3]);
+            const folder2 = new Tree('/a/b/Season 2', 'Season 2', 'directory', undefined, [file2_1, file2_2, file2_3, mutation, file2_4, file2_5]);
+            
+            virtualTreeBuilder.buildVirtualTreeFromFolders([folder1, folder2]);
+            
+            const expectedTree = readFile('intertwined_seasons_no_season_info_in_episode');
+
+            expect(convertToYaml(virtualTreeBuilder.virtualTree)).to.be.equal(expectedTree);
+            expect(virtualTreeBuilder['rejected'][0].name).to.eql('random_video.mp4');
+        });
+
+    });
+
+    describe('Commiting vitual tree to file system', () => {
+
+        it('base test', () => {
+
+
+
         });
 
     });
