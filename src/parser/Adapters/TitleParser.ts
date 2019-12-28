@@ -8,7 +8,7 @@ import Path from 'path';
 
 export class TitleParserAdapter implements TitleParser {
 
-    parse(fileName: string): { season?: number | undefined; episode?: number | undefined; } {
+    parse(fileName: string): { season?: number; episode?: number; } {
         fileName = this.removeExtension(fileName);
         
         const info = ptt.parse(fileName);

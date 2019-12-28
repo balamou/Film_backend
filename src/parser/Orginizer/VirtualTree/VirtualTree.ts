@@ -1,7 +1,7 @@
 import Tree from '../../Tree/Tree';
 
 export class VirtualTree {
-    private tree: Season[] = []; // this should be a priority queue ordered by season number
+    private readonly tree: Season[] = []; // this should be a priority queue ordered by season number
 
     addEpisode = (seasonNumber: number, episode: Episode) => {
         let seasonNode = this.tree.find(node => node.seasonNum === seasonNumber); // could use a hash map
@@ -49,7 +49,7 @@ export class VirtualTree {
 
 export class Season {
     readonly seasonNum: number;
-    episodes: Episode[] = []; // this should be a priority queue ordered by episode number
+    readonly episodes: Episode[] = []; // this should be a priority queue ordered by episode number
     path?: string;
 
     constructor(seasonNum: number) {
