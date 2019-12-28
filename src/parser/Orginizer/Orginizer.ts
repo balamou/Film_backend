@@ -4,15 +4,15 @@ import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
 import Path from 'path';
 
 class Orginizer {
-    private readonly NETWORK_ENABLED = true;
-    private readonly DATABASE_ENABLED = true;
+    protected readonly NETWORK_ENABLED = true;
+    protected readonly DATABASE_ENABLED = true;
     private readonly exclude: RegExp;
-    private readonly language: string;
+    protected readonly language: string;
 
-    private readonly factory: Factory;
+    protected readonly factory: Factory;
     private readonly dirTree: DirectoryTreeCreator;
 
-    private readonly purgeFolder: string = 'purge';
+    protected readonly purgeFolder: string = 'purge';
 
     constructor(language: string, factory: Factory, exclude: RegExp) {
         this.exclude = exclude;

@@ -40,7 +40,7 @@ function dirTreeComparison(path: string) {
             console.log("Changes occured!");
             const difference = TreeDifference.difference(tree, currTree);
             difference.print();
-            const execDiff = new ExecuteDifference(new FSEditor(), (seriesPath: string) => {}); // TODO: move to the factory
+            const execDiff = new ExecuteDifference('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
             execDiff.execute(difference);
             // TODO: resave dir state
         }

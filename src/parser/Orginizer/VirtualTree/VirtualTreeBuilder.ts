@@ -56,6 +56,14 @@ export class VirtualTreeBuilder {
         });
     }
 
+    /**
+     * Commits the virtual tree to the file system.
+     * Cleans up all the video files whose titles couldn't be parsed, and moves
+     * them into the `rejected` folder. Then moves all folders in `path` with no videos into the `purge` 
+     * folder (except `purge` & `rejected` folders).
+     * 
+     * @param path to the series folder
+    */
     commit(path: string) {
         this.virtualTree.forEach( (season, episode) => {
             const newFolder = `S${season.seasonNum}`;
@@ -71,18 +79,18 @@ export class VirtualTreeBuilder {
     }
     
     private cleanup(path: string) {
-        this.cleanRejectFolder(path);
+        this.cleanRejectFolder(path, 'rejected');
         const tree = this.dirTree.treeFrom(path, /.DS_Store|purge|rejected/); // TODO: make exclude injectable
         this.rejected = tree.children.filter(child => child.isFolder && !child.contains(node => node.isVideo));
-        this.cleanRejectFolder(path);
+        this.cleanRejectFolder(path, 'purge');
         
         this.fileSystemEditor.deleteFile(`${path}/.DS_Store`);
     }
     
-    private cleanRejectFolder(path: string) {
+    private cleanRejectFolder(path: string, purgeFolder: string) {
         const paths = this.rejected.map(node => node.path);
         this.purger.insertPaths(paths);
-        this.purger.purge(`${path}/rejected`);
+        this.purger.purge(`${path}/${purgeFolder}`);
         this.rejected = [];
     }
 

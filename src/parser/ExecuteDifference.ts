@@ -1,18 +1,20 @@
-import { FileSystemEditor } from "./Adapters/FSEditor";
 import { Difference } from './Tree/TreeDifference';
 import DatabaseManager from "../database/DatabaseManager";
 import Tree from "./Tree/Tree";
 
+import Factory from "./Orginizer/Factory";
+import Orginizer from "./Orginizer/Orginizer";
 
-class ExecuteDifference {
-    private readonly fsEditor: FileSystemEditor;
+import Path from 'path';
+import { TitleParserAdapter } from "./Adapters/TitleParser";
+
+class ExecuteDifference extends Orginizer {
     private readonly dbManager: DatabaseManager;
-    private hardReload: (seriesPath: string) => void;
     
-    constructor(fsEditor: FileSystemEditor, hardReload: (seriesPath: string) => void) {
-        this.fsEditor = fsEditor;
+    constructor(language: string, factory: Factory, exclude: RegExp) {
+        super(language, factory, exclude);
+
         this.dbManager = new DatabaseManager(); // TODO?: Dependency injection
-        this.hardReload = hardReload;
     }
 
     // Instructions
@@ -22,7 +24,7 @@ class ExecuteDifference {
     // m[see below] add logic to handle this
 
     //      d[SEASON, POSTER] if poster deleted => refetch. If season deleted => remove from DB
-    //      a[FOLDER(season/purge), FILE(video/purge)] if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
+    //      *a[FOLDER(season/purge), FILE(video/purge)] if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
     //      m[SEASON see below] add logic to handle episode removal/addition
 
     //          d[EPISODE, THUMBNAILS]: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
@@ -52,59 +54,83 @@ class ExecuteDifference {
         this.dbManager.endConnection(); // async 
     }
 
-    levelOchange = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+    private levelOchange = (parent: Tree, deleted: Tree[], added: Tree[]) => {
         deleted.forEach(series => this.dbManager.deleteSeries(series.path));
-        added.forEach(series => this.hardReload(series.path));
+        added.forEach(series => this.orginizeSeriesFolder(series.path));
     }
 
-    level1change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+    private level1change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
         const seriesFolder = parent.path;
-
-        const removeSeason = (folderName: string) => {
-            let matched = folderName.match(/\d+/);
-            if (!matched) return; // TODO: Weird: Folder with no number (LOG)
-
-            const seasonNumber = this._parseInt(matched[0]);
-
-            if (!seasonNumber) return; // Weird: Folder with no number (LOG)
-
-            this.dbManager.removeSeason(seriesFolder, seasonNumber);
-        }; 
 
         deleted.forEach(node => {
             if (node.name === 'poster.jpeg') {
-                // refetch poster (using parent.name)
+                this.refetchSeriesPoster(seriesFolder);
             } else {
-                removeSeason(node.path);
+                this.removeSeason(seriesFolder, node.path);
             }
         });
 
-        added.forEach(node => {
-            
-        });
+        this.handleAddedLevel1(seriesFolder, added);
     }
 
-    level2change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
-        
-    }
+    private removeSeason(seriesFolder: string, folderName: string) {
+        const titleParser = new TitleParserAdapter(); // TODO: move to factory
+        const seasonNumber = titleParser.parseSeasonFrom(folderName);
 
-    level3change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
-        
+        if (seasonNumber)
+            this.dbManager.removeSeason(seriesFolder, seasonNumber);
+    }; 
+
+    private refetchSeriesPoster(seriesFolder: string) {
+        // TODO: refetch poster (using `seriesFolder`)
     }
 
     /**
-   * Attempts to convert a string `s` into a number. 
-   * Returns undefined if not convertible.
-  */
-    private _parseInt(s: string): number | undefined {
-        const result = parseInt(s);
+     * @param path to the series folder
+     * @param added files/folders added to the series folder
+    */
+    private handleAddedLevel1(path: string, added: Tree[]) {
+        const log = console.log;
+        const seriesName = Path.parse(path).name;
 
-        if (isNaN(result)) {
-            return undefined;
+        const videos = added.filter(node => node.isFile && node.isVideo);
+        const folders = added.filter(node => node.isFolder);
+        const purge = added.filter(node => node.isFile && !node.isVideo);
+        
+        const vtBuilder = this.factory.createVirtualTreeBuilder();
+
+        vtBuilder.buildVirtualTreeFromFiles(videos);
+        vtBuilder.buildVirtualTreeFromFolders(folders);
+
+        vtBuilder.commit(path);
+        //----------
+        const vtParser = this.factory.createVirtualTreeParser(this.language);
+        const dbManager = this.factory.createDatabaseManager(this.language);
+        
+        const virtualTree = vtBuilder.virtualTree;
+
+        vtParser.generateThumbnails(virtualTree);
+        
+        if (this.NETWORK_ENABLED) {
+            log(`Fetching ${seriesName} information`);
+            const seriesInfo = vtParser.getSeriesInformation(path, seriesName, virtualTree);
+            
+            if (this.DATABASE_ENABLED) {
+                log(`Adding ${seriesName} to the database`);
+                dbManager.commitToDB(path, seriesName, seriesInfo);
+                log(`Done adding to the database`);
+            }
         }
-
-        return result;
     }
+
+    private level2change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+        
+    }
+
+    private level3change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
+        
+    }
+
 }
 
 export default ExecuteDifference;
