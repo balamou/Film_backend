@@ -62,8 +62,12 @@ class ExecuteDifference {
 
         const removeSeason = (folderName: string) => {
             let matched = folderName.match(/\d+/);
-            if (!matched) return; // Weird: Folder with no number (LOG)
-            const seasonNumber = parseInt(matched[0]);
+            if (!matched) return; // TODO: Weird: Folder with no number (LOG)
+
+            const seasonNumber = this._parseInt(matched[0]);
+
+            if (!seasonNumber) return; // Weird: Folder with no number (LOG)
+
             this.dbManager.removeSeason(seriesFolder, seasonNumber);
         }; 
 
@@ -86,6 +90,20 @@ class ExecuteDifference {
 
     level3change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
         
+    }
+
+    /**
+   * Attempts to convert a string `s` into a number. 
+   * Returns undefined if not convertible.
+  */
+    private _parseInt(s: string): number | undefined {
+        const result = parseInt(s);
+
+        if (isNaN(result)) {
+            return undefined;
+        }
+
+        return result;
     }
 }
 

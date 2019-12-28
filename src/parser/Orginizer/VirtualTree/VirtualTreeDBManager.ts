@@ -26,6 +26,7 @@ export default class VirtualTreeDBManager {
     private async _commitToDB(path: string, seriesName: string, seriesData: SeriesData, language: string) {
         const cManager = new CreationManager();
         const { seriesInfo, episodesInfo } = seriesData;
+        const staticDirectory = /public\//;
 
         const series = await cManager.createSeries({
             language: language,
@@ -33,7 +34,7 @@ export default class VirtualTreeDBManager {
             title: seriesInfo?.title ?? seriesName,
             seasons: seriesInfo?.totalSeasons,
             description: seriesInfo?.plot?.substring(0, 250),
-            poster: seriesInfo?.poster?.replace(/public\//, '')
+            poster: seriesInfo?.poster?.replace(staticDirectory, '')
         });
 
         for (const episodeInfo of episodesInfo) {
@@ -43,9 +44,9 @@ export default class VirtualTreeDBManager {
                 seriesId: series.id!,
                 seasonNumber: episodeInfo.season,
                 episodeNumber: episodeInfo.episode,
-                videoURL: episodeInfo.videoPath.replace(/public\//, ''),
+                videoURL: episodeInfo.videoPath.replace(staticDirectory, ''),
                 duration: episodeInfo.duration,
-                thumbnailURL: episodeInfo.thumbnail?.replace(/public\//, ''),
+                thumbnailURL: episodeInfo.thumbnail?.replace(staticDirectory, ''),
                 title: episodeInfo.title,
                 plot: episodeInfo.plot?.substring(0, 250)
             });

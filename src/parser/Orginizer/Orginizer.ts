@@ -12,6 +12,8 @@ class Orginizer {
     private readonly factory: Factory;
     private readonly dirTree: DirectoryTreeCreator;
 
+    private readonly purgeFolder: string = 'purge';
+
     constructor(language: string, factory: Factory, exclude: RegExp) {
         this.exclude = exclude;
         this.language = language;
@@ -27,7 +29,7 @@ class Orginizer {
 
         const purger = this.factory.createFilePurger();
         purger.insertPaths(files);
-        purger.purge(`${path}/purge`);
+        purger.purge(`${path}/${this.purgeFolder}`);
 
         folders.forEach(folder => this.orginizeSeriesFolder(folder));
     }
