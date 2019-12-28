@@ -93,8 +93,11 @@ class ExecuteDifference extends Orginizer {
 
         const videos = added.filter(node => node.isFile && node.isVideo);
         const folders = added.filter(node => node.isFolder);
-        const purge = added.filter(node => node.isFile && !node.isVideo); // TODO: Purge those files
-        
+        const purge = added.filter(node => node.isFile && !node.isVideo);
+        this.purge(path, purge);
+
+        if (videos.length === 0 && folders.length === 0) return; // do nothing
+
         const vtBuilder = this.factory.createVirtualTreeBuilder();
 
         vtBuilder.buildVirtualTreeFromFiles(videos);
@@ -121,6 +124,12 @@ class ExecuteDifference extends Orginizer {
                 log(`Done adding to the database`);
             }
         }
+    }
+
+    private purge(path: string, files: Tree[]) {
+        const purger = this.factory.createFilePurger();
+        purger.insertPaths(files.map(x => x.path));
+        purger.purge(`${path}/purge`);
     }
 
     private level2change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
