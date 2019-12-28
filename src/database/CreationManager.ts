@@ -1,6 +1,6 @@
 import DatabaseManager from './DatabaseManager';
 
-export type SeriesType = {id?: number, language: string, folder: string, title: string, seasons: number, description?: string, poster?: string};
+export type SeriesType = {id?: number, language: string, folder: string, title: string, seasons?: number, description?: string, poster?: string};
 
 export type EpisodeType = {id?: number, seriesId: number, seasonNumber: number, episodeNumber: number, videoURL: string, duration: number, thumbnailURL?: string, title?: string, plot?: string, stoppedAt?: number};
 

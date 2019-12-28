@@ -2,24 +2,29 @@ import CreationManager from '../../../database/CreationManager';
 import { SeriesData } from './VirtualTreeParser';
 
 export default class VirtualTreeDBManager {
+    private readonly language: string; // 'en' or 'ru'
+
+    constructor(language: string) {
+        this.language = language;
+    }
 
     // this method makes _commitToDB execute asynchronously
     commitToDB(path: string, seriesName: string, seriesData: SeriesData) {
         const synchronize = require('synchronized-promise');
         const syncCommitToDB = synchronize(this._commitToDB);
 
-        syncCommitToDB(path, seriesName, seriesData);
+        syncCommitToDB(path, seriesName, seriesData, this.language);
     }
 
-    async _commitToDB(path: string, seriesName: string, seriesData: SeriesData) {
+    async _commitToDB(path: string, seriesName: string, seriesData: SeriesData, language: string) {
         const cManager = new CreationManager();
         const { seriesInfo, episodesInfo } = seriesData;
 
         const series = await cManager.createSeries({
-            language: 'en', // TODO: add language
+            language: language,
             folder: path,
             title: seriesInfo?.title ?? seriesName,
-            seasons: seriesInfo?.totalSeasons ?? 0, // TODO: make it not optional
+            seasons: seriesInfo?.totalSeasons,
             description: seriesInfo?.plot?.substring(0, 250),
             poster: seriesInfo?.poster?.replace(/public\//, '')
         });

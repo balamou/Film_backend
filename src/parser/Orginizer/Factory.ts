@@ -43,6 +43,6 @@ export default class OrginizerFactory implements AbstractFactory {
     }
 
     createDatabaseManager(): VirtualTreeDBManager {
-        return new VirtualTreeDBManager();
+        return new VirtualTreeDBManager('ru');
     }
 }
