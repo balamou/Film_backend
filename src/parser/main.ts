@@ -8,6 +8,7 @@ import OrginizerFactory from './Orginizer/Factory';
 import TreeDifference from './Tree/TreeDifference';
 
 import DirSnapshot from './DirSnapshot';
+import FilePurger from './DirManager/FilePurger';
 
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
 
@@ -24,38 +25,35 @@ export default function main() { // TODO: Rename to facade
     } else {
         const orginizer = new Orginizer('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
         orginizer.orginizeAllSeries(path);
-        DirSnapshot.saveDirectoryStateOnDisk(path);
+        DirSnapshot.saveDirectoryStateOnDisk(path, GLOBAL_EXCLUDE);
     }
 }
 
 function dirTreeComparison(path: string) {
     removeFiles(path); // remove files from path
-    const tree = DirSnapshot.loadDirectoryStateFromFile(path);
-    const currTree = getDirTree(path, GLOBAL_EXCLUDE);
+    const beforeTree = DirSnapshot.loadDirectoryStateFromFile(path);
+    const afterTree = getDirTree(path, GLOBAL_EXCLUDE);
 
-    if (tree) {
-        if (tree.hash() === currTree.hash()) {
-            console.log("No changes in the file system.");
-        } else {
-            console.log("Changes occured!");
-            const difference = TreeDifference.difference(tree, currTree);
-            difference.print();
-            const execDiff = new ExecuteDifference('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
-            execDiff.execute(difference);
-            // TODO: resave dir state
-        }
+    if (!beforeTree) return;
+
+    if (beforeTree.hash() === afterTree.hash()) {
+        console.log(["No changes in the file system."]);
+    } else {
+        console.log(["Changes occured!"]);
+        
+        const difference = TreeDifference.difference(beforeTree, afterTree);
+        difference.print();
+        const execDiff = new ExecuteDifference('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
+        execDiff.execute(difference);
+        // TODO: resave dir state
     }
 }
 
 function removeFiles(path: string) {
     const tree = getDirTree(path, GLOBAL_EXCLUDE);
-    const purge = tree.children.filter(child => child.isFile);
-    purgeFiles(path, purge);
-}
+    const purge = tree.children.filter(child => child.isFile).map(x => x.path);
 
-function purgeFiles(path: string, files: Tree[]) {
-    const fsEditor = new FSEditor();
-    const purgeFolder = `${path}/purge`;
-    fsEditor.makeDirectory(purgeFolder);
-    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
+    const purger = new FilePurger(new FSEditor());
+    purger.insertPaths(purge);
+    purger.purge(`${path}/purge`);
 }

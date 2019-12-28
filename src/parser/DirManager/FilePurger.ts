@@ -72,6 +72,12 @@ class FilePurger {
         }
     }
 
+    /**
+     * If no paths added it does nothing. Else it creates a new folder if it does not exist (`purgeDirectory`) 
+     * and moves all inserted paths into it. No paths will be left after execution.
+     * 
+     * @param purgeDirectory directory all files/folders are moved to
+    */
     purge(purgeDirectory: string) {
         if (this.rootNode.nestedPaths.length === 0) return;
 
