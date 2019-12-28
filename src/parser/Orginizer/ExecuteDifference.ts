@@ -33,6 +33,7 @@ class ExecuteDifference extends Orginizer {
     //              Deleted: regenerate thumbnail if possible
     //              Added: purge all added
     execute(difference: Difference) {
+        let seriesFolder: string | undefined;
         difference.levelOrderTraversal((level: number, parent: Tree, deleted: Tree[], added: Tree[]) => {
             switch (level) {
                 case 0:
@@ -40,9 +41,11 @@ class ExecuteDifference extends Orginizer {
                 break;
                 case 1:
                     this.level1change(parent, deleted, added);
+                    seriesFolder = parent.path;
                 break;
                 case 2:
-                    this.level2change(parent, deleted, added);
+                    if (seriesFolder)
+                        this.level2change(seriesFolder, parent, deleted, added);
                 break;
                 case 3:
                     this.level3change(parent, deleted, added);
@@ -118,8 +121,8 @@ class ExecuteDifference extends Orginizer {
             
             if (this.DATABASE_ENABLED) {
                 log(`Adding ${seriesName} to the database`);
-                const newEpisodes = seriesData.episodesInfo.map(x => `S${x.season}E${x.episode}`).join(' ');
-                log(`New episodes -> ${newEpisodes}`);
+                const newEpisodes = seriesData.episodesInfo.map(x => `S${x.season}E${x.episode}`);
+                log(`New episodes ->`, newEpisodes);
                 dbManager.commitNewEpisodesToExistingShow(path, seriesData); 
                 log(`Done adding to the database`);
             }
@@ -132,8 +135,27 @@ class ExecuteDifference extends Orginizer {
         purger.purge(`${path}/purge`);
     }
 
-    private level2change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
-        
+    private level2change = (seriesFolder: string, parent: Tree, deleted: Tree[], added: Tree[]) => {
+        deleted.forEach(node => {
+            if (node.name === 'thumbnails') {
+                // TODO: Regenerate thumbnails
+            }
+
+            if (node.isVideo) {
+                // TODO: Delete episode from DB
+            }
+        });
+
+        this.handleAddedLevel2(seriesFolder, added);
+    }
+
+    private handleAddedLevel2(pathToSeries: string, added: Tree[]) {
+        const videos = added.filter(node => node.isFile && node.isVideo);
+        const purge = added.filter(node => node.isFolder || (node.isFile && !node.isVideo));
+        this.purge(pathToSeries, purge);
+
+        if (videos.length === 0) return;
+        // TODO: Add new episodes to DB & get thumbnails
     }
 
     private level3change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
