@@ -1,7 +1,7 @@
 import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
 
-import ExecuteDifference from './ExecuteDifference';
+import ExecuteDifference from './Orginizer/ExecuteDifference';
 import Orginizer from './Orginizer/Orginizer';
 import OrginizerFactory from './Orginizer/Factory';
 import TreeDifference from './Tree/TreeDifference';
@@ -46,16 +46,18 @@ function bulkSeriesRefresh(path: string, language: string) {
  * @param path to the folder with all shows
 */
 function dirTreeComparison(path: string, language: string) {
+    const log = console.log;
+
     removeFiles(path); // remove files from path
     const beforeTree = DirSnapshot.loadDirectoryStateFromFile(path);
     const afterTree = getDirTree(path, GLOBAL_EXCLUDE);
 
-    if (!beforeTree) return;
+    if (!beforeTree) return log(`Error parsing tree from directory snapshot '${path}/dirSnapshot.yml'`);
 
     if (beforeTree.hash() === afterTree.hash()) {
-        console.log(["No changes in the file system."]);
+        log(["No changes in the file system."]);
     } else {
-        console.log(["Changes occured!"]);
+        log(["Changes occured!"]);
 
         const difference = TreeDifference.difference(beforeTree, afterTree);
         difference.print();

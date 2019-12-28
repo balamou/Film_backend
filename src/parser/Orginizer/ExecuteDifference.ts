@@ -1,12 +1,12 @@
-import { Difference } from './Tree/TreeDifference';
-import DatabaseManager from "../database/DatabaseManager";
-import Tree from "./Tree/Tree";
+import DatabaseManager from "../../database/DatabaseManager";
+import { TitleParserAdapter } from "../Adapters/TitleParser";
 
-import Factory from "./Orginizer/Factory";
-import Orginizer from "./Orginizer/Orginizer";
+import Orginizer from "./Orginizer";
+import Factory from "./Factory";
+import Tree from "../Tree/Tree";
+import { Difference } from '../Tree/TreeDifference';
 
 import Path from 'path';
-import { TitleParserAdapter } from "./Adapters/TitleParser";
 
 class ExecuteDifference extends Orginizer {
     private readonly dbManager: DatabaseManager;
