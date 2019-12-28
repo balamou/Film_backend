@@ -1,5 +1,6 @@
-import CreationManager from '../../../database/CreationManager';
 import { SeriesData } from './VirtualTreeParser';
+import CreationManager from '../../../database/CreationManager';
+import DatabaseFetcher from '../../../database/DatabaseFetcher';
 
 export default class VirtualTreeDBManager {
     private readonly language: string; // 'en' or 'ru'
@@ -42,6 +43,42 @@ export default class VirtualTreeDBManager {
 
             const episode = await cManager.createEpisode({
                 seriesId: series.id!,
+                seasonNumber: episodeInfo.season,
+                episodeNumber: episodeInfo.episode,
+                videoURL: episodeInfo.videoPath.replace(staticDirectory, ''),
+                duration: episodeInfo.duration,
+                thumbnailURL: episodeInfo.thumbnail?.replace(staticDirectory, ''),
+                title: episodeInfo.title,
+                plot: episodeInfo.plot?.substring(0, 250)
+            });
+        }
+
+        await cManager.endConnection();
+    }
+
+    
+    commitNewEpisodesToExistingShow(path: string, seriesData: SeriesData) {
+        const synchronize = require('synchronized-promise');
+        const syncCommit = synchronize(this._commitNewEpisodesToExistingShow);
+
+        syncCommit(path, seriesData);
+    }
+
+    private async _commitNewEpisodesToExistingShow(path: string, seriesData: SeriesData) {
+        const dManager = new DatabaseFetcher();
+        const cManager = new CreationManager();
+        const staticDirectory = /public\//;
+
+        const { seriesInfo , episodesInfo } = seriesData;
+        const seriesId = await dManager.getSeriesIdFromFolder(path);
+
+        if (!seriesId) return console.log(`[vtDBManager] Series doest not exist in DB`);
+
+        for (const episodeInfo of episodesInfo) {
+            if (!episodeInfo.duration) continue;
+
+            const episode = await cManager.createEpisode({
+                seriesId: seriesId,
                 seasonNumber: episodeInfo.season,
                 episodeNumber: episodeInfo.episode,
                 videoURL: episodeInfo.videoPath.replace(staticDirectory, ''),

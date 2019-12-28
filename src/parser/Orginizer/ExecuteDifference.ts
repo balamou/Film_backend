@@ -93,7 +93,7 @@ class ExecuteDifference extends Orginizer {
 
         const videos = added.filter(node => node.isFile && node.isVideo);
         const folders = added.filter(node => node.isFolder);
-        const purge = added.filter(node => node.isFile && !node.isVideo);
+        const purge = added.filter(node => node.isFile && !node.isVideo); // TODO: Purge those files
         
         const vtBuilder = this.factory.createVirtualTreeBuilder();
 
@@ -111,16 +111,13 @@ class ExecuteDifference extends Orginizer {
         
         if (this.NETWORK_ENABLED) {
             log(`Fetching ${seriesName} information`);
-            const seriesInfo = vtParser.getSeriesInformation(path, seriesName, virtualTree);
+            const seriesData = vtParser.getSeriesInformation(path, seriesName, virtualTree);
             
             if (this.DATABASE_ENABLED) {
-
                 log(`Adding ${seriesName} to the database`);
-                const newEpisodes = seriesInfo.episodesInfo.map(x => `S${x.season}E${x.episode}`).join(' ');
+                const newEpisodes = seriesData.episodesInfo.map(x => `S${x.season}E${x.episode}`).join(' ');
                 log(`New episodes -> ${newEpisodes}`);
-                // TODO: fetch series id based on seriesFolder
-                // TODO: insert episodes at that id
-                // dbManager.commitToDB(path, seriesName, seriesInfo); 
+                dbManager.commitNewEpisodesToExistingShow(path, seriesData); 
                 log(`Done adding to the database`);
             }
         }

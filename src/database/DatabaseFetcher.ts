@@ -107,6 +107,14 @@ class DatabaseFetcher extends DatabaseManager {
 
         throw new Error('Username does not exist');
     }
+
+    async getSeriesIdFromFolder(seriesFolder: string) {
+        const series_id = await this.pool.query<{id: number}>('SELECT id FROM SERIES WHERE FOLDER=$1', [ seriesFolder ]);
+
+        if (series_id.rowCount > 0) return series_id.rows[0].id;
+
+        return undefined;
+    }
 }
 
 export default DatabaseFetcher;
