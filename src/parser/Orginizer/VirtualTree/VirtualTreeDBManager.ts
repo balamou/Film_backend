@@ -8,7 +8,14 @@ export default class VirtualTreeDBManager {
         this.language = language;
     }
 
-    // this method makes _commitToDB execute asynchronously
+    /**
+     * Commits `seriesData` to the database. 
+     * 
+     * @param path to the series. It is stored in the database in the `folder` column
+     * @param seriesName an optional series name fall back if `seriesData` did not get the title of the series
+     * 
+     * `Note:` This method forces `_commitToDB` to execute synchronously
+    */
     commitToDB(path: string, seriesName: string, seriesData: SeriesData) {
         const synchronize = require('synchronized-promise');
         const syncCommitToDB = synchronize(this._commitToDB);
@@ -16,7 +23,7 @@ export default class VirtualTreeDBManager {
         syncCommitToDB(path, seriesName, seriesData, this.language);
     }
 
-    async _commitToDB(path: string, seriesName: string, seriesData: SeriesData, language: string) {
+    private async _commitToDB(path: string, seriesName: string, seriesData: SeriesData, language: string) {
         const cManager = new CreationManager();
         const { seriesInfo, episodesInfo } = seriesData;
 

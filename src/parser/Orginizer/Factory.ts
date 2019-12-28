@@ -10,13 +10,14 @@ import { EnglishFetcher } from '../FilmScrapper/omdb';
 import RussianFetcher from '../FilmScrapper/russian/RussianFetcher';
 import VirtualTreeDBManager from './VirtualTree/VirtualTreeDBManager';
 import FilePurger from '../DirManager/FilePurger';
+import Fetcher from '../FilmScrapper/fetcher';
 
 export interface AbstractFactory {
     createDirTreeCreator(): DirectoryTreeCreator;
     createFlattenFileTree(): FlattenFileTree;
     createVirtualTreeBuilder(): VirtualTreeBuilder;
-    createVirtualTreeParser(): VirtualTreeParser;
-    createDatabaseManager(): VirtualTreeDBManager;
+    createVirtualTreeParser(language: string): VirtualTreeParser;
+    createDatabaseManager(language: string): VirtualTreeDBManager;
     createFilePurger(): FilePurger;
 }
 
@@ -38,11 +39,21 @@ export default class OrginizerFactory implements AbstractFactory {
         return new VirtualTreeBuilder(new TitleParserAdapter(), new FSEditor(), new DirTree());
     }
 
-    createVirtualTreeParser(): VirtualTreeParser {
-        return new VirtualTreeParser(new FSEditor(), new RussianFetcher());
+    createVirtualTreeParser(language: string): VirtualTreeParser {
+        let fetcher: Fetcher = new EnglishFetcher();
+        switch(language) {
+            case 'en':
+                fetcher = new EnglishFetcher();
+                break;
+            case 'ru':
+                fetcher = new RussianFetcher();
+                break;
+        }
+
+        return new VirtualTreeParser(new FSEditor(), fetcher);
     }
 
-    createDatabaseManager(): VirtualTreeDBManager {
-        return new VirtualTreeDBManager('ru');
+    createDatabaseManager(language: string): VirtualTreeDBManager {
+        return new VirtualTreeDBManager(language);
     }
 }

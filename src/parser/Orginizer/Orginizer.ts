@@ -46,8 +46,8 @@ class Orginizer {
         // TODO: do base check if a folder has videos -> if not return
         
         const flatten = this.factory.createFlattenFileTree();
-        const vtParser = this.factory.createVirtualTreeParser();
-        const dbManager = this.factory.createDatabaseManager(); 
+        const vtParser = this.factory.createVirtualTreeParser(this.language);
+        const dbManager = this.factory.createDatabaseManager(this.language); 
         
         flatten.flatten(path);
         const virtualTree = this.buildVirtualTree(path);
