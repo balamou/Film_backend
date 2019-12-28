@@ -18,18 +18,18 @@ const paths = [{ language: 'en', type: 'shows', path: '/public/en/shows' },
 export default function main() { // TODO: Rename to facade
     const path = './public/en/shows';
 
-    if (CommitDirectory.didSaveDirState(path)) {
+    if (DirSnapshot.didSaveDirState(path)) {
         dirTreeComparison(path);
     } else {
         const orginizer = new Orginizer('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
         orginizer.orginizeAllSeries(path);
-        CommitDirectory.saveDirectoryStateOnDisk(path);
+        DirSnapshot.saveDirectoryStateOnDisk(path);
     }
 }
 
 function dirTreeComparison(path: string) {
     removeFiles(path); // remove files from path
-    const tree = CommitDirectory.loadDirectoryStateFromFile(path);
+    const tree = DirSnapshot.loadDirectoryStateFromFile(path);
     const currTree = getDirTree(path, GLOBAL_EXCLUDE);
 
     if (tree) {
@@ -59,11 +59,11 @@ function purgeFiles(path: string, files: Tree[]) {
     files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
 }
 
-class CommitDirectory {
+class DirSnapshot {
     private static readonly fsEditor = new FSEditor();
     private static readonly dirTree = new DirTree();
 
-    private static readonly fileName = 'film.yaml';
+    private static readonly fileName = 'dirSnapshot.yaml';
 
     /**
      * @param path points to the shows/movies directory
@@ -83,7 +83,7 @@ class CommitDirectory {
             const data = this.fsEditor.readFile(`${path}/${this.fileName}`);
             const tree = YAML.parse(data) as Tree;
 
-            return Tree.instanciateFromJSON(tree);
+            return Tree.appendMissingMethodsTo(tree);
         } catch {
             console.log(`Error loading or decoding '${this.fileName}' file`);
             return undefined;

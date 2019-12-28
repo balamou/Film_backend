@@ -101,8 +101,16 @@ class Tree {
         return result;
     }
 
-    static instanciateFromJSON(tree: Tree): Tree {
-        let children = tree.children.map(child => this.instanciateFromJSON(child));
+    /**
+     * This method is used to fully convert raw data (from JSON/YAML) into a proper Tree instance.
+     * 
+     * @param tree this parameter was instanciated from JSON or YAML and will be missing methods.
+     * This method appends all its missing methods.
+     * 
+     * `Note:` this uses post-order traversal
+    */
+    static appendMissingMethodsTo(tree: Tree): Tree {
+        let children = tree.children.map(child => this.appendMissingMethodsTo(child));
 
         return new Tree(tree.path, tree.name, tree.type, tree.extension, children);
     }   

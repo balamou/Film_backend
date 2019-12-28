@@ -18,7 +18,7 @@ export default class TreeToYaml {
     yamlDataToTree(data: string) {
         const instanceTree = YAML.parse(data) as Tree;
 
-        return Tree.instanciateFromJSON(instanceTree);
+        return Tree.appendMissingMethodsTo(instanceTree);
     }
 
     treeToYaml(tree: Tree) {
