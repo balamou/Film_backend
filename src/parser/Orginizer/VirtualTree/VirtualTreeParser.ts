@@ -64,18 +64,18 @@ export class VirtualTreeParser {
 
     private getSeriesInfo(path: string, seriesName: string) {
         try {
-            const seriesData = this.fetcher.fetchSeries(seriesName);
+            const { title, plot, poster, totalSeasons } = this.fetcher.fetchSeries(seriesName);
             let fullPosterName: string | undefined;
 
-            if (seriesData.poster) {
+            if (poster) {
                 try {
-                    fullPosterName = download(seriesData.poster, `${path}/poster`);
+                    fullPosterName = download(poster, `${path}/poster`);
                 } catch {
                     console.log(`Unable to download poster image for ${seriesName}`);
                 }
             }
 
-            this.seriesData.addSeriesInfo(seriesData.title, seriesData.plot, fullPosterName, seriesData.totalSeasons);
+            this.seriesData.addSeriesInfo(title, fullPosterName, plot, totalSeasons);
         } catch {
             console.log(`Error parsing series info '${seriesName}'`);
         }
@@ -89,11 +89,11 @@ export class VirtualTreeParser {
             const episodeNum = episode.episodeNum;
 
             try {
-                const episodeInfo = this.fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
+                const { title, plot } = this.fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
 
-                this.seriesData.insert(season.seasonNum, episode.episodeNum, episode.path, {
-                    title: episodeInfo.title,
-                    plot: episodeInfo.plot
+                this.seriesData.insert(seasonNum, episodeNum, episode.path, {
+                    title: title,
+                    plot: plot
                 });
             } catch {
                 console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);

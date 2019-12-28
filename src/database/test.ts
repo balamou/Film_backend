@@ -79,5 +79,3 @@ async function completeReset() {
     // await resetDatabase();
     main();
 }
-
-completeReset();
