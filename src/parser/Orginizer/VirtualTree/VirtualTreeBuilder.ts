@@ -72,7 +72,7 @@ export class VirtualTreeBuilder {
     
     private cleanup(path: string) {
         this.cleanRejectFolder(path);
-        const tree = this.dirTree.treeFrom(path, /.DS_Store|purge|rejected/);
+        const tree = this.dirTree.treeFrom(path, /.DS_Store|purge|rejected/); // TODO: make exclude injectable
         this.rejected = tree.children.filter(child => child.isFolder && !child.contains(node => node.isVideo));
         this.cleanRejectFolder(path);
         
