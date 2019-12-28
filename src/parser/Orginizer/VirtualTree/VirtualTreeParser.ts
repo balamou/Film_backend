@@ -71,13 +71,13 @@ export class VirtualTreeParser {
                 try {
                     fullPosterName = download(poster, `${path}/poster`);
                 } catch {
-                    console.log(`Unable to download poster image for ${seriesName}`);
+                    console.log(`   Unable to download poster image for ${seriesName}`);
                 }
             }
 
             this.seriesData.addSeriesInfo(title, fullPosterName, plot, totalSeasons);
         } catch {
-            console.log(`Error parsing series info '${seriesName}'`);
+            console.log(`   Error parsing series info '${seriesName}'`);
         }
     }
 
@@ -96,7 +96,7 @@ export class VirtualTreeParser {
                     plot: plot
                 });
             } catch {
-                console.log(`Error parsing for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
+                console.log(`   No information found for '${seriesName}' season ${seasonNum} episode ${episodeNum}`);
             }
         });
 
@@ -108,7 +108,7 @@ export class VirtualTreeParser {
 
         virtualTree.forEach((season, episode) => {
             const path = season.path;
-            if (!path) return console.log(`Error: season ${season.seasonNum} folder not defined`);
+            if (!path) return console.log(`[vtParser] Error: season ${season.seasonNum} folder not defined`);
 
             const thumbnails = `${path}/thumbnails`;
             const thumbnail = `${path}/thumbnails/E${episode.episodeNum}.png`;

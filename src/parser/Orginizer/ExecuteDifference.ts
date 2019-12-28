@@ -10,29 +10,28 @@ import Path from 'path';
 
 class ExecuteDifference extends Orginizer {
     private readonly dbManager: DatabaseManager;
+    private readonly titleParser: TitleParserAdapter;
     
     constructor(language: string, factory: Factory, exclude: RegExp) {
         super(language, factory, exclude);
 
         this.dbManager = new DatabaseManager(); // TODO?: Dependency injection
+        this.titleParser = new TitleParserAdapter(); // TODO: move to factory
     }
 
     // Instructions
 
     // d[SERIES] remove from DB
     // a[SERIES] do a hard reload (Assumption -> all files are purged before this method executes)
-    // m[see below] add logic to handle this
 
     //      d[SEASON, POSTER] if poster deleted => refetch. If season deleted => remove from DB
     //      *a[FOLDER(season/purge), FILE(video/purge)] if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
-    //      m[SEASON see below] add logic to handle episode removal/addition
 
     //          d[EPISODE, THUMBNAILS]: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
     //          a[FOLDER(purge), FILE(video, purge)]: if video added => parse Episode information from title, scrape thumbs, parse from imdb, else purge
-    //          m[THUMBAILS see below] Contents modified: add logic to handle each thumbnail removal
 
     //              Deleted: regenerate thumbnail if possible
-    //              Added: purge
+    //              Added: purge all added
     execute(difference: Difference) {
         difference.levelOrderTraversal((level: number, parent: Tree, deleted: Tree[], added: Tree[]) => {
             switch (level) {
@@ -74,8 +73,7 @@ class ExecuteDifference extends Orginizer {
     }
 
     private removeSeason(seriesFolder: string, folderName: string) {
-        const titleParser = new TitleParserAdapter(); // TODO: move to factory
-        const seasonNumber = titleParser.parseSeasonFrom(folderName);
+        const seasonNumber = this.titleParser.parseSeasonFrom(folderName);
 
         if (seasonNumber)
             this.dbManager.removeSeason(seriesFolder, seasonNumber);
@@ -116,8 +114,13 @@ class ExecuteDifference extends Orginizer {
             const seriesInfo = vtParser.getSeriesInformation(path, seriesName, virtualTree);
             
             if (this.DATABASE_ENABLED) {
+
                 log(`Adding ${seriesName} to the database`);
-                dbManager.commitToDB(path, seriesName, seriesInfo);
+                const newEpisodes = seriesInfo.episodesInfo.map(x => `S${x.season}E${x.episode}`).join(' ');
+                log(`New episodes -> ${newEpisodes}`);
+                // TODO: fetch series id based on seriesFolder
+                // TODO: insert episodes at that id
+                // dbManager.commitToDB(path, seriesName, seriesInfo); 
                 log(`Done adding to the database`);
             }
         }
