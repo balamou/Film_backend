@@ -1,12 +1,14 @@
 import { FSEditor } from './Adapters/FSEditor';
-import { getDirTree } from './Adapters/DirTreeCreator';
+import { getDirTree, DirTree } from './Adapters/DirTreeCreator';
+
 import Tree from './Tree/Tree';
+import YAML from 'yaml';
 import diffTrees from './Tree/DiffTrees';
 import ExecuteDifference from './ExecuteDifference';
 import Orginizer from './Orginizer/Orginizer';
 import OrginizerFactory from './Orginizer/Factory';
 
-const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
+const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.yaml/;
 
 const paths = [{ language: 'en', type: 'shows', path: '/public/en/shows' },
                 { language: 'en', type: 'movies', path: '/public/en/movies' },
@@ -14,21 +16,20 @@ const paths = [{ language: 'en', type: 'shows', path: '/public/en/shows' },
                 { language: 'ru', type: 'movies', path: '/public/ru/movies' }];
 
 export default function main() { // TODO: Rename to facade
-    const fsEditor = new FSEditor();
     const path = './public/en/shows';
 
-    if (fsEditor.doesFileExist(`${path}/film.config`)) {
+    if (CommitDirectory.didSaveDirState(path)) {
         dirTreeComparison(path);
     } else {
         const orginizer = new Orginizer('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
         orginizer.orginizeAllSeries(path);
-        saveDirectoryStateOnDisk(path);
+        CommitDirectory.saveDirectoryStateOnDisk(path);
     }
 }
 
 function dirTreeComparison(path: string) {
     removeFiles(path); // remove files from path
-    const tree = loadDirectoryStateFromFile(path);
+    const tree = CommitDirectory.loadDirectoryStateFromFile(path);
     const currTree = getDirTree(path, GLOBAL_EXCLUDE);
 
     if (tree) {
@@ -58,23 +59,41 @@ function purgeFiles(path: string, files: Tree[]) {
     files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
 }
 
-function saveDirectoryStateOnDisk(path: string) {
-    const tree = getDirTree(path, GLOBAL_EXCLUDE);
-    const fsEditor = new FSEditor();
+class CommitDirectory {
+    private static readonly fsEditor = new FSEditor();
+    private static readonly dirTree = new DirTree();
 
-    fsEditor.writeToFile(`${path}/film.config`, JSON.stringify(tree));
-}
+    private static readonly fileName = 'film.yaml';
 
-function loadDirectoryStateFromFile(path: string): Tree | undefined {
-    const fsEditor = new FSEditor();
+    /**
+     * @param path points to the shows/movies directory
+    */
+    static saveDirectoryStateOnDisk(path: string) {
+        const tree = this.dirTree.treeFrom(path, GLOBAL_EXCLUDE);
+        const dataToYaml = (data: any) => YAML.stringify(JSON.parse(JSON.stringify(data)));
 
-    try {
-        const data = fsEditor.readFile(`${path}/film.config`);
-        const tree = JSON.parse(data) as Tree;
+        this.fsEditor.writeToFile(`${path}/${this.fileName}`, dataToYaml(tree));
+    }
 
-        return Tree.instanciateFromJSON(tree);
-    } catch {
-        console.log("Error loading or decoding 'film.config' file");
-        return undefined;
+    /**
+     * @param path points to the shows/movies directory
+    */
+    static loadDirectoryStateFromFile(path: string): Tree | undefined {
+        try {
+            const data = this.fsEditor.readFile(`${path}/${this.fileName}`);
+            const tree = YAML.parse(data) as Tree;
+
+            return Tree.instanciateFromJSON(tree);
+        } catch {
+            console.log(`Error loading or decoding '${this.fileName}' file`);
+            return undefined;
+        }
+    }
+
+    /**
+     * @param path points to the shows/movies directory
+    */
+    static didSaveDirState(path: string) {
+        return this.fsEditor.doesFileExist(`${path}/${this.fileName}`)
     }
 }
