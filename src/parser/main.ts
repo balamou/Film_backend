@@ -1,7 +1,6 @@
 import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
 
-import Tree from './Tree/Tree';
 import ExecuteDifference from './ExecuteDifference';
 import Orginizer from './Orginizer/Orginizer';
 import OrginizerFactory from './Orginizer/Factory';
@@ -17,19 +16,36 @@ const paths = [{ language: 'en', type: 'shows', path: 'public/en/shows' },
                 { language: 'ru', type: 'shows', path: 'public/ru/shows' },
                 { language: 'ru', type: 'movies', path: 'public/ru/movies' }];
 
-export default function main() { // TODO: Rename to facade
+export default function main() {
     const path = 'public/en/shows';
+    const language = 'en';
 
+    bulkSeriesRefresh(path, language);
+}
+
+/**
+ * Checks if there are any changes in the `path` directory from the last refresh.
+ * If there are changes, it looks at each change and retrieves/commits the appropriate data.
+ * If no previosu refresh found it will do an initial parse through the series folder and
+ * commit a `dirSnapshot.yml` file as the current dir state.
+ * 
+ * @param path to the folder with all the shows
+ * @param language language of the shows
+*/
+function bulkSeriesRefresh(path: string, language: string) {
     if (DirSnapshot.didSaveDirState(path)) {
-        dirTreeComparison(path);
+        dirTreeComparison(path, language);
     } else {
-        const orginizer = new Orginizer('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
+        const orginizer = new Orginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
         orginizer.orginizeAllSeries(path);
         DirSnapshot.saveDirectoryStateOnDisk(path, GLOBAL_EXCLUDE);
     }
 }
 
-function dirTreeComparison(path: string) {
+/**
+ * @param path to the folder with all shows
+*/
+function dirTreeComparison(path: string, language: string) {
     removeFiles(path); // remove files from path
     const beforeTree = DirSnapshot.loadDirectoryStateFromFile(path);
     const afterTree = getDirTree(path, GLOBAL_EXCLUDE);
@@ -40,10 +56,10 @@ function dirTreeComparison(path: string) {
         console.log(["No changes in the file system."]);
     } else {
         console.log(["Changes occured!"]);
-        
+
         const difference = TreeDifference.difference(beforeTree, afterTree);
         difference.print();
-        const execDiff = new ExecuteDifference('en', new OrginizerFactory(), GLOBAL_EXCLUDE);
+        const execDiff = new ExecuteDifference(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
         execDiff.execute(difference);
         // TODO: resave dir state
     }
