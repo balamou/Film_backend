@@ -4,6 +4,7 @@ import DatabaseFetcher from '../../../database/DatabaseFetcher';
 
 export default class VirtualTreeDBManager {
     private readonly language: string; // 'en' or 'ru'
+    private readonly options = { descriptionLength: 400, episodePlotLength: 400 };
 
     constructor(language: string) {
         this.language = language;
@@ -21,10 +22,10 @@ export default class VirtualTreeDBManager {
         const synchronize = require('synchronized-promise');
         const syncCommitToDB = synchronize(this._commitToDB);
 
-        syncCommitToDB(path, seriesName, seriesData, this.language);
+        syncCommitToDB(path, seriesName, seriesData, this.language, this.options);
     }
 
-    private async _commitToDB(path: string, seriesName: string, seriesData: SeriesData, language: string) {
+    private async _commitToDB(path: string, seriesName: string, seriesData: SeriesData, language: string, options: { descriptionLength: number, episodePlotLength: number }) {
         const cManager = new CreationManager();
         const { seriesInfo, episodesInfo } = seriesData;
         const staticDirectory = /public\//;
@@ -34,7 +35,7 @@ export default class VirtualTreeDBManager {
             folder: path,
             title: seriesInfo?.title ?? seriesName,
             seasons: seriesInfo?.totalSeasons,
-            description: seriesInfo?.plot?.substring(0, 250),
+            description: seriesInfo?.plot?.substring(0, options.descriptionLength),
             poster: seriesInfo?.poster?.replace(staticDirectory, '')
         });
 
@@ -49,7 +50,7 @@ export default class VirtualTreeDBManager {
                 duration: episodeInfo.duration,
                 thumbnailURL: episodeInfo.thumbnail?.replace(staticDirectory, ''),
                 title: episodeInfo.title,
-                plot: episodeInfo.plot?.substring(0, 250)
+                plot: episodeInfo.plot?.substring(0, options.episodePlotLength)
             });
         }
 
@@ -64,7 +65,7 @@ export default class VirtualTreeDBManager {
         syncCommit(path, seriesData);
     }
 
-    private async _commitNewEpisodesToExistingShow(path: string, seriesData: SeriesData) {
+    private async _commitNewEpisodesToExistingShow(path: string, seriesData: SeriesData, options: { descriptionLength: number, episodePlotLength: number }) {
         const dManager = new DatabaseFetcher();
         const cManager = new CreationManager();
         const staticDirectory = /public\//;
@@ -85,7 +86,7 @@ export default class VirtualTreeDBManager {
                 duration: episodeInfo.duration,
                 thumbnailURL: episodeInfo.thumbnail?.replace(staticDirectory, ''),
                 title: episodeInfo.title,
-                plot: episodeInfo.plot?.substring(0, 250)
+                plot: episodeInfo.plot?.substring(0, options.episodePlotLength)
             });
         }
 
