@@ -3,10 +3,10 @@ import { getDirTree, DirTree } from './Adapters/DirTreeCreator';
 
 import Tree from './Tree/Tree';
 import YAML from 'yaml';
-import diffTrees from './Tree/DiffTrees';
 import ExecuteDifference from './ExecuteDifference';
 import Orginizer from './Orginizer/Orginizer';
 import OrginizerFactory from './Orginizer/Factory';
+import TreeDifference from './Tree/TreeDifference';
 
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.yaml/;
 
@@ -37,7 +37,7 @@ function dirTreeComparison(path: string) {
             console.log("No changes in the file system.");
         } else {
             console.log("Changes occured!");
-            const difference = diffTrees(tree, currTree);
+            const difference = TreeDifference.difference(tree, currTree);
             difference.print();
             const execDiff = new ExecuteDifference(new FSEditor(), (seriesPath: string) => {}); // TODO: move to the factory
             execDiff.execute(difference);

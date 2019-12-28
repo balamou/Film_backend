@@ -1,5 +1,5 @@
 import { FileSystemEditor } from "./Adapters/FSEditor";
-import { Difference } from './Tree/DiffTrees';
+import { Difference } from './Tree/TreeDifference';
 import DatabaseManager from "../database/DatabaseManager";
 import Tree from "./Tree/Tree";
 
