@@ -8,7 +8,7 @@ import { VirtualTreeParser } from './VirtualTree/VirtualTreeParser';
 
 import { EnglishFetcher } from '../FilmScrapper/omdb';
 import RussianFetcher from '../FilmScrapper/russian/RussianFetcher';
-import DatabaseManager from './VirtualTree/DatabaseManager';
+import VirtualTreeDBManager from './VirtualTree/VirtualTreeDBManager';
 import FilePurger from '../DirManager/FilePurger';
 
 export interface AbstractFactory {
@@ -16,7 +16,7 @@ export interface AbstractFactory {
     createFlattenFileTree(): FlattenFileTree;
     createVirtualTreeBuilder(): VirtualTreeBuilder;
     createVirtualTreeParser(): VirtualTreeParser;
-    createDatabaseManager(): DatabaseManager;
+    createDatabaseManager(): VirtualTreeDBManager;
     createFilePurger(): FilePurger;
 }
 
@@ -42,7 +42,7 @@ export default class OrginizerFactory implements AbstractFactory {
         return new VirtualTreeParser(new FSEditor(), new RussianFetcher());
     }
 
-    createDatabaseManager(): DatabaseManager {
-        return new DatabaseManager();
+    createDatabaseManager(): VirtualTreeDBManager {
+        return new VirtualTreeDBManager();
     }
 }

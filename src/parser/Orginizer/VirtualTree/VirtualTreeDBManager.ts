@@ -1,7 +1,7 @@
 import CreationManager from '../../../database/CreationManager';
-import { SeriesData } from '../VirtualTree/VirtualTreeParser';
+import { SeriesData } from './VirtualTreeParser';
 
-export default class DatabaseManager {
+export default class VirtualTreeDBManager {
 
     // this method makes _commitToDB execute asynchronously
     commitToDB(path: string, seriesName: string, seriesData: SeriesData) {
@@ -15,7 +15,6 @@ export default class DatabaseManager {
         const cManager = new CreationManager();
         const { seriesInfo, episodesInfo } = seriesData;
 
-        console.log(seriesInfo);
         const series = await cManager.createSeries({
             language: 'en', // TODO: add language
             folder: path,
@@ -26,12 +25,14 @@ export default class DatabaseManager {
         });
 
         for (const episodeInfo of episodesInfo) {
+            if (!episodeInfo.duration) continue;
+
             const episode = await cManager.createEpisode({
                 seriesId: series.id!,
                 seasonNumber: episodeInfo.season,
                 episodeNumber: episodeInfo.episode,
                 videoURL: episodeInfo.videoPath.replace(/public\//, ''),
-                duration: episodeInfo.duration ?? 10, // TODO: Fix duration
+                duration: episodeInfo.duration,
                 thumbnailURL: episodeInfo.thumbnail?.replace(/public\//, ''),
                 title: episodeInfo.title,
                 plot: episodeInfo.plot?.substring(0, 250)
