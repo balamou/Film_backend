@@ -6,6 +6,8 @@ import { FileSystemEditor } from '../../Adapters/FSEditor';
 import { DirectoryTreeCreator } from '../../Adapters/DirTreeCreator';
 import FilePurger from '../../DirManager/FilePurger';
 
+type Options = {exclude?: RegExp, rejected?: string, purge?: string};
+
 export class VirtualTreeBuilder {
     private titleParser: TitleParser;
     private fileSystemEditor: FileSystemEditor;
@@ -15,12 +17,29 @@ export class VirtualTreeBuilder {
     private rejected: Tree[] = [];
     readonly virtualTree = new VirtualTree();
 
-    constructor(titleParser: TitleParser, fileSystemEditor: FileSystemEditor, dirTree: DirectoryTreeCreator) {
+    private options: {exclude: RegExp, rejected: string, purge: string};
+
+    constructor(titleParser: TitleParser, fileSystemEditor: FileSystemEditor, dirTree: DirectoryTreeCreator, options?: Options) {
         this.titleParser = titleParser;
         this.fileSystemEditor = fileSystemEditor;
         this.dirTree = dirTree;
+        this.options = this.setupOptions(options);
 
         this.purger = new FilePurger(this.fileSystemEditor);
+    }
+
+    private setupOptions(options?: Options) {
+        const defaultOptions = { exclude: /.DS_Store|purge|rejected/, rejected: 'rejected', purge: 'purge' };
+
+        if (options) {
+            return {
+                exclude: options.exclude ?? defaultOptions.exclude,
+                rejected: options.rejected ?? defaultOptions.rejected,
+                purge: defaultOptions.purge ?? defaultOptions.purge
+            };
+        } 
+
+        return defaultOptions;
     }
 
     buildVirtualTreeFromFiles(files: Tree[]) {
@@ -79,10 +98,10 @@ export class VirtualTreeBuilder {
     }
     
     private cleanup(path: string) {
-        this.cleanRejectFolder(path, 'rejected');
-        const tree = this.dirTree.treeFrom(path, /.DS_Store|purge|rejected/); // TODO: make exclude injectable
+        this.cleanRejectFolder(path, this.options.rejected);
+        const tree = this.dirTree.treeFrom(path, this.options.exclude);
         this.rejected = tree.children.filter(child => child.isFolder && !child.contains(node => node.isVideo));
-        this.cleanRejectFolder(path, 'purge');
+        this.cleanRejectFolder(path, this.options.purge);
         
         this.fileSystemEditor.deleteFile(`${path}/.DS_Store`);
     }
