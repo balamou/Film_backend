@@ -5,47 +5,54 @@ import { FileSystemEditor } from '../../Adapters/FSEditor';
 import ffmpeg from '../../Adapters/ffmpeg';
 import { download } from '../../Adapters/HTTPReq';
 
-class VideoInfo {
-    season: number;
-    episode: number;
-    videoPath: string;
-
-    title?: string;
-    plot?: string;
-    thumbnail?: string;
-    duration?: number;
-
-    constructor(season: number,
-        episode: number,
-        videoPath: string,
-        title?: string | undefined,
-        plot?: string | undefined,
-        thumbnail?: string | undefined,
-        duration?: number | undefined) {
-        this.season = season;
-        this.episode = episode;
-        this.videoPath = videoPath;
-
-        this.title = title;
-        this.plot = plot;
-        this.thumbnail = thumbnail;
-        this.duration = duration;
+class EpisodeInfo{
+    constructor(public season: number,
+        public episode: number,
+        public videoPath: string,
+        public title?: string,
+        public plot?: string,
+        public thumbnail?: string,
+        public duration?: number) {
     }
 }
 
-export type SeriesData = {
-    seriesInfo: {
-        title?: string | undefined;
-        poster?: string | undefined;
-        plot?: string | undefined;
-        totalSeasons?: number | undefined;
-    } | undefined;
-    videoInfo: VideoInfo[];
+class SeriesInfo {
+    constructor(public title?: string | undefined,
+        public poster?: string | undefined,
+        public plot?: string | undefined,
+        public totalSeasons?: number | undefined) {
+    }
+}
+
+export class SeriesData {
+    seriesInfo?: SeriesInfo;
+    episodesInfo: EpisodeInfo[] = [];
+
+    constructor(seriesInfo?: SeriesInfo) {
+        this.seriesInfo = seriesInfo
+    }
+
+    addSeriesInfo(title?: string, poster?: string, plot?: string, totalSeasons?: number) {
+        this.seriesInfo = new SeriesInfo(title, poster, plot, totalSeasons);
+    }
+
+    insert(season: number, episode: number, videoPath: string, data: { title?: string, plot?: string, thumbnail?: string, duration?: number }) {
+        const match = this.episodesInfo.find(item => item.episode === episode && item.season === season);
+
+        if (!match) {
+            const newInfo = new EpisodeInfo(season, episode, videoPath, data.title, data.plot, data.thumbnail, data.duration);
+            this.episodesInfo.push(newInfo);
+        } else {
+            if (data.title) match.title = data.title;
+            if (data.plot) match.plot = data.plot;
+            if (data.thumbnail) match.thumbnail = data.thumbnail;
+            if (data.duration) match.duration = data.duration;
+        }
+    }
 };
 
 export class VirtualTreeParser {
-    videoInfo: VideoInfo[] = [];
-    seriesInfo?: { title?: string, poster?: string, plot?: string, totalSeasons?: number };
+    seriesData: SeriesData = new SeriesData();
 
     private fsEditor: FileSystemEditor;
     private fetcher: Fetcher;
@@ -53,21 +60,6 @@ export class VirtualTreeParser {
     constructor(fsEditor: FileSystemEditor, fetcher: Fetcher) {
         this.fsEditor = fsEditor;
         this.fetcher = fetcher;
-    }
-
-    insert(season: number, episode: number, videoPath: string,
-        data: { title?: string, plot?: string, thumbnail?: string, duration?: number }) {
-        const match = this.videoInfo.find(item => item.episode === episode && item.season === season);
-
-        if (!match) {
-            const newInfo = new VideoInfo(season, episode, videoPath, data.title, data.plot, data.thumbnail, data.duration);
-            this.videoInfo.push(newInfo);
-        } else {
-            if (data.title) match.title = data.title;
-            if (data.plot) match.plot = data.plot;
-            if (data.thumbnail) match.thumbnail = data.thumbnail;
-            if (data.duration) match.duration = data.duration;
-        }
     }
 
     private getSeriesInfo(path: string, seriesName: string) {
@@ -83,12 +75,7 @@ export class VirtualTreeParser {
                 }
             }
 
-            this.seriesInfo = {
-                title: seriesData.title,
-                plot: seriesData.plot,
-                poster: fullPosterName,
-                totalSeasons: seriesData.totalSeasons
-            };
+            this.seriesData.addSeriesInfo(seriesData.title, seriesData.plot, fullPosterName, seriesData.totalSeasons);
         } catch {
             console.log(`Error parsing series info '${seriesName}'`);
         }
@@ -104,7 +91,7 @@ export class VirtualTreeParser {
             try {
                 const episodeInfo = this.fetcher.fetchEpisode(seriesName, seasonNum, episodeNum);
 
-                this.insert(season.seasonNum, episode.episodeNum, episode.path, {
+                this.seriesData.insert(season.seasonNum, episode.episodeNum, episode.path, {
                     title: episodeInfo.title,
                     plot: episodeInfo.plot
                 });
@@ -113,7 +100,7 @@ export class VirtualTreeParser {
             }
         });
 
-        return { seriesInfo: this.seriesInfo, videoInfo: this.videoInfo };
+        return this.seriesData;
     }
 
     generateThumbnails(virtualTree: VirtualTree) {
@@ -130,7 +117,7 @@ export class VirtualTreeParser {
             const thumbnailPath = videoProcessor.generateThumbnail(episode.path, thumbnail);
             const duration = videoProcessor.getDuration(episode.path);
 
-            this.insert(season.seasonNum, episode.episodeNum, episode.path, {
+            this.seriesData.insert(season.seasonNum, episode.episodeNum, episode.path, {
                 thumbnail: thumbnailPath,
                 duration: duration
             });

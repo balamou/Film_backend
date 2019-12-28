@@ -32,6 +32,13 @@ class Orginizer {
         folders.forEach(folder => this.orginizeSeriesFolder(folder));
     }
     
+    /**
+     * Reorginizes the series structure. 
+     * Fetches the series information and commits it to the database.
+     * 
+     * @param path to the series
+     * @param seriesName optional series name (could be entered by the user)
+    */
     public orginizeSeriesFolder(path: string, seriesName?: string) {
         const log = console.log;
         seriesName = seriesName ?? Path.basename(path);
@@ -74,15 +81,14 @@ class Orginizer {
     // ------------------------------------------------------------------------
     private separateFoldersFromFiles(path: string) {
         const tree = this.dirTree.treeFrom(path, this.exclude);
-
         const folders: Tree[] = [];
         const files: Tree[] = [];
 
-        tree.levelOrderTraversal((node, level) => {
-            if (level == 1 && node.isFolder)
+        tree.children.forEach(node => {
+            if (node.isFolder)
                 folders.push(node);
-
-            if (level == 1 && node.isFile)
+            
+            if (node.isFile)
                 files.push(node);
         });
 

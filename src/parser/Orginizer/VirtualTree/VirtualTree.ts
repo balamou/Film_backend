@@ -33,18 +33,6 @@ export class VirtualTree {
             sortedEpisodes.forEach(episode => apply(season, episode));
         });
     };
-
-    async asyncForEach(apply: (season: Season, episode: Episode) => void) {
-        const sortedSeasons = this.tree.sort((a, b) => a.seasonNum - b.seasonNum); // O(n*logn) - this could be avoided using a PQ
-
-        for (let season of sortedSeasons) {
-            const sortedEpisodes = season.episodes.sort((a, b) => a.episodeNum - b.episodeNum); // O(n*logn) - this could be avoided using a PQ
-
-            for (let episode of sortedEpisodes) {
-                await apply(season, episode);
-            }
-        }
-    }
 }
 
 export class Season {

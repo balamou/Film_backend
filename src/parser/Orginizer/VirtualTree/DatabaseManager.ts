@@ -3,8 +3,8 @@ import { SeriesData } from '../VirtualTree/VirtualTreeParser';
 
 export default class DatabaseManager {
 
+    // this method makes _commitToDB execute asynchronously
     commitToDB(path: string, seriesName: string, seriesInfo: SeriesData) {
-        // this method makes _commitToDB execute asynchronously
         const synchronize = require('synchronized-promise');
         const syncCommitToDB = synchronize(this._commitToDB);
 
@@ -25,7 +25,7 @@ export default class DatabaseManager {
 
         if (!series.id) throw new Error(`Series '${seriesName}' has an unspecified 'seriesId'`);
 
-        for (const videoInfo of seriesInfo.videoInfo) {
+        for (const videoInfo of seriesInfo.episodesInfo) {
             const episode = await cManager.createEpisode({
                 seriesId: series.id,
                 seasonNumber: videoInfo.season,
