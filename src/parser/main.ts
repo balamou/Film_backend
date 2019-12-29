@@ -63,7 +63,8 @@ function dirTreeComparison(path: string, language: string) {
         difference.print();
         const execDiff = new ExecuteDifference(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
         execDiff.execute(difference);
-        // TODO: resave dir state
+        
+        DirSnapshot.saveDirectoryStateOnDisk(path, GLOBAL_EXCLUDE);
     }
 }
 

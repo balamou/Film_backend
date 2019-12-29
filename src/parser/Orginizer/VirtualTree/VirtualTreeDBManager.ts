@@ -62,7 +62,7 @@ export default class VirtualTreeDBManager {
         const synchronize = require('synchronized-promise');
         const syncCommit = synchronize(this._commitNewEpisodesToExistingShow);
 
-        syncCommit(path, seriesData);
+        syncCommit(path, seriesData, this.options);
     }
 
     private async _commitNewEpisodesToExistingShow(path: string, seriesData: SeriesData, options: { descriptionLength: number, episodePlotLength: number }) {
