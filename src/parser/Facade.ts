@@ -12,6 +12,14 @@ import FilePurger from './DirManager/FilePurger';
 class Facade {
     private static readonly GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
 
+    private static get factory() {
+        return {
+            getFilePurger: () => new FilePurger(new FSEditor()),
+            getOrginizer: (language: string) => new Orginizer(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE),
+            getDifferenceOrginizer: (language: string) => new DifferenceOrginizer(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE)
+        }
+    }
+
     /**
      * Checks if there are any changes in the `path` directory from the last refresh.
      * If there are changes, it looks at each change and retrieves/commits the appropriate data.
@@ -25,7 +33,7 @@ class Facade {
         if (DirSnapshot.didSaveDirState(path)) {
             this.dirTreeComparison(path, language);
         } else {
-            const orginizer = new Orginizer(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE);
+            const orginizer = this.factory.getOrginizer(language);
             orginizer.orginizeAllSeries(path);
             DirSnapshot.saveDirectoryStateOnDisk(path, this.GLOBAL_EXCLUDE);
         }
@@ -50,7 +58,7 @@ class Facade {
 
             const difference = TreeDifference.difference(beforeTree, afterTree);
             difference.print();
-            const execDiff = new DifferenceOrginizer(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE);
+            const execDiff = this.factory.getDifferenceOrginizer(language);
             execDiff.execute(difference);
 
             DirSnapshot.saveDirectoryStateOnDisk(path, this.GLOBAL_EXCLUDE);
@@ -61,7 +69,7 @@ class Facade {
         const tree = getDirTree(path, this.GLOBAL_EXCLUDE);
         const purge = tree.children.filter(child => child.isFile).map(x => x.path);
 
-        const purger = new FilePurger(new FSEditor());
+        const purger = this.factory.getFilePurger();
         purger.insertPaths(purge);
         purger.purge(`${path}/purge`);
     }
