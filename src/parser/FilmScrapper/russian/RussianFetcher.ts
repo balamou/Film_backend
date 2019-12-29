@@ -27,7 +27,15 @@ class RussianFetcher implements Fetcher {
 
         const process = cprocess.spawnSync("python3", [scriptPath, `"${title}"`], { encoding: "utf-8" });
 
-        if (process.stderr.length > 0) throw new Error(process.stderr);
+        if (process.stderr.length > 0) {
+            const moduleNotInstalled = process.stderr.match(/(No module named)\s\'(.+)\'/);
+            if (moduleNotInstalled) {
+                const mod = moduleNotInstalled[2];
+                throw new Error(`Python module '${mod}' not installed.\nPlease run: sudo pip3 install ${mod}`);
+            }
+
+            throw new Error(process.stderr);
+        }
 
         return process.stdout;
     }
@@ -71,7 +79,7 @@ class RussianFetcher implements Fetcher {
 
     private getSeries(title: string) {
         const path = title.trim().replace(/\s+/g, '_').toLocaleLowerCase();
-        let seriesData = this.cacher.retrieveCachedData(path);
+        let seriesData = this.cacher.retrieveCachedData(path, 'cache/ru/series');
         if (seriesData) return seriesData;
 
         // if no cached data make call
@@ -85,7 +93,7 @@ class RussianFetcher implements Fetcher {
         }
 
         // cache data
-        this.cacher.cacheData(path, seriesData);
+        this.cacher.cacheData(path, seriesData, 'cache/ru/series');
 
         return seriesData;
     }

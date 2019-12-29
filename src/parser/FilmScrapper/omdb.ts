@@ -59,7 +59,7 @@ export class EnglishFetcher implements Fetcher {
 
         const resultEpisode = seriesData.seasons.find(s => s.seasonNumber === season)?.episodes.find(ep => ep.episodeNumber === episode);
        
-        if (!resultEpisode) throw new Error(`Couldn't find information on 'S${season}E${episode}'`);
+        if (!resultEpisode) throw new Error(`Couldn't find information on 'S${season}E${episode}' of '${seriesName}'`);
 
         return resultEpisode;
     }

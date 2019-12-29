@@ -3,6 +3,7 @@ import CreationManager from './CreationManager';
 import DatabaseFetcher from './DatabaseFetcher';
 import main from '../parser/main';
 import { EnglishFetcher } from '../parser/FilmScrapper/omdb';
+import RussianFetcher from '../parser/FilmScrapper/russian/RussianFetcher';
 
 async function resetDatabase() {
     const dbManager = new DatabaseManager();
@@ -93,7 +94,16 @@ function testEnglishFetcher() {
     // console.log(tryMessage(() => fetch.fetchSeries('south park')));
 }
 
-testEnglishFetcher();
+function testRussianFetcher() {
+    const fetch = new RussianFetcher();
+
+    console.log(fetch.fetchEpisode('Rick and morty', 2, 3));
+    console.log(_try(() => fetch.fetchEpisode('Friends', 1, 6)));
+    console.log(tryMessage(() => fetch.fetchEpisode('Simpsons', 12, 4)));
+    // console.log(tryMessage(() => fetch.fetchSeries('south park')));
+}
+
+testRussianFetcher();
 
 function _try<T>(callback: () => T) {
     try {
