@@ -8,7 +8,7 @@ import { Difference } from '../Tree/TreeDifference';
 
 import Path from 'path';
 
-class ExecuteDifference extends Orginizer {
+class DifferenceOrginizer extends Orginizer {
     private readonly dbManager: DatabaseManager;
     private readonly titleParser: TitleParserAdapter;
     
@@ -177,4 +177,4 @@ class ExecuteDifference extends Orginizer {
 
 }
 
-export default ExecuteDifference;
+export default DifferenceOrginizer;

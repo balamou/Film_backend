@@ -1,7 +1,7 @@
 import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
 
-import ExecuteDifference from './Orginizer/ExecuteDifference';
+import DifferenceOrginizer from './Orginizer/DifferenceOrginizer';
 import Orginizer from './Orginizer/Orginizer';
 import OrginizerFactory from './Orginizer/Factory';
 import TreeDifference from './Tree/TreeDifference';
@@ -50,7 +50,7 @@ class Facade {
 
             const difference = TreeDifference.difference(beforeTree, afterTree);
             difference.print();
-            const execDiff = new ExecuteDifference(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE);
+            const execDiff = new DifferenceOrginizer(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE);
             execDiff.execute(difference);
 
             DirSnapshot.saveDirectoryStateOnDisk(path, this.GLOBAL_EXCLUDE);
