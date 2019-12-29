@@ -85,3 +85,24 @@ const fetch = new EnglishFetcher();
 
 console.log(fetch.retrieveSeriesData('Rick and morty'));
 console.log(fetch.fetchEpisode('Rick and morty', 2, 3));
+
+console.log(_try(() => fetch.fetchEpisode('Friends', 1, 6)));
+
+console.log(tryMessage(() => fetch.fetchEpisode('Simpsons', 12, 4)));
+
+
+function _try<T>(callback: () => T) {
+    try {
+        return callback();
+    } catch {
+        return undefined;
+    }
+}
+
+function tryMessage<T>(callback: () => T) {
+    try {
+        return callback();
+    } catch (error) {
+        return (error as Error).message;
+    }
+}

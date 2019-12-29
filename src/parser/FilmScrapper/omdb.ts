@@ -70,6 +70,7 @@ export class EnglishFetcher implements Fetcher {
         if (!data) return undefined;
 
         this.cacher.cacheData(filename, data, 'cache/en');
+        return data;
     }
 
     private fetchAll(seriesName: string) {
@@ -77,34 +78,7 @@ export class EnglishFetcher implements Fetcher {
         if (!seriesInfo) return undefined;
 
         const totalSeasons = seriesInfo?.totalSeasons;
-        const finalSeasons: Season[] = []
-
-        if (totalSeasons) {
-
-            for (let season = 1; season <= totalSeasons; season++) {
-                const episodes = this.getEpisodeList(seriesName, season);
-
-                if (!episodes) continue;
-                
-                const finalEpisodes: Episode[] =[];
-
-                episodes.forEach(episode => {
-                    const episodeNumber = parseInt(episode.Episode);
-                    const episode_ = this._fetchEpisode(seriesName, season, episodeNumber);
-
-                    finalEpisodes.push(
-                        {
-                            episodeNumber: episodeNumber,
-                            title: episode_?.title,
-                            plot: episode_?.plot
-                        }
-                    );
-                });
-
-                const season_ = { seasonNumber: season, episodes: finalEpisodes};
-                finalSeasons.push(season_);
-            }
-        }
+        const finalSeasons = totalSeasons === undefined ? [] : this.getAllSeasons(seriesName, totalSeasons);
 
         return {
             seriesInfo: {
@@ -117,7 +91,23 @@ export class EnglishFetcher implements Fetcher {
         } as SeriesInfo;
     }
 
-    private getEpisodeList(seriesName: string, season: number) {
+    private getAllSeasons(seriesName: string, totalSeasons: number) {
+        const allSeasons: Season[] = [];
+
+        for (let season = 1; season <= totalSeasons; season++) {
+            const episodes = this.getEpisodeListInSeason(seriesName, season); // need this request to fetch the episode plot
+
+            if (!episodes) continue;
+            
+            const finalEpisodes = episodes.map(episode => this._fetchEpisode(seriesName, season, parseInt(episode.Episode)));
+    
+            allSeasons.push({ seasonNumber: season, episodes: finalEpisodes });
+        }
+
+        return allSeasons;
+    }
+
+    private getEpisodeListInSeason(seriesName: string, season: number) {
         const seasonData = Omdb.fetchSeason(seriesName, season);
                 
         if (seasonData.Error) return undefined;
@@ -133,7 +123,7 @@ export class EnglishFetcher implements Fetcher {
         if (seriesInfo.Error)
             return undefined;
 
-        const {Title, Year, Plot, Poster, totalSeasons} = seriesInfo as {Title?: string, Year?: string, Plot?: string, Poster?: string, totalSeasons: number};
+        const {Title, Year, Plot, Poster, totalSeasons} = seriesInfo as {Title?: string, Year?: string, Plot?: string, Poster?: string, totalSeasons?: number};
 
         return {
             title: Title,
@@ -148,14 +138,14 @@ export class EnglishFetcher implements Fetcher {
         const episodeInfo = Omdb.fetchEpisode(seriesName, season, episode);
 
         if (episodeInfo.Error)
-            return undefined;
+            return { episodeNumber: episode, title: undefined, plot: undefined};
 
-        const {Title, Plot, imdbRating} = episodeInfo as {Title: string, Plot?: string, imdbRating?: string};
+        const {Title, Plot} = episodeInfo as {Title?: string, Plot?: string};
 
         return {
+            episodeNumber: episode,
             title: Title,
             plot: Plot,
-            imdbRating: imdbRating  
         };
     }
 
