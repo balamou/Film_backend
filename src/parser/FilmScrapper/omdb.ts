@@ -62,14 +62,14 @@ export class EnglishFetcher implements Fetcher {
     
     retrieveSeriesData(seriesName: string) {
         const filename = seriesName.replace(/\s+/g, '_').toLowerCase();
-        const cachedData = this.cacher.retrieveCachedData(filename, 'cache/en');
+        const cachedData = this.cacher.retrieveCachedData(filename, 'cache/en/series');
 
         if (cachedData) return cachedData;
 
         const data = this.fetchAll(seriesName);
         if (!data) return undefined;
 
-        this.cacher.cacheData(filename, data, 'cache/en');
+        this.cacher.cacheData(filename, data, 'cache/en/series');
         return data;
     }
 
@@ -94,14 +94,14 @@ export class EnglishFetcher implements Fetcher {
     private getAllSeasons(seriesName: string, totalSeasons: number) {
         const allSeasons: Season[] = [];
 
-        for (let season = 1; season <= totalSeasons; season++) {
-            const episodes = this.getEpisodeListInSeason(seriesName, season); // need this request to fetch the episode plot
+        for (let seasonNumber = 1; seasonNumber <= totalSeasons; seasonNumber++) {
+            const episodeNumbers = this.getEpisodeListInSeason(seriesName, seasonNumber); // need this request to fetch the episode plot
 
-            if (!episodes) continue;
+            if (!episodeNumbers) continue;
             
-            const finalEpisodes = episodes.map(episode => this._fetchEpisode(seriesName, season, parseInt(episode.Episode)));
+            const finalEpisodes = episodeNumbers.map(episodeNumber => this._fetchEpisode(seriesName, seasonNumber, episodeNumber));
     
-            allSeasons.push({ seasonNumber: season, episodes: finalEpisodes });
+            allSeasons.push({ seasonNumber: seasonNumber, episodes: finalEpisodes });
         }
 
         return allSeasons;
@@ -112,9 +112,11 @@ export class EnglishFetcher implements Fetcher {
                 
         if (seasonData.Error) return undefined;
         
-        const seasons = seasonData as {Episodes?: {Title?: string, Episode: string, Plot?: string}[]};
+        const { Episodes } = seasonData as {Episodes?: {Episode: string}[]};
 
-        return seasons.Episodes?.filter(x => isNaN(parseInt(x.Episode)) === false);
+        if (!Episodes) return undefined;
+
+        return Episodes.map(x => parseInt(x.Episode)).filter(x => !isNaN(x));
     }
     
     private _fetchSeries(seriesName: string) {

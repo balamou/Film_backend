@@ -89,7 +89,7 @@ console.log(fetch.fetchEpisode('Rick and morty', 2, 3));
 console.log(_try(() => fetch.fetchEpisode('Friends', 1, 6)));
 
 console.log(tryMessage(() => fetch.fetchEpisode('Simpsons', 12, 4)));
-
+console.log(tryMessage(() => fetch.fetchSeries('south park')));
 
 function _try<T>(callback: () => T) {
     try {
