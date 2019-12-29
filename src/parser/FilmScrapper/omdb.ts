@@ -2,15 +2,19 @@ import { httpGet } from '../Adapters/HTTPReq';
 import Fetcher from './fetcher';
 import Cacher from './russian/Cacher';
 import { FSEditor } from '../Adapters/FSEditor';
-
-// Example rest calls:
-//
-// http://www.omdbapi.com/?apikey=b2141cec&t=rick+and+morty&plot=full&type=series&Season=1
-// http://www.omdbapi.com/?apikey=b2141cec&t=rick+and+morty&plot=full&type=series&Season=1&Episode=2
+require("dotenv").config();
 
 export class Omdb {
-    static readonly API_KEY = 'b2141cec';
-
+    private static get API_KEY() {
+        if (!process.env.OMDB_KEY) throw new Error('Please speficy the OMDB_KEY in the .env file');
+        
+        return process.env.OMDB_KEY; // b2141cec
+    }
+    
+    // Example rest calls:
+    //
+    // http://www.omdbapi.com/?apikey=b2141cec&t=rick+and+morty&plot=full&type=series&Season=1
+    // http://www.omdbapi.com/?apikey=b2141cec&t=rick+and+morty&plot=full&type=series&Season=1&Episode=2
     private static seriesEndPoint = (seriesName: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series`;
     private static seasonEndPoint = (seriesName: string, season: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}`;
     private static episodeEndPoint = (seriesName: string, season: number, episode: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}&Episode=${episode}`;
@@ -22,7 +26,7 @@ export class Omdb {
     static fetchMovie = (movieName: string) => httpGet(Omdb.movieEndPoint(movieName));
 
     // Error respose:
-    // {"Response":"False","Error":"Series or episode not found!"}
+    // { "Response": "False", "Error": "Series or episode not found!" }
 }
 
 type Episode = {episodeNumber: number, title?: string, plot?: string};
@@ -60,7 +64,7 @@ export class EnglishFetcher implements Fetcher {
         return resultEpisode;
     }
     
-    retrieveSeriesData(seriesName: string) {
+    private retrieveSeriesData(seriesName: string) {
         const filename = seriesName.replace(/\s+/g, '_').toLowerCase();
         const cachedData = this.cacher.retrieveCachedData(filename, 'cache/en/series');
 

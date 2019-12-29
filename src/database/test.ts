@@ -81,15 +81,19 @@ async function completeReset() {
     main();
 }
 
-const fetch = new EnglishFetcher();
+function testEnglishFetcher() {
+    const fetch = new EnglishFetcher();
 
-console.log(fetch.retrieveSeriesData('Rick and morty'));
-console.log(fetch.fetchEpisode('Rick and morty', 2, 3));
+    console.log(fetch["retrieveSeriesData"]('Rick and morty'));
+    console.log(fetch.fetchEpisode('Rick and morty', 2, 3));
 
-console.log(_try(() => fetch.fetchEpisode('Friends', 1, 6)));
+    console.log(_try(() => fetch.fetchEpisode('Friends', 1, 6)));
 
-console.log(tryMessage(() => fetch.fetchEpisode('Simpsons', 12, 4)));
-console.log(tryMessage(() => fetch.fetchSeries('south park')));
+    console.log(tryMessage(() => fetch.fetchEpisode('Simpsons', 12, 4)));
+    // console.log(tryMessage(() => fetch.fetchSeries('south park')));
+}
+
+testEnglishFetcher();
 
 function _try<T>(callback: () => T) {
     try {
