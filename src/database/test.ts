@@ -2,6 +2,7 @@ import DatabaseManager from './DatabaseManager';
 import CreationManager from './CreationManager';
 import DatabaseFetcher from './DatabaseFetcher';
 import main from '../parser/main';
+import { EnglishFetcher } from '../parser/FilmScrapper/omdb';
 
 async function resetDatabase() {
     const dbManager = new DatabaseManager();
@@ -79,3 +80,7 @@ async function completeReset() {
     // await resetDatabase();
     main();
 }
+
+const fetch = new EnglishFetcher();
+
+fetch.cache('Rick and morty');

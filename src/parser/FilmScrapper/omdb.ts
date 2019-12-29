@@ -1,5 +1,7 @@
 import { httpGet } from '../Adapters/HTTPReq';
 import Fetcher from './fetcher';
+import Cacher from './russian/Cacher';
+import { FSEditor } from '../Adapters/FSEditor';
 
 // Example rest calls:
 //
@@ -23,32 +25,122 @@ export class Omdb {
     // {"Response":"False","Error":"Series or episode not found!"}
 }
 
-export class EnglishFetcher implements Fetcher {
+type Episode = {episodeNumber: number, title?: string, plot?: string};
+type Season = {seasonNumber: number, episodes: Episode[]};
+type SeriesInfo = {
+    seriesInfo: {
+        title: string;
+        year?: string;
+        plot?: string;
+        poster?: string;
+    }, 
+    seasons: Season[]
+};
 
-    fetchSeries(seriesName: string) {
+export class EnglishFetcher implements Fetcher {
+    
+    private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
+    
+    fetchSeries(seriesName: string): { title?: string | undefined; plot?: string | undefined; poster?: string | undefined; totalSeasons?: number | undefined; } {
+        throw new Error("Method not implemented.");
+    }
+    fetchEpisode(seriesName: string, season: number, episode: number): { title?: string | undefined; plot?: string | undefined; imdbRating?: string | undefined; } {
+        throw new Error("Method not implemented.");
+    }
+    
+    cache(seriesName: string) {
+        const data = this.fetchAll(seriesName);
+
+        if (!data) return;
+        const name = seriesName.replace(/\s+/g, '_').toLowerCase();
+
+        this.cacher.cacheData(name, data, 'cache/en');
+    }
+
+    private fetchAll(seriesName: string) {
+        const seriesInfo = this._fetchSeries(seriesName);
+        if (!seriesInfo) return undefined;
+
+        const totalSeasons = seriesInfo?.totalSeasons;
+        const finalSeasons: Season[] = []
+
+        if (totalSeasons) {
+
+            for (let season = 1; season <= totalSeasons; season++) {
+                const episodes = this.getEpisodeList(seriesName, season);
+
+                if (!episodes) continue;
+                
+                const finalEpisodes: Episode[] =[];
+
+                episodes.forEach(episode => {
+                    const episodeNumber = parseInt(episode.Episode);
+                    const episode_ = this._fetchEpisode(seriesName, season, episodeNumber);
+
+                    finalEpisodes.push(
+                        {
+                            episodeNumber: episodeNumber,
+                            title: episode_?.title,
+                            plot: episode_?.plot
+                        }
+                    );
+                });
+
+                const season_ = { seasonNumber: season, episodes: finalEpisodes};
+                finalSeasons.push(season_);
+            }
+        }
+
+        return {
+            seriesInfo: {
+                title: seriesInfo.title,
+                year: seriesInfo.year,
+                plot: seriesInfo.plot,
+                poster: seriesInfo.poster,
+            },
+            seasons: finalSeasons
+        } as SeriesInfo;
+    }
+
+    private getEpisodeList(seriesName: string, season: number) {
+        const seasonData = Omdb.fetchSeason(seriesName, season);
+                
+        if (seasonData.Error) return undefined;
+        
+        const seasons = seasonData as {Episodes?: {Title?: string, Episode: string, Plot?: string}[]};
+
+        return seasons.Episodes?.filter(x => isNaN(parseInt(x.Episode)) === false);
+    }
+    
+    private _fetchSeries(seriesName: string) {
         const seriesInfo = Omdb.fetchSeries(seriesName);
 
         if (seriesInfo.Error)
-            throw new Error(seriesInfo.Error);
+            return undefined;
+
+        const {Title, Year, Plot, Poster, totalSeasons} = seriesInfo as {Title: string, Year?: string, Plot?: string, Poster?: string, totalSeasons: number};
 
         return {
-            title: seriesInfo.Title as string,
-            plot: seriesInfo.Plot as string,
-            poster: seriesInfo.Poster as string,
-            totalSeasons: seriesInfo.totalSeasons as number
+            title: Title,
+            year: Year,
+            plot: Plot,
+            poster: Poster,
+            totalSeasons: totalSeasons
         };
     }
 
-    fetchEpisode(seriesName: string, season: number, episode: number) {
+    private _fetchEpisode(seriesName: string, season: number, episode: number) {
         const episodeInfo = Omdb.fetchEpisode(seriesName, season, episode);
 
         if (episodeInfo.Error)
-            throw new Error(episodeInfo.Error);
+            return undefined;
+
+        const {Title, Plot, imdbRating} = episodeInfo as {Title: string, Plot?: string, imdbRating?: string};
 
         return {
-            title: episodeInfo.Title as string,
-            plot: episodeInfo.Plot as string,
-            imdbRating: episodeInfo.imdbRating as string
+            title: Title,
+            plot: Plot,
+            imdbRating: imdbRating  
         };
     }
 
