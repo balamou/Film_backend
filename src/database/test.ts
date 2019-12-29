@@ -83,4 +83,5 @@ async function completeReset() {
 
 const fetch = new EnglishFetcher();
 
-fetch.cache('Rick and morty');
+console.log(fetch.retrieveSeriesData('Rick and morty'));
+console.log(fetch.fetchEpisode('Rick and morty', 2, 3));

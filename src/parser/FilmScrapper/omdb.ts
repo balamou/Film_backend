@@ -29,7 +29,7 @@ type Episode = {episodeNumber: number, title?: string, plot?: string};
 type Season = {seasonNumber: number, episodes: Episode[]};
 type SeriesInfo = {
     seriesInfo: {
-        title: string;
+        title?: string;
         year?: string;
         plot?: string;
         poster?: string;
@@ -38,23 +38,38 @@ type SeriesInfo = {
 };
 
 export class EnglishFetcher implements Fetcher {
-    
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
     
     fetchSeries(seriesName: string): { title?: string | undefined; plot?: string | undefined; poster?: string | undefined; totalSeasons?: number | undefined; } {
-        throw new Error("Method not implemented.");
+        const seriesData = this.retrieveSeriesData(seriesName);
+
+        if (!seriesData) throw new Error(`Couldn't find information on '${seriesName}'`);
+
+        return seriesData.seriesInfo;
     }
+
     fetchEpisode(seriesName: string, season: number, episode: number): { title?: string | undefined; plot?: string | undefined; imdbRating?: string | undefined; } {
-        throw new Error("Method not implemented.");
+        const seriesData = this.retrieveSeriesData(seriesName);
+
+        if (!seriesData) throw new Error(`Couldn't find information on '${seriesName}'`);
+
+        const resultEpisode = seriesData.seasons.find(s => s.seasonNumber === season)?.episodes.find(ep => ep.episodeNumber === episode);
+       
+        if (!resultEpisode) throw new Error(`Couldn't find information on 'S${season}E${episode}'`);
+
+        return resultEpisode;
     }
     
-    cache(seriesName: string) {
+    retrieveSeriesData(seriesName: string) {
+        const filename = seriesName.replace(/\s+/g, '_').toLowerCase();
+        const cachedData = this.cacher.retrieveCachedData(filename, 'cache/en');
+
+        if (cachedData) return cachedData;
+
         const data = this.fetchAll(seriesName);
+        if (!data) return undefined;
 
-        if (!data) return;
-        const name = seriesName.replace(/\s+/g, '_').toLowerCase();
-
-        this.cacher.cacheData(name, data, 'cache/en');
+        this.cacher.cacheData(filename, data, 'cache/en');
     }
 
     private fetchAll(seriesName: string) {
@@ -118,7 +133,7 @@ export class EnglishFetcher implements Fetcher {
         if (seriesInfo.Error)
             return undefined;
 
-        const {Title, Year, Plot, Poster, totalSeasons} = seriesInfo as {Title: string, Year?: string, Plot?: string, Poster?: string, totalSeasons: number};
+        const {Title, Year, Plot, Poster, totalSeasons} = seriesInfo as {Title?: string, Year?: string, Plot?: string, Poster?: string, totalSeasons: number};
 
         return {
             title: Title,
