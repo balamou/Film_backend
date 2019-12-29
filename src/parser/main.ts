@@ -11,16 +11,13 @@ import FilePurger from './DirManager/FilePurger';
 
 const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
 
-const paths = [{ language: 'en', type: 'shows', path: 'public/en/shows' },
-                { language: 'en', type: 'movies', path: 'public/en/movies' },
-                { language: 'ru', type: 'shows', path: 'public/ru/shows' },
-                { language: 'ru', type: 'movies', path: 'public/ru/movies' }];
+const paths = {
+    shows: [{ language: 'en', path: 'public/en/shows' }, { language: 'ru', path: 'public/ru/shows' }],
+    movies: [{ language: 'en', path: 'public/en/movies' }, { language: 'ru', path: 'public/ru/movies' }]
+};
 
 export default function main() {
-    const path = 'public/en/shows';
-    const language = 'en';
-
-    bulkSeriesRefresh(path, language);
+    paths.shows.forEach(x => bulkSeriesRefresh(x.path, x.language));
 }
 
 /**
