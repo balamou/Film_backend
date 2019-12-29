@@ -4,19 +4,34 @@
   "description": "REST API for the Film app",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node ./src/app.js"
+    "test": "mocha -r ts-node/register tests/**/*.test.ts",
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
+    "generate": "ts-node tests/ExampleTrees/generate.ts",
+    "parse-shows": "ts-node src/scripts/RunOrginizer.ts",
+    "reset-database" : "ts-node src/scripts/ResetDatabase.ts",
+    "start": "ts-node ./src/app.ts"
+  },
+  "nyc": {
+    "include": "src",
+    "exclude": "tests/**/*.test.ts" 
   },
   "author": "Michel Balamou",
   "license": "ISC",
   "devDependencies": {
     "@types/bluebird": "^3.5.29",
+    "@types/chai": "^4.2.7",
     "@types/express": "^4.17.2",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.17",
     "@types/pg": "^7.11.2",
     "@types/sequelize": "^4.28.8",
     "@types/validator": "^12.0.1",
-    "nodemon": "^1.19.4"
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "nodemon": "^1.19.4",
+    "nyc": "^15.0.0",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "@types/request": "^2.48.3",

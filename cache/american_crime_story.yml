@@ -1,0 +1,75 @@
+dateCached: 2019-12-23T02:34:29.733Z
+seriesInfo:
+  title: Американская история преступлений
+  year: 2016
+  plot: Каждый сезон проекта снят в жанре криминальной драмы и расскажет о том или
+    ином громком преступлении, оставившем свой след в истории Соединенных
+    Штатов. Первый сезон поведает зрителям обо всех перипетиях так называемого
+    «Дела Симпсона», прогремевшего на весь мир в 90-х годах прошлого века.
+    Окровавленные перчатки, странные показания соседей, попытка суицида, чехарда
+    с присяжными и знаменитая погоня за подозреваемым, которая транслировалась
+    по телевизору в прямом эфире… Эта история о том, как звезда экранов,
+    возможно, жестоко убил двух человек, настолько запутана, что зрителю
+    придется самому выбрать верную сторону.
+  poster: https://m.media-amazon.com/images/M/MV5BNzc2MzJmM2ItMjgzYy00MjgxLTljYjctZjJhYzM1ODFhMzU0XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg
+seasons:
+  - seasonNumber: 1
+    episodes:
+      - episodeNumber: 1
+        title: Из пепла трагедии
+      - episodeNumber: 2
+        title: Главный забег в его жизни
+      - episodeNumber: 3
+        title: Команда мечты
+      - episodeNumber: 4
+        title: 100% невиновен
+      - episodeNumber: 5
+        title: Расовая карта
+      - episodeNumber: 6
+        title: Марша, Марша, Марша
+      - episodeNumber: 7
+        title: Теории заговора
+      - episodeNumber: 8
+        title: Присяжные в тюрьме
+      - episodeNumber: 9
+        title: Манна небесная
+      - episodeNumber: 10
+        title: Вердикт
+  - seasonNumber: 2
+    episodes:
+      - episodeNumber: 1
+        title: Человек, который был модой
+      - episodeNumber: 2
+        title: Охота на убийцу
+      - episodeNumber: 3
+        title: A Random Killing
+      - episodeNumber: 4
+        title: House by the Lake
+      - episodeNumber: 5
+        title: Don't Ask, Don't Tell
+      - episodeNumber: 6
+        title: Descent
+      - episodeNumber: 7
+        title: Ascent
+      - episodeNumber: 8
+        title: Creator/Destroyer
+      - episodeNumber: 9
+        title: Alone
+  - seasonNumber: 3
+    episodes:
+      - episodeNumber: 1
+        title: null
+      - episodeNumber: 2
+        title: null
+      - episodeNumber: 3
+        title: null
+      - episodeNumber: 4
+        title: null
+      - episodeNumber: 5
+        title: null
+      - episodeNumber: 6
+        title: null
+      - episodeNumber: 7
+        title: null
+      - episodeNumber: 8
+        title: null

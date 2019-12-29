@@ -1,0 +1,62 @@
+path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3
+name: video_files_at_level_3
+type: directory
+extension: null
+children:
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S1
+    name: S1
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S1/Ep3.mp4
+        name: Ep3.mp4
+        type: file
+        extension: .mp4
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S1/Episode2.mkv
+        name: Episode2.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S1/Episode_1.mkv
+        name: Episode_1.mkv
+        type: file
+        extension: .mkv
+        children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S2
+    name: S2
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S2/Ep9.mp4
+        name: Ep9.mp4
+        type: file
+        extension: .mp4
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S2/Episode_4.mkv
+        name: Episode_4.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S2/Season2_Episode2.mkv
+        name: Season2_Episode2.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S2/nested_videos
+        name: nested_videos
+        type: directory
+        extension: null
+        children:
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S2/nested_videos/South
+              park [3x02].mkv
+            name: South park [3x02].mkv
+            type: file
+            extension: .mkv
+            children: []
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/video_files_at_level_3/S2/nested_videos/South
+              park [3x03].mp4
+            name: South park [3x03].mp4
+            type: file
+            extension: .mp4
+            children: []

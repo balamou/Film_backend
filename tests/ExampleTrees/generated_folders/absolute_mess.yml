@@ -1,0 +1,187 @@
+path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess
+name: absolute_mess
+type: directory
+extension: null
+children:
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3
+    name: S3
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/Ep1.mkv
+        name: Ep1.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/Ep2.mkv
+        name: Ep2.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/Episode
+          3.mkv
+        name: Episode 3.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested
+        name: nested
+        type: directory
+        extension: null
+        children:
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested/information.txt
+            name: information.txt
+            type: file
+            extension: .txt
+            children: []
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested/nested
+            name: nested
+            type: directory
+            extension: null
+            children:
+              - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested/nested/E12.mkv
+                name: E12.mkv
+                type: file
+                extension: .mkv
+                children: []
+              - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested/nested/E13.mkv
+                name: E13.mkv
+                type: file
+                extension: .mkv
+                children: []
+              - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested/nested/E14.mkv
+                name: E14.mkv
+                type: file
+                extension: .mkv
+                children: []
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/S3/nested/poster.jpeg
+            name: poster.jpeg
+            type: file
+            extension: .jpeg
+            children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+      1
+    name: Season 1
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          1/Ep4.mkv
+        name: Ep4.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          1/Ep5.mp4
+        name: Ep5.mp4
+        type: file
+        extension: .mp4
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          1/Episode 3.mkv
+        name: Episode 3.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          1/hello
+        name: hello
+        type: directory
+        extension: null
+        children:
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+              1/hello/Episod 3.txt
+            name: Episod 3.txt
+            type: file
+            extension: .txt
+            children: []
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+              1/hello/image.jpeg
+            name: image.jpeg
+            type: file
+            extension: .jpeg
+            children: []
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+              1/hello/subs.txt
+            name: subs.txt
+            type: file
+            extension: .txt
+            children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+      2
+    name: Season 2
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          2/Ep1.mkv
+        name: Ep1.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          2/Ep2.mkv
+        name: Ep2.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          2/Episode 3.mkv
+        name: Episode 3.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+          2/nested
+        name: nested
+        type: directory
+        extension: null
+        children:
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+              2/nested/E12.mkv
+            name: E12.mkv
+            type: file
+            extension: .mkv
+            children: []
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+              2/nested/E13.mkv
+            name: E13.mkv
+            type: file
+            extension: .mkv
+            children: []
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season
+              2/nested/E14.mkv
+            name: E14.mkv
+            type: file
+            extension: .mkv
+            children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season4
+    name: Season4
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season4/no_videos
+        name: no_videos
+        type: directory
+        extension: null
+        children:
+          - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season4/no_videos/info.txt
+            name: info.txt
+            type: file
+            extension: .txt
+            children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/Season4/subtitles.srt.txt
+        name: subtitles.srt.txt
+        type: file
+        extension: .txt
+        children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/source.txt
+    name: source.txt
+    type: file
+    extension: .txt
+    children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/absolute_mess/thumbnail.jpeg
+    name: thumbnail.jpeg
+    type: file
+    extension: .jpeg
+    children: []

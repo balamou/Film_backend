@@ -1,16 +1,16 @@
 import DatabaseManager from './DatabaseManager';
 import CreationManager from './CreationManager';
 import DatabaseFetcher from './DatabaseFetcher';
+import main from '../parser/main';
 
 async function resetDatabase() {
     const dbManager = new DatabaseManager();
     const result = await dbManager.setupDatabase()
+    await dbManager.endConnection();
 
     if (!result.rows) return;
 
-    console.log(result.rows);
-        
-    await dbManager.endConnection();
+    console.log(result.rows);        
 }
 
 async function test2() {
@@ -75,4 +75,7 @@ async function emptyEpisodesAndSeries() {
     await dbManager.endConnection();
 }
 
-emptyEpisodesAndSeries();
+async function completeReset() {
+    // await resetDatabase();
+    main();
+}

@@ -1,156 +1,78 @@
 import { FSEditor } from './Adapters/FSEditor';
 import { getDirTree } from './Adapters/DirTreeCreator';
-import Factory from './Factory';
-import Tree from './Tree/Tree';
-import DatabaseManager from './DatabaseManager/DatabaseManager';
-import diffTrees from './Tree/DiffTrees';
 
-const factory = new Factory();
-const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|film.config/;
-const NETWORK_ENABLED = true;
-const DATABASE_ENABLED = true;
+import ExecuteDifference from './Orginizer/ExecuteDifference';
+import Orginizer from './Orginizer/Orginizer';
+import OrginizerFactory from './Orginizer/Factory';
+import TreeDifference from './Tree/TreeDifference';
+
+import DirSnapshot from './DirSnapshot';
+import FilePurger from './DirManager/FilePurger';
+
+const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
+
+const paths = [{ language: 'en', type: 'shows', path: 'public/en/shows' },
+                { language: 'en', type: 'movies', path: 'public/en/movies' },
+                { language: 'ru', type: 'shows', path: 'public/ru/shows' },
+                { language: 'ru', type: 'movies', path: 'public/ru/movies' }];
 
 export default function main() {
-    const fsEditor = new FSEditor();
-    const path = './public/en/shows';
+    const path = 'public/en/shows';
+    const language = 'en';
 
-    if (fsEditor.doesFileExist(`${path}/film.config`)) {
-        dirTreeComparison(path);
+    bulkSeriesRefresh(path, language);
+}
+
+/**
+ * Checks if there are any changes in the `path` directory from the last refresh.
+ * If there are changes, it looks at each change and retrieves/commits the appropriate data.
+ * If no previosu refresh found it will do an initial parse through the series folder and
+ * commit a `dirSnapshot.yml` file as the current dir state.
+ * 
+ * @param path to the folder with all the shows
+ * @param language language of the shows
+*/
+function bulkSeriesRefresh(path: string, language: string) {
+    if (DirSnapshot.didSaveDirState(path)) {
+        dirTreeComparison(path, language);
     } else {
-        orginizeAllSeries(path);
-        saveDirectoryStateOnDisk(path);
+        const orginizer = new Orginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
+        orginizer.orginizeAllSeries(path);
+        DirSnapshot.saveDirectoryStateOnDisk(path, GLOBAL_EXCLUDE);
     }
 }
 
-function dirTreeComparison(path: string) {
+/**
+ * @param path to the folder with all shows
+*/
+function dirTreeComparison(path: string, language: string) {
+    const log = console.log;
+
     removeFiles(path); // remove files from path
-    const tree = loadDirectoryStateFromFile(path);
-    const currTree = getDirTree(path, GLOBAL_EXCLUDE);
+    const beforeTree = DirSnapshot.loadDirectoryStateFromFile(path);
+    const afterTree = getDirTree(path, GLOBAL_EXCLUDE);
 
-    if (tree) {
-        // console.log(tree);
-        // console.log(currTree);
+    if (!beforeTree) return log(`Error parsing tree from directory snapshot '${path}/dirSnapshot.yml'`);
 
-        if (tree.hash() === currTree.hash()) {
-            console.log("No changes in the file system.");
-        } else {
-            console.log("Changes occured!");
-            const difference = diffTrees(tree, currTree);
-            difference.print();
-            // d[SERIES] remove from DB
-            // a[SERIES] do a hard reload (Assumption -> all files are purged before this method executes)
-            // m[see below] add logic to handle this
+    if (beforeTree.hash() === afterTree.hash()) {
+        log(["No changes in the file system."]);
+    } else {
+        log(["Changes occured!"]);
 
-                // d[SEASON, POSTER] if poster deleted => refetch. If season deleted => remove from DB
-                // a[FOLDER(season/purge), FILE(video/purge)] if folder added => parse season, extract thumbs & add to db. if file added => check if file video then accumulate them into a season/seasons, else purge
-                // m[SEASON see below] add logic to handle episode removal/addition
-
-                    // d[EPISODE, THUMBNAILS]: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
-                    // a[FOLDER(purge), FILE(video, purge)]: if video added => parse Episode information from title, scrape thumbs, parse from imdb, else purge
-                    // m[THUMBAILS see below] Contents modified: add logic to handle each thumbnail removal
-
-                        // Deleted: regenerate thumbnail if possible
-                        // Added: purge
-        }
+        const difference = TreeDifference.difference(beforeTree, afterTree);
+        difference.print();
+        const execDiff = new ExecuteDifference(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
+        execDiff.execute(difference);
+        
+        DirSnapshot.saveDirectoryStateOnDisk(path, GLOBAL_EXCLUDE);
     }
 }
 
 function removeFiles(path: string) {
     const tree = getDirTree(path, GLOBAL_EXCLUDE);
-    const purge = tree.children.filter(child => child.isFile);
-    purgeFiles(path, purge);
+    const purge = tree.children.filter(child => child.isFile).map(x => x.path);
+
+    const purger = new FilePurger(new FSEditor());
+    purger.insertPaths(purge);
+    purger.purge(`${path}/purge`);
 }
-
-function saveDirectoryStateOnDisk(path: string) {
-    const tree = getDirTree(path, GLOBAL_EXCLUDE);
-    const fsEditor = new FSEditor();
-
-    fsEditor.writeToFile(`${path}/film.config`, JSON.stringify(tree));
-}
-
-function loadDirectoryStateFromFile(path: string): Tree | undefined {
-    const fsEditor = new FSEditor();
-
-    try {
-        const data = fsEditor.readFile(`${path}/film.config`);
-        const tree = JSON.parse(data) as Tree;
-
-        return Tree.instanciateFromJSON(tree);
-    } catch {
-        console.log("Error loading or decoding 'film.config' file");
-        return undefined;
-    }
-}
-
-function purgeFiles(path: string, files: Tree[]) {
-    const fsEditor = new FSEditor();
-    const purgeFolder = `${path}/purge`;
-    fsEditor.makeDirectory(purgeFolder);
-    files.forEach(file => fsEditor.moveFileToFolder(file.path, purgeFolder));
-}
-
-function orginizeAllSeries(path: string) {
-    // orginize folder
-    const tree = getDirTree(path, GLOBAL_EXCLUDE);
-
-    const folders: Tree[] = [];
-    const files: Tree[] = []; // moves files to new folder purge
-
-    tree.levelOrderTraversal((node, level) => {
-        if (level == 1 && node.isFolder)
-            folders.push(node);
-
-        if (level == 1 && node.isFile)
-            files.push(node);
-    });
-
-    // move files to purge
-    purgeFiles(path, files);
-
-    // orginize each series folder
-    folders.forEach(folder => orginizeSeriesFolder(folder.path));
-}
-
-function orginizeSeriesFolder(path: string) {
-    const flatten = factory.createFlattenFileTree();
-    flatten.flatten(path);
-
-    // Separate
-    const directoryTree = getDirTree(path, GLOBAL_EXCLUDE);
-
-    const level4folders: Tree[] = [];
-    const level4files: Tree[] = [];
-
-    directoryTree.levelOrderTraversal((node, level) => {
-        if (level == 1 && node.isFolder)
-            level4folders.push(node);
-
-        if (level == 1 && node.isFile)
-            level4files.push(node);
-    });
-
-    // Virtual tree
-    const vtBuilder = factory.createVirtualTreeBuilder();
-    vtBuilder.buildVirtualTree(level4files);
-    vtBuilder.buildVirtualTreeFromFolders(level4folders);
-    vtBuilder.commit(path);
-
-    // Parse Virtual tree
-    const vtParser = factory.createVirtualTreeParser();
-    vtParser.generateThumbnails(vtBuilder.virtualTree);
-
-    const seriesName = new FSEditor().getBasename(path); // get series name from file
-
-    if (!NETWORK_ENABLED) return;
-    const seriesInfo = vtParser.getSeriesInformation(path, seriesName, vtBuilder.virtualTree);
-    console.log(seriesInfo);
-
-    // Add data to database
-    if (!DATABASE_ENABLED) return;
-    console.log("Adding to database...");
-    const dbManager = new DatabaseManager();    
-    dbManager.commitToDB(path, seriesName, seriesInfo);
-    console.log("Done adding to database.");
-}
-
-main();

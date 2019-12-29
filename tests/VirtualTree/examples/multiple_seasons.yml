@@ -1,0 +1,67 @@
+tree:
+  - episodes:
+      - episodeNum: 2
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/Season3_episode2.mkv
+          name: Season3_episode2.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/Season3_episode2.mkv
+      - episodeNum: 3
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/Season3_episode3.mkv
+          name: Season3_episode3.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/Season3_episode3.mkv
+    seasonNum: 3
+  - episodes:
+      - episodeNum: 4
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/Season2_episode4.mkv
+          name: Season2_episode4.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/Season2_episode4.mkv
+    seasonNum: 2
+  - episodes:
+      - episodeNum: 5
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/Season1_episode5.mkv
+          name: Season1_episode5.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/Season1_episode5.mkv
+      - episodeNum: 4
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/Season1_episode4.mkv
+          name: Season1_episode4.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/Season1_episode4.mkv
+      - episodeNum: 6
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/Season1_episode6.mkv
+          name: Season1_episode6.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/Season1_episode6.mkv
+    seasonNum: 1

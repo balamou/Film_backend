@@ -1,0 +1,57 @@
+tree:
+  - episodes:
+      - episodeNum: 1
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/c.mkv
+          name: c.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/c.mkv
+      - episodeNum: 4
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/c.mkv
+          name: c.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/c.mkv
+    seasonNum: 3
+  - episodes:
+      - episodeNum: 3
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/c.mkv
+          name: c.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/c.mkv
+      - episodeNum: 4
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/c.mkv
+          name: c.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/c.mkv
+    seasonNum: 2
+  - episodes:
+      - episodeNum: 5
+        file:
+          FILE: file
+          DIRECTORY: directory
+          path: /a/b/c.mkv
+          name: c.mkv
+          type: file
+          extension: .mkv
+          children: []
+        path: /a/b/c.mkv
+    seasonNum: 1

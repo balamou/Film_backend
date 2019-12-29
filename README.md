@@ -19,10 +19,10 @@ brew install postgresql
 brew services start postgresql
 
 # install kinopoiskpy
-pip3 install kinopoiskpy
+sudo pip3 install kinopoiskpy
 
 # install timeout_decorator
-pip3 install timeout_decorator
+sudo pip3 install timeout_decorator
 
 # install ffmpeg
 brew install ffmpeg

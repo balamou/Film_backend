@@ -1,0 +1,68 @@
+path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level
+name: folders_with_no_video_files_in_top_level
+type: directory
+extension: null
+children:
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/S3
+    name: S3
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/S3/infromation.txt
+        name: infromation.txt
+        type: file
+        extension: .txt
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/S3/some_picture.jpeg
+        name: some_picture.jpeg
+        type: file
+        extension: .jpeg
+        children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+      4
+    name: Season 4
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+          4/Ep3.mp4
+        name: Ep3.mp4
+        type: file
+        extension: .mp4
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+          4/Episode2.mkv
+        name: Episode2.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+          4/Episode_1.mkv
+        name: Episode_1.mkv
+        type: file
+        extension: .mkv
+        children: []
+  - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+      7
+    name: Season 7
+    type: directory
+    extension: null
+    children:
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+          7/Ep9.mp4
+        name: Ep9.mp4
+        type: file
+        extension: .mp4
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+          7/Episode_4.mkv
+        name: Episode_4.mkv
+        type: file
+        extension: .mkv
+        children: []
+      - path: /Users/michelbalamou/Downloads/Film_backend/tests/ExampleTrees/example_folders/folders_with_no_video_files_in_top_level/Season
+          7/Season2_Episode2.mkv
+        name: Season2_Episode2.mkv
+        type: file
+        extension: .mkv
+        children: []

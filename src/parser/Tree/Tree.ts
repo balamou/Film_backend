@@ -2,7 +2,7 @@ class Tree {
     readonly path: string;
     readonly name: string;
     readonly type: string;
-    readonly extension: string | undefined;
+    readonly extension?: string;
     readonly children: Tree[];
 
     private readonly FILE = 'file';
@@ -23,14 +23,10 @@ class Tree {
             const size = queue.length;
 
             for (let i = 0; i < size; i++) {
-                const currNode = queue.shift(); // `shift` is the same as `dequeue` in a queue
-                if (!currNode) continue;
-                const children = currNode.children;
-
+                const currNode = queue.shift()!; // `shift` is the same as `dequeue` in a queue
+                
                 onEach(currNode, level);
-
-                if (children)
-                    children.forEach(item => queue.push(item));
+                currNode.children.forEach(node => queue.push(node));
             }
 
             level++;
@@ -42,14 +38,12 @@ class Tree {
         const queue = [this as Tree];
 
         while(queue.length > 0) {
-            const currNode = queue.shift(); // `shift` is the same as `dequeue` in a queue
-            if (!currNode) continue;
-            const children = currNode.children;
+            const currNode = queue.shift()!; // `shift` is the same as `dequeue` in a queue
 
-            if (predicate(currNode)) return true;
-            if (!children) continue;
-
-            children.forEach((item: any) => queue.push(item));
+            if (predicate(currNode)) {
+                return true;
+            }
+            currNode.children.forEach(node => queue.push(node));
         }
         return false;
     };
@@ -63,8 +57,10 @@ class Tree {
     };
 
     get isVideo(): boolean {
-        if (!this.extension) return false;
-        return this.isVideoFormat(this.extension);
+        if (this.extension) {
+            return this.isVideoFormat(this.extension);
+        }
+        return false;
     };
     
     private isVideoFormat = (extension: string) => {
@@ -79,10 +75,12 @@ class Tree {
 
     // idk i got this from stack overflow
     private hashString(str: string) {
-        let hash = 0, i, chr;
+        let hash = 0;
+        
         if (str.length === 0) return hash;
-        for (i = 0; i < str.length; i++) {
-            chr = str.charCodeAt(i);
+
+        for (let i = 0; i < str.length; i++) {
+            const chr = str.charCodeAt(i);
             hash = ((hash << 5) - hash) + chr;
             hash |= 0; // Convert to 32bit integer
         }
@@ -103,14 +101,18 @@ class Tree {
         return result;
     }
 
-    static instanciateFromJSON(tree: Tree): Tree {
-        const children = tree.children;
-        let newChildren: Tree[] = [];
+    /**
+     * This method is used to fully convert raw data (from JSON/YAML) into a proper Tree instance.
+     * 
+     * @param tree this parameter was instanciated from JSON or YAML and will be missing methods.
+     * This method appends all its missing methods.
+     * 
+     * `Note:` this uses post-order traversal
+    */
+    static appendMissingMethodsTo(tree: Tree): Tree {
+        let children = tree.children.map(child => this.appendMissingMethodsTo(child));
 
-        if (children)
-            newChildren = children.map(child => this.instanciateFromJSON(child));
-
-        return new Tree(tree.path, tree.name, tree.type, tree.extension, newChildren);
+        return new Tree(tree.path, tree.name, tree.type, tree.extension, children);
     }   
 }
 
