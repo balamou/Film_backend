@@ -30,10 +30,9 @@ class ExecuteDifference extends Orginizer {
     //          d[EPISODE, THUMBNAILS]: if video file => remove Episode from database, if thumbnails folder then regenerate thumbnails for each episode
     //          a[FOLDER(purge), FILE(video, purge)]: if video added => parse Episode information from title, scrape thumbs, parse from imdb, else purge
 
-    //              Deleted: regenerate thumbnail if possible
+    //              d[THUMBNAIL]: regenerate thumbnail if possible
     //              Added: purge all added
     execute(difference: Difference) {
-        let seriesFolder: string | undefined;
         difference.levelOrderTraversal((level: number, parent: Tree, deleted: Tree[], added: Tree[]) => {
             switch (level) {
                 case 0:
@@ -41,14 +40,12 @@ class ExecuteDifference extends Orginizer {
                 break;
                 case 1:
                     this.level1change(parent, deleted, added);
-                    seriesFolder = parent.path;
                 break;
                 case 2:
-                    if (seriesFolder)
-                        this.level2change(seriesFolder, parent, deleted, added);
+                    // this.level2change(seriesFolder, parent, deleted, added); // TODO: Get series folder
                 break;
                 case 3:
-                    this.level3change(parent, deleted, added);
+                    // this.level3change(seriesFolder, parent, deleted, added); // TODO: Get series folder
                 break;
             }
         });
@@ -158,8 +155,14 @@ class ExecuteDifference extends Orginizer {
         // TODO: Add new episodes to DB & get thumbnails
     }
 
-    private level3change = (parent: Tree, deleted: Tree[], added: Tree[]) => {
-        
+    private level3change = (seriesFolder: string, parent: Tree, deleted: Tree[], added: Tree[]) => {
+        this.purge(seriesFolder, added);
+
+        deleted.forEach(node => {
+            if (node.extension === '.png') {
+                // TODO: regenerate episode thumbnail
+            }
+        });
     }
 
 }
