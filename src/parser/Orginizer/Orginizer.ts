@@ -61,7 +61,11 @@ class Orginizer {
             
             if (this.DATABASE_ENABLED) {
                 log(`Adding ${seriesName} to the database`);
-                dbManager.commitToDB(path, seriesName, seriesInfo);
+                try {
+                    dbManager.commitToDB(path, seriesName, seriesInfo);
+                } catch (error) {
+                    log(error);
+                }
                 log(`Done adding to the database`);
             }
         }

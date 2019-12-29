@@ -120,7 +120,11 @@ class ExecuteDifference extends Orginizer {
                 log(`Adding ${seriesName} to the database`);
                 const newEpisodes = seriesData.episodesInfo.map(x => `S${x.season}E${x.episode}`);
                 log(`New episodes ->`, newEpisodes);
-                dbManager.commitNewEpisodesToExistingShow(path, seriesData); 
+                try {
+                    dbManager.commitNewEpisodesToExistingShow(path, seriesData); 
+                } catch (error) {
+                    log(error);
+                }
                 log(`Done adding to the database`);
             }
         }
