@@ -29,7 +29,7 @@ describe('Array extensions', function () {
 
             const doesInclude = people.doesInclude(elonMusk, (lhs, rhs) => lhs.birth === rhs.birth);
 
-            expect(doesInclude).to.be.true;
+            expect(doesInclude).to.be.false;
         });
 
     });
