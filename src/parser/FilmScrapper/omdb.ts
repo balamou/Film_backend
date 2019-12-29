@@ -161,12 +161,14 @@ export class EnglishFetcher implements Fetcher {
         if (!movieInfo.Error)
             throw new Error(movieInfo.Error);
 
+        const { Title, Year, Plot, Poster, imdbRating } = movieInfo as { Title?: string, Year?: string, Plot?: string, Poster?: string, imdbRating?: string };
+
         return {
-            title: movieInfo.Title as string,
-            year: movieInfo.Year as string,
-            plot: movieInfo.Plot as string,
-            poster: movieInfo.Poster as string,
-            imdbRating: movieInfo.imdbRating as string
+            title: Title,
+            year: Year,
+            plot: Plot,
+            poster: Poster,
+            imdbRating: imdbRating
         };
     }
 }

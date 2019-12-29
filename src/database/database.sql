@@ -65,3 +65,18 @@ CREATE TABLE IF NOT EXISTS VIEWED_EPISODES(
   FOREIGN KEY (EPISODE_ID) REFERENCES EPISODES(ID) ON DELETE CASCADE,
   FOREIGN KEY (USER_ID) REFERENCES USERS(ID)
 );
+
+-- -----------------------------------------------------------------------------
+-- MOVIES
+-- -----------------------------------------------------------------------------
+CREATE TABLE MOVIES(
+  ID SERIAL PRIMARY KEY,
+  LANGUAGE language NOT NULL DEFAULT 'en',
+  DURATION INT NOT NULL,
+  VIDEO_URL VARCHAR(200) NOT NULL,
+  FOLDER VARCHAR(200) NOT NULL,
+  TITLE VARCHAR(50) NOT NULL, -- get from IMDB, default to folder name
+
+  DESCRIPTION VARCHAR(400),
+  POSTER VARCHAR(200)
+);

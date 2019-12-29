@@ -7,4 +7,17 @@ const paths = {
 
 export default function main() {
     paths.shows.forEach(x => Facade.bulkSeriesRefresh(x.path, x.language));
+    paths.movies.forEach(x => orginizeMovies(x.path, x.language));
+}
+
+function orginizeMovies(path: string, language: string) {
+
+    // Get tree
+    // BFS find first video
+    //  move it up & rename
+    // purge the rest
+    // fetch info
+    // add to db
+    // save diff
+
 }
