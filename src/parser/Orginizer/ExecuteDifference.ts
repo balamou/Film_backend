@@ -72,11 +72,17 @@ class ExecuteDifference extends Orginizer {
         this.handleAddedLevel1(seriesFolder, added);
     }
 
+    /**
+     * @param seriesFolder path to the series folder
+     * @param folderName name of the deleted folder in `seriesFolder` directory
+    */
     private removeSeason(seriesFolder: string, folderName: string) {
         const seasonNumber = this.titleParser.parseSeasonFrom(folderName);
 
-        if (seasonNumber)
+        if (seasonNumber) {
+            console.log(`Removing season ${seasonNumber}`);
             this.dbManager.removeSeason(seriesFolder, seasonNumber);
+        }
     }; 
 
     private refetchSeriesPoster(seriesFolder: string) {
