@@ -3,7 +3,7 @@ import { FileSystemEditor, FSEditor } from '../../Adapters/FSEditor';
 import Tree from '../../Tree/Tree';
 import FilePurger from './FilePurger';
 
-class FlattenFileTree {
+class FlattenFileTree { // TODO: Rename to FileTreeFlattener
     private readonly dirTreeCreator: DirectoryTreeCreator;
     private readonly fileSystemEditor: FileSystemEditor;
     private readonly purger: FilePurger;

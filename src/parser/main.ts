@@ -2,6 +2,7 @@ import Facade from './Facade';
 import { DirTree } from './Adapters/DirTreeCreator';
 import { FSEditor } from './Adapters/FSEditor';
 import Path from 'path';
+import FilePurger from './Orginizer/DirManager/FilePurger';
 
 const paths = { // TODO: move those paths into a config file
     shows: [{ language: 'en', path: 'public/en/shows' }, { language: 'ru', path: 'public/ru/shows' }], 
@@ -46,9 +47,7 @@ function orgMovie(path: string, language: string) {
     }
 
     videoPath = rename(videoPath, 'movie');
-
-    // const moviesFolder2 = new DirTree().treeFrom(path, GLOBAL_EXCLUDE);
-
+    purge(path, videoPath);
 
     // Get tree
     // BFS find first video
@@ -58,6 +57,17 @@ function orgMovie(path: string, language: string) {
     // fetch info
     // add to db
     // save diff
+}
+
+function purge(pathToMovie: string, videoFilePath: string) {
+    const folder = new DirTree().treeFrom(pathToMovie, GLOBAL_EXCLUDE);
+    const filePuger = new FilePurger(new FSEditor());
+    const videoName = Path.basename(videoFilePath);
+    
+    const purgableFiles = folder.children.filter(node => node.name !== videoName).map(node => node.path);
+    
+    filePuger.insertPaths(purgableFiles);
+    filePuger.purge(`${pathToMovie}/purge`);
 }
 
 /**
