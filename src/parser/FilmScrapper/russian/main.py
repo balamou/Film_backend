@@ -66,15 +66,41 @@ def get_episode_data(title):
     seriesInfo["title"] = movies[0].title.strip() # override title (to avoid brackets)
     return { "seriesInfo": seriesInfo, "seasons" :episode_data }
 
+def json_stringify(data):
+    encoded = json.dumps(data, ensure_ascii=False).encode('utf8')
+    return encoded.decode()
+
 def main():
     title = sys.argv[1]
 
+    if sys.argv[1] == '-m': # this block searches for movies only
+        title = sys.argv[2]
+        try: 
+            print(get_movie(title))
+            return
+        except Exception as e:
+            sys.stderr.write(e)
+
     try:
         episode_data = get_episode_data(title)
-        encoded = json.dumps(episode_data, ensure_ascii=False).encode('utf8')
-        print(encoded.decode())
+        print(json_stringify(episode_data))
     except Exception as e:
         sys.stderr.write(e)
+
+
+def get_movie(title):
+    movies = find_movies_matching(title)
+    
+    if len(movies) == 0:
+        raise Exception("No movies found with title '%s'" % title) # ERROR
+    
+    time.sleep(12)
+    movie = Movie(id = movies[0].id)
+    time.sleep(2)
+    movieInfo = get_film_info(movie)
+
+    return json_stringify(movieInfo)
+
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,6 @@
 # <div align="center">![Film](images/logo.png)</div>
+[![CircleCI](https://circleci.com/gh/balamou/Film_backend.svg?style=svg&circle-token=27a1ec7abbaf32b48e24a97b83210f471fb1e666)](https://circleci.com/gh/balamou/Film_backend)
+
 > REST API backend for [Film app](https://github.com/balamou/Film)
 
 ## Installation 

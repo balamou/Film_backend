@@ -16,16 +16,31 @@ type SeriesInfo = {
     }, 
     seasons: Season[]
 };
+type Movie = {
+    title?: string,
+    year?: string,
+    plot?: string,
+    poster?: string,
+    imdbRating?: string,
+}
 
 class RussianFetcher implements Fetcher {
     private seriesInfo?: SeriesInfo;
     private seriesName?: string;
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
     
-    private execScript(title: string) {
+    /**
+     * @param mode `show` or `movie`. Searches for the specific type of content by title.
+    */
+    private execScript(title: string, mode: string = 'show') {
         const scriptPath = path.join(__dirname, "main.py");
+        let options = [scriptPath, `"${title}"`];
 
-        const process = cprocess.spawnSync("python3", [scriptPath, `"${title}"`], { encoding: "utf-8" });
+        if (mode === 'movie') {
+            options = [scriptPath, '-m', `"${title}"`];
+        }
+
+        const process = cprocess.spawnSync("python3", options, { encoding: "utf-8" });
 
         if (process.stderr.length > 0) {
             const moduleNotInstalled = process.stderr.match(/(No module named)\s\'(.+)\'/);
@@ -73,8 +88,17 @@ class RussianFetcher implements Fetcher {
         };
     }
 
-    fetchMovie(movieName: string): { title?: string | undefined; year?: string | undefined; plot?: string | undefined; poster?: string | undefined; imdbRating?: string | undefined; } {
-        throw new Error("Method not implemented.");
+    fetchMovie(movieName: string) {
+        try {
+            const output = this.execScript(movieName, 'movie');
+            const movieData = JSON.parse(output) as Movie;
+            
+            // TODO: Add backup to get the poster image
+
+            return movieData;
+        } catch {
+            throw new Error(`Movie with title '${movieName}' not found!`);
+        }
     }
 
     private getSeries(title: string) {

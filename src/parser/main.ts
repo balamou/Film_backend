@@ -1,9 +1,14 @@
 import Facade from './Facade';
+import Path from 'path';
+
 import { DirTree } from './Adapters/DirTreeCreator';
 import { FSEditor } from './Adapters/FSEditor';
-import Path from 'path';
 import FilePurger from './Orginizer/DirManager/FilePurger';
 import ffmpeg from './Adapters/ffmpeg';
+
+import RussianFetcher from './FilmScrapper/russian/RussianFetcher';
+import { EnglishFetcher } from './FilmScrapper/omdb';
+import Fetcher from './FilmScrapper/fetcher';
 
 const paths = { // TODO: move those paths into a config file
     shows: [{ language: 'en', path: 'public/en/shows' }, { language: 'ru', path: 'public/ru/shows' }], 
@@ -20,6 +25,8 @@ const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
  * @param path to the movies folder
 */
 function orginizeMovies(path: string, language: string) {
+    console.log();
+    console.log(`Orginizing '${language}' movies`);
     const moviesFolder = new DirTree().treeFrom(path, GLOBAL_EXCLUDE);
 
     const files = moviesFolder.children.filter(node => node.isFile); // TODO: purge
@@ -28,6 +35,9 @@ function orginizeMovies(path: string, language: string) {
     folders.forEach(folder => orgMovie(folder.path, language));
 }
 
+/**
+ * @param path to the movie folder (ex: public/en/movies/joker)
+*/
 function orgMovie(path: string, language: string) {
     const moviesFolder = new DirTree().treeFrom(path, GLOBAL_EXCLUDE);
     const fsEditor = new FSEditor();
@@ -52,7 +62,16 @@ function orgMovie(path: string, language: string) {
 
     const videoProcessor = new ffmpeg();
     const thumbnailPath = videoProcessor.generateThumbnail(videoPath, `${path}/thumbnail.png`);
-    
+
+    if (!thumbnailPath) console.log(`Error: thumbnail couldn't be generated for '${videoPath}'`);
+
+    // Fetch ----
+    const fetcher = getFetcher('ru');
+
+    const movieName = Path.basename(path);
+    const movieData = optionalTry(() => fetcher.fetchMovie(movieName));
+    console.log(movieData);
+
     // Get tree
     // BFS find first video
     //  move it up & rename
@@ -61,6 +80,24 @@ function orgMovie(path: string, language: string) {
     // fetch info
     // add to db
     // save diff
+}
+
+function optionalTry<T>(callback: () => T) {
+    try {
+        return callback();
+    } catch {
+        return undefined;
+    }
+}
+
+function getFetcher(language: string): Fetcher {
+    if (language === 'ru')
+        return new RussianFetcher();
+    
+    if (language === 'en')
+        return new EnglishFetcher();
+    
+    return new EnglishFetcher();
 }
 
 function purge(pathToMovie: string, videoFilePath: string) {
