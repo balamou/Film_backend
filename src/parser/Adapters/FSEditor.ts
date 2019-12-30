@@ -31,6 +31,8 @@ export class FSEditor implements FileSystemEditor {
             const dest = Path.resolve(to, basename);
 
             fs.renameSync(from, dest);
+
+            return dest;
         } catch (error) {
             if (error.code === this.RENAME_ERROR) {
                 const basename = Path.basename(from);
@@ -79,12 +81,14 @@ export class FSEditor implements FileSystemEditor {
      * It means the file `e.png` is at level 3 and wants to move up to the same level as
      * the folder `c`. The resulting path for `e.png` will be `a/b/e.png`.
      * 
-     * @param files [Relative|Absolute] `files.path`
-     * @param desiredLevel is the level desired to move files. It is relative to the `pathToFolder`
+     * @param filePath path to the file to move (relative/absolute)
+     * @param level level the file is at
+     * @param desiredLevel is the level desired to move files
+     * @returns new path to the file
      */
     moveFileToLevel(filePath: string, level: number, desiredLevel: number) {
         const finalDir = this.removeSubpaths(filePath, level - desiredLevel + 1);
-        this.moveFileToFolder(filePath, finalDir);
+        return this.moveFileToFolder(filePath, finalDir);
     }
 
     /**
