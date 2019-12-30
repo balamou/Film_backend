@@ -1,6 +1,6 @@
-import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
-import { FileSystemEditor, FSEditor } from '../Adapters/FSEditor';
-import Tree from '../Tree/Tree';
+import { DirectoryTreeCreator } from '../../Adapters/DirTreeCreator';
+import { FileSystemEditor, FSEditor } from '../../Adapters/FSEditor';
+import Tree from '../../Tree/Tree';
 import FilePurger from './FilePurger';
 
 class FlattenFileTree {

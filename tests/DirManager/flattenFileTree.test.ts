@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 
-import FlattenFileTree from '../../src/parser/DirManager/FlattenFileTree';
+import FlattenFileTree from '../../src/parser/Orginizer/DirManager/FlattenFileTree';
 import MockDirTreeCreator from '../stub/MockDirTreeCreator';
 import MockFSEditor from '../stub/MockFSEditor';
-import FilePurger from '../../src/parser/DirManager/FilePurger';
+import FilePurger from '../../src/parser/Orginizer/DirManager/FilePurger';
 import { FSEditor } from '../../src/parser/Adapters/FSEditor';
 
 describe('Flatten File Tree', function () {

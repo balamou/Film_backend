@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import FilePurger from '../../src/parser/DirManager/FilePurger';
+import FilePurger from '../../src/parser/Orginizer/DirManager/FilePurger';
 import MockFSEditor from '../stub/MockFSEditor';
 import YAML from 'yaml';
 import { FSEditor } from '../../src/parser/Adapters/FSEditor';
