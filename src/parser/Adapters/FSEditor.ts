@@ -11,6 +11,7 @@ export interface FileSystemEditor {
 
 import fs from 'fs';
 import Path from 'path';
+import '../Tree/Array';
 
 export class FSEditor implements FileSystemEditor {
     private readonly RENAME_ERROR = 'ENOTEMPTY';
