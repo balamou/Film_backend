@@ -17,3 +17,7 @@
 
 [X] Crop strings if they are too big for a database entry
 [ ] Add episodes to the database as a batch and not one by one
+
+## Clean up
+[ ] Move all excludes to one main variable
+[ ] Set all dependencies in the constructor

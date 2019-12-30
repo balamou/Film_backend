@@ -1,5 +1,6 @@
 import Facade from './Facade';
 import { DirTree } from './Adapters/DirTreeCreator';
+import { FSEditor } from './Adapters/FSEditor';
 
 const paths = { // TODO: move those paths into a config file
     shows: [{ language: 'en', path: 'public/en/shows' }, { language: 'ru', path: 'public/ru/shows' }], 
@@ -28,11 +29,15 @@ function orgMovie(path: string, language: string) {
     const moviesFolder = new DirTree().treeFrom(path, GLOBAL_EXCLUDE);
 
     const video = moviesFolder.find(node => node.isVideo);
-
     if (!video) return console.log(`No videos found in '${path}'`);
     const [videoFile, level] = video;
 
     console.log(videoFile.path, level);
+
+    if (level !== 1) {
+        const fsEditor = new FSEditor();
+        fsEditor.moveFileToLevel(videoFile.path, level, 1);
+    }
 
     // Get tree
     // BFS find first video
