@@ -153,7 +153,10 @@ describe('Flatten File Tree', function () {
 
             purger.purge = (purgeDirectory: string) => calledPurge = true;
                 
-            fsEditor.moveFileToFolder = (from: string, to: string) => calledMove = true;
+            fsEditor.moveFileToFolder = (from: string, to: string) => {
+                calledMove = true; 
+                return undefined;
+            };
 
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), fsEditor, purger);
 
@@ -177,7 +180,7 @@ describe('Flatten File Tree', function () {
             const fsEditor = new FSEditor();
 
             purger.purge = (purgeDirectory: string) => {};
-            fsEditor.moveFileToFolder = (from: string, to: string) => {};
+            fsEditor.moveFileToFolder = (from: string, to: string) => undefined;
 
             const flattenFileTree = new FlattenFileTree(new MockDirTreeCreator(), fsEditor, purger);
             let misplacedFiles: {

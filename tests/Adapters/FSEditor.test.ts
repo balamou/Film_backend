@@ -63,6 +63,7 @@ describe('FSEditor', () => {
             
             fsEditor.moveFileToFolder = (from: string, to: string) => {
                 result.push([from, to]);
+                return undefined;
             };
     
             const moveUp = [{ path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/South park [3x02].mkv`, level: 3},
@@ -100,6 +101,7 @@ describe('FSEditor', () => {
             
             fsEditor.moveFileToFolder = (from: string, to: string) => {
                 result.push([from, to]);
+                return undefined;
             };
     
             const moveUp = [{ path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/South park [3x02].mkv`, level: 3},
@@ -137,6 +139,7 @@ describe('FSEditor', () => {
             
             fsEditor.moveFileToFolder = (from: string, to: string) => {
                 result.push([from, to]);
+                return undefined;
             };
     
             const moveUp = [{ path: `${rootFolder}/video_files_below_level_2/Season 12/nested_videos/South park [3x02].mkv`, level: 3},

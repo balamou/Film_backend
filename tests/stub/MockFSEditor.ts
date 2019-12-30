@@ -13,7 +13,7 @@ export default class MockFSEditor implements FileSystemEditor {
         throw new Error("Method not implemented.");
     }
     
-    moveFileToFolder(from: string, to: string): void {
+    moveFileToFolder(from: string, to: string): string | undefined {
         throw new Error("Method not implemented.");
     }
 

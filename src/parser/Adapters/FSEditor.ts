@@ -1,7 +1,7 @@
 export interface FileSystemEditor {
     makeDirectory(dirName: string): void;
     moveAndRename(from: string, to: string): void;
-    moveFileToFolder(from: string, to: string): void;
+    moveFileToFolder(from: string, to: string): string | undefined;
     doesFileExist(path: string): boolean;
     deleteFile(path: string): void;
     readFile(path: string): string;
