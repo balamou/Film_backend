@@ -1,6 +1,9 @@
 import { FileSystemEditor } from '../../src/parser/Adapters/FSEditor';
 
 export default class MockFSEditor implements FileSystemEditor {
+    moveFileToLevel(filePath: string, level: number, desiredLevel: number): void {
+        throw new Error("Method not implemented.");
+    }
 
     makeDirectory(dirName: string): void {
         throw new Error("Method not implemented.");

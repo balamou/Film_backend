@@ -17,7 +17,7 @@ class Facade {
             getFilePurger: () => new FilePurger(new FSEditor()),
             getOrginizer: (language: string) => new Orginizer(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE),
             getDifferenceOrginizer: (language: string) => new DifferenceOrginizer(language, new OrginizerFactory(), this.GLOBAL_EXCLUDE)
-        }
+        };
     }
 
     /**

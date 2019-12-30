@@ -72,6 +72,7 @@ class FlattenFileTree {
 
     /**
      * Moves files to up the directory tree to a desired level
+     * TODO: move this method to FileSystemEditor
      * 
      * @param files [Relative|Absolute] `files.path`
      * @param desiredLevel is the level desired to move files. It is relative to the `pathToFolder`
@@ -85,6 +86,7 @@ class FlattenFileTree {
 
     /**
      * Removes subpaths from the end of a path.
+     * TODO: move this method to FileSystemEditor
      * 
      * Example the path `a/b/c/d/e` after removing 2 levels becomes `a/b/c`.
      * This function preserves the type of the path, relative or absolute.
