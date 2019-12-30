@@ -3,6 +3,7 @@ import { DirTree } from './Adapters/DirTreeCreator';
 import { FSEditor } from './Adapters/FSEditor';
 import Path from 'path';
 import FilePurger from './Orginizer/DirManager/FilePurger';
+import ffmpeg from './Adapters/ffmpeg';
 
 const paths = { // TODO: move those paths into a config file
     shows: [{ language: 'en', path: 'public/en/shows' }, { language: 'ru', path: 'public/ru/shows' }], 
@@ -49,11 +50,14 @@ function orgMovie(path: string, language: string) {
     videoPath = rename(videoPath, 'movie');
     purge(path, videoPath);
 
+    const videoProcessor = new ffmpeg();
+    const thumbnailPath = videoProcessor.generateThumbnail(videoPath, `${path}/thumbnail.png`);
+    
     // Get tree
     // BFS find first video
     //  move it up & rename
-    // generate thumbnail
     // purge the rest
+    // generate thumbnail
     // fetch info
     // add to db
     // save diff
