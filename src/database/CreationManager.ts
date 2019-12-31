@@ -6,6 +6,8 @@ export type EpisodeType = {id?: number, seriesId: number, seasonNumber: number, 
 
 export type UserType = {id?: number, username: string};
 
+export type MovieType = {id?: number, language: string, duration: number, videoURL: string, folder: string, title: string, description?: string, poster?: string};
+
 class CreationManager extends DatabaseManager {
 
     private readonly VARCHAR_LIMIT = 250;
@@ -35,6 +37,14 @@ class CreationManager extends DatabaseManager {
         return result.rows[0];
     }
 
+    async createMovie(movie: MovieType) {
+        const query = 'INSERT INTO MOVIES(LANGUAGE, DURATION, VIDEO_URL, FOLDER, TITLE, DESCRIPTION, POSTER) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *';
+        const result = await this.pool.query<MovieType>(query, [
+            movie.language, movie.duration, movie.videoURL, movie.folder, movie.title, movie.description, movie.poster
+        ]);
+
+        return result.rows[0];
+    }
 }
 
 export default CreationManager;

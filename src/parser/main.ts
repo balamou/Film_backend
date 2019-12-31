@@ -9,6 +9,7 @@ import ffmpeg from './Adapters/ffmpeg';
 import RussianFetcher from './FilmScrapper/russian/RussianFetcher';
 import { EnglishFetcher } from './FilmScrapper/omdb';
 import Fetcher from './FilmScrapper/fetcher';
+import CreationManager from '../database/CreationManager';
 
 const paths = { // TODO: move those paths into a config file
     shows: [{ language: 'en', path: 'public/en/shows' }, { language: 'ru', path: 'public/ru/shows' }], 
@@ -61,22 +62,34 @@ function orgMovie(path: string, language: string) {
     purge(path, videoPath);
 
     const videoProcessor = new ffmpeg();
-    const thumbnailPath = videoProcessor.generateThumbnail(videoPath, `${path}/thumbnail.png`);
+    const duration = videoProcessor.getDuration(videoPath);
 
-    if (!thumbnailPath) console.log(`Error: thumbnail couldn't be generated for '${videoPath}'`);
-
+    if (!duration) return console.log(` Error! Duration cannot be extracted from '${videoPath}'. Cancelling '${path}'...`);
+    
     // Fetch ----
     const fetcher = getFetcher('ru');
-
     const movieName = Path.basename(path);
     const movieData = optionalTry(() => fetcher.fetchMovie(movieName));
+
+    if (!movieData) console.log(`   Error: cannot find information on '${movieName}' movie`);
     console.log(movieData);
+
+    console.log('Adding to database...'); 
+    const cManager = new CreationManager();
+    cManager.createMovie({
+        language: language,
+        duration: duration,
+        videoURL: videoPath.replace(/public\//, ''),
+        folder: path,
+        title: movieData?.title ?? Path.basename(path),
+        description: movieData?.plot?.substring(0, 400),
+        poster: movieData?.poster
+    });
 
     // Get tree
     // BFS find first video
     //  move it up & rename
     // purge the rest
-    // generate thumbnail
     // fetch info
     // add to db
     // save diff
