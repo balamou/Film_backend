@@ -32,7 +32,6 @@ export class FSEditor implements FileSystemEditor {
             const dest = Path.resolve(to, basename);
 
             fs.renameSync(from, dest);
-
             return dest;
         } catch (error) {
             if (error.code === this.RENAME_ERROR) {
@@ -89,7 +88,10 @@ export class FSEditor implements FileSystemEditor {
      */
     moveFileToLevel(filePath: string, level: number, desiredLevel: number) {
         const finalDir = this.removeSubpaths(filePath, level - desiredLevel + 1);
-        return this.moveFileToFolder(filePath, finalDir);
+        this.moveFileToFolder(filePath, finalDir);
+
+        const basename = Path.basename(filePath);
+        return `${finalDir}/${basename}`;
     }
 
     /**
