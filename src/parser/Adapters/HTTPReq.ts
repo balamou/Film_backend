@@ -17,7 +17,6 @@ export function download(url: string, filename: string) {
     const res = syncRequest('GET', url);
 
     const body = res.getBody();
-    const fsEditor = new FSEditor();
 
     const wstream = fs.createWriteStream(`${filename}.jpeg`);
     wstream.write(body);

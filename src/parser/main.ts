@@ -10,6 +10,7 @@ import RussianFetcher from './FilmScrapper/russian/RussianFetcher';
 import { EnglishFetcher } from './FilmScrapper/omdb';
 import Fetcher from './FilmScrapper/fetcher';
 import CreationManager from '../database/CreationManager';
+import { download } from './Adapters/HTTPReq';
 
 const paths = { // TODO: move those paths into a config file
     shows: [{ language: 'en', path: 'public/en/shows' }, { language: 'ru', path: 'public/ru/shows' }], 
@@ -67,9 +68,15 @@ function orgMovie(path: string, language: string) {
     if (!duration) return console.log(` Error! Duration cannot be extracted from '${videoPath}'. Cancelling '${path}'...`);
     
     // Fetch ----
-    const fetcher = getFetcher('en');
+    const fetcher = getFetcher(language);
     const movieName = Path.basename(path);
     const movieData = fetcher.fetchMovie(movieName);
+    let posterPath: string | undefined = undefined;
+
+    if (movieData.poster) {
+        // Download poster
+        posterPath = download(movieData.poster, `${path}/poster`);
+    }
 
     if (!movieData) console.log(`   Error: cannot find information on '${movieName}' movie`);
     console.log(movieData);
@@ -83,7 +90,7 @@ function orgMovie(path: string, language: string) {
         folder: path,
         title: movieData?.title ?? Path.basename(path),
         description: movieData?.plot?.substring(0, 400),
-        poster: movieData?.poster
+        poster: posterPath?.replace(/public\//, '')
     }).catch(error => {
         console.log('----------');
         console.log(error);
