@@ -1,24 +1,32 @@
 import { Router } from 'express';
+import DatabaseFetcher from '../database/DatabaseFetcher';
 
 const router = Router();
 
 router.get("/movie/:movieId/:userId", (req, res, next) => {
-    const movieId = req.params.movieId;
-    const userId = req.params.userId;
-    const basePath = "http://192.168.72.59:3000";
+    const movieId = parseInt(req.params.movieId);
+    const userId = parseInt(req.params.userId);
 
-    const movie = {
-        id: 3,
-        title: "lemeo",
-        duration: 100,
-        videoURL: basePath + "/en/shows/E03.mkv",
-        
-        description: "Some random description",
-        poster: "https://cdn-www.bluestacks.com/bs-images/com.my_.ffs_.simulator.americandad_topbanner.jpg",
-        stoppedAt: 40
-    };
-
-    res.json(movie);
+    getMovie(movieId, userId)
+    .then(movie => res.json(movie))
+    .catch(error => res.json({ error: error }));
 });
+
+async function getMovie(movieId: number, userId: number) {
+    const dbFetcher = new DatabaseFetcher();
+    const movie = await dbFetcher.getMovieById(movieId, userId);
+
+    await dbFetcher.endConnection();
+
+    return {
+        id: movie.id,
+        title: movie.title,
+        duration: movie.duration,
+        videoURL: movie.video_url,
+        description: movie.description,
+        poster: movie.poster,
+        stoppedAt: movie.stopped_at
+    };
+}
 
 export default router;

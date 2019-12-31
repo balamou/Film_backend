@@ -22,6 +22,26 @@ class DatabaseFetcher extends DatabaseManager {
 
         return result.rows[0];
     }
+    
+    /**
+     * Returns movie information with the last watched timestamp if available.
+     * 
+     * @param movieId movie id 
+     * @param userId user id is used to retrieve where last watched
+     */
+    async getMovieById(movieId: number, userId: number) {
+        const query = `SELECT MOVIES.*, T.STOPPED_AT 
+        FROM MOVIES 
+        LEFT JOIN
+            (SELECT *
+            FROM VIEWED_MOVIES as VM
+            WHERE VM.USER_ID = $2) as T
+        ON MOVIES.ID = T.MOVIE_ID
+        WHERE MOVIES.ID = $1;`;
+        const result = await this.pool.query<{id: number, duration: number, video_url: string, title: string, description?: string, poster?: string, stopped_at?: number}>(query, [ movieId, userId ]);
+
+        return result.rows[0];
+    }
 
     // TODO: return actual stopped at
     async getEpisodesFromSeriesIdWithStoppedAt(seriesId: number, season: number, userId: number): Promise<EpisodeType[]> {        
