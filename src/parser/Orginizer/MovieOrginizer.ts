@@ -47,61 +47,84 @@ class MovieOrginizer {
      * @param path to the movie folder (ex: public/en/movies/joker)
     */
     private orgMovie(path: string, language: string) {
-        const moviesFolder = this.factory.createDirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
+        const log = console.log;
+        const movieName = Path.basename(path);
+
+        const { pathToVideo, error } = this.moveUpAndRename(path);
+        if (error) return log(error);
+        
+        this.purge(path, pathToVideo);
+
+        const {duration, error: err } = this.getDuration(pathToVideo);
+        if (err) return log(err);
+        
+        const { movieData, error: err2 } = this.fetchMovieData(path, movieName, language);
+        if (err2) log(err2);
+      
+        log('Adding to database...');
+        const cManager = new CreationManager();
+        cManager.createMovie({
+            language: language,
+            duration: duration,
+            videoURL: pathToVideo.replace(/public\//, ''),
+            folder: path,
+            title: movieData?.title ?? movieName,
+            description: movieData?.plot?.substring(0, 400),
+            poster: movieData?.poster?.replace(/public\//, '')
+        }).catch(error => {
+            log('----------');
+            log(error);
+            log('----------');
+        });
+    }
+
+    private fetchMovieData(path: string, movieName: string, language: string) {
+        const fetcher = this.factory.createFetcher(language);
+        const movieData = fetcher.fetchMovie(movieName);
+        
+        if (!movieData) return { movieData: undefined, error: `Error: cannot find information on '${movieName}' movie` };
+        
+        if (movieData.poster) movieData.poster = download(movieData.poster, `${path}/poster`);
+        
+        return { movieData: movieData, error: undefined };
+    }
+
+    private getDuration(videoPath: string) {
+        const videoProcessor = this.factory.createVideoProcessor();
+        const duration = videoProcessor.getDuration(videoPath);
+
+        if (!duration) return { duration: NaN, error: `Error! Duration cannot be extracted from '${videoPath}'`};
+        
+        return { duration: duration, error: undefined};
+    }   
+
+    /**
+     * Finds the first video using BFS in the dir folder and moves it up to level 1.
+     * 
+     * @param pathToMovie path to the movie folder (ex. public/en/movies/iron_man)
+    */
+    private moveUpAndRename(pathToMovie: string) {
+        console.log(pathToMovie);
+        const moviesFolder = this.factory.createDirTree().treeFrom(pathToMovie, this.GLOBAL_EXCLUDE);
         const fsEditor = this.factory.createFSEditor();
 
         const video = moviesFolder.find(node => node.isVideo);
-        if (!video) return console.log(`No videos found in '${path}'`);
-        const [videoFile, level] = video;
+        
+        if (!video) return { pathToVideo: 'undefined', error: `No videos found in '${pathToMovie}'`};
 
-        console.log(videoFile.path, level);
+        const [videoFile, level] = video;
         let videoPath = videoFile.path;
 
         if (level !== 1) {
             const newPath = fsEditor.moveFileToLevel(videoFile.path, level, 1);
 
-            if (!newPath) return console.log(`Error occured moving '${videoFile.path}' to top level`);
+            if (!newPath) return { pathToVideo: 'undefined', error: `Error occured moving '${videoFile.path}' to top level` };
 
             videoPath = newPath;
         }
 
         videoPath = fsEditor.rename(videoPath, 'movie');
-        this.purge(path, videoPath);
-
-        const videoProcessor = this.factory.createVideoProcessor();
-        const duration = videoProcessor.getDuration(videoPath);
-
-        if (!duration) return console.log(` Error! Duration cannot be extracted from '${videoPath}'. Cancelling '${path}'...`);
-
-        // Fetch ----
-        const fetcher = this.factory.createFetcher(language);
-        const movieName = Path.basename(path);
-        const movieData = fetcher.fetchMovie(movieName);
-        let posterPath: string | undefined = undefined;
-
-        if (movieData.poster) {
-            // Download poster
-            posterPath = download(movieData.poster, `${path}/poster`);
-        }
-
-        if (!movieData) console.log(`   Error: cannot find information on '${movieName}' movie`);
-        console.log(movieData);
-
-        console.log('Adding to database...');
-        const cManager = new CreationManager();
-        cManager.createMovie({
-            language: language,
-            duration: duration,
-            videoURL: videoPath.replace(/public\//, ''),
-            folder: path,
-            title: movieData?.title ?? Path.basename(path),
-            description: movieData?.plot?.substring(0, 400),
-            poster: posterPath?.replace(/public\//, '')
-        }).catch(error => {
-            console.log('----------');
-            console.log(error);
-            console.log('----------');
-        });
+        return { pathToVideo: videoPath, error: undefined };
     }
 
     private purge(pathToMovie: string, videoFilePath: string) {
