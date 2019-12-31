@@ -40,10 +40,18 @@ type SeriesInfo = {
     }, 
     seasons: Season[]
 };
+type Movie = {
+    title?: string,
+    year?: string,
+    plot?: string,
+    poster?: string,
+    imdbRating?: string
+};
 
 export class EnglishFetcher implements Fetcher {
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
-    
+    private readonly moviesCacher = new Cacher<Movie>(new FSEditor()); // TODO: inject
+
     fetchSeries(seriesName: string): { title?: string | undefined; plot?: string | undefined; poster?: string | undefined; totalSeasons?: number | undefined; } {
         const seriesData = this.retrieveSeriesData(seriesName);
 
@@ -154,8 +162,21 @@ export class EnglishFetcher implements Fetcher {
             plot: Plot,
         };
     }
+    
+    fetchMovie(movieName: string) { 
+        const key = movieName.replace(/\s+/g, '_').toLowerCase();
+        let movieData = this.moviesCacher.retrieveCachedData(key, 'cache/en/movies');
 
-    fetchMovie(movieName: string) {
+        if (movieData) return movieData;
+
+        movieData = this._fetchMovie(movieName);
+
+        this.moviesCacher.cacheData(key, movieData, 'cache/en/movies');
+
+        return movieData;
+    }
+
+    private _fetchMovie(movieName: string) {
         const movieInfo = Omdb.fetchMovie(movieName);
 
         if (!movieInfo.Error)

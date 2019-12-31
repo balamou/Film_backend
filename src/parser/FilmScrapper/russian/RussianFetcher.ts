@@ -97,7 +97,7 @@ class RussianFetcher implements Fetcher {
 
         movieData = this.makeKinopoiskRequestMovie(movieName);
 
-        this.moviesCacher.cacheData(key, movieData, 'cache/ru/movies')
+        this.moviesCacher.cacheData(key, movieData, 'cache/ru/movies');
         
         return movieData;
     }
