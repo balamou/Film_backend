@@ -5,8 +5,14 @@ type Episode_Type = {id?: number, series_id: number, season_number: number, epis
 
 class DatabaseFetcher extends DatabaseManager {
 
-    async fetchSeries(start: number, quantity: number, language: string) {
+    async fetchSeries(start: number, quantity: number, language: string) { // TODO: add pagination support
         const result = await this.pool.query<SeriesType>('SELECT * FROM SERIES WHERE language=$1', [ language ]);
+
+        return result.rows;
+    }
+
+    async fetchMovies(start: number, quantity: number, language: string) { // TODO: add pagination support
+        const result = await this.pool.query<{id: number, poster?: string}>('SELECT ID, POSTER FROM MOVIES WHERE language=$1', [ language ]);
 
         return result.rows;
     }
