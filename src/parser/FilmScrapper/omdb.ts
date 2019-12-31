@@ -179,7 +179,7 @@ export class EnglishFetcher implements Fetcher {
     private _fetchMovie(movieName: string) {
         const movieInfo = Omdb.fetchMovie(movieName);
 
-        if (!movieInfo.Error)
+        if (movieInfo.Error)
             throw new Error(movieInfo.Error);
 
         const { Title, Year, Plot, Poster, imdbRating } = movieInfo as { Title?: string, Year?: string, Plot?: string, Poster?: string, imdbRating?: string };

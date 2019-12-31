@@ -67,9 +67,9 @@ function orgMovie(path: string, language: string) {
     if (!duration) return console.log(` Error! Duration cannot be extracted from '${videoPath}'. Cancelling '${path}'...`);
     
     // Fetch ----
-    const fetcher = getFetcher('ru');
+    const fetcher = getFetcher('en');
     const movieName = Path.basename(path);
-    const movieData = optionalTry(() => fetcher.fetchMovie(movieName));
+    const movieData = fetcher.fetchMovie(movieName);
 
     if (!movieData) console.log(`   Error: cannot find information on '${movieName}' movie`);
     console.log(movieData);

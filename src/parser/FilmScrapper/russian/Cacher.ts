@@ -28,7 +28,7 @@ class Cacher<T> {
     }
 
     cacheData(file: string, data: T, dir: string = 'cache') {
-        const _data = {dateCached: new Date(), ...data}
+        const _data = {dateCached: new Date(), ...data};
         this.fsEditor.makeDirectory(dir);
         this.fsEditor.writeToFile(`${dir}/${file}.yml`, YAML.stringify(_data));
     }
