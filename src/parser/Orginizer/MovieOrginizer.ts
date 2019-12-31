@@ -40,6 +40,10 @@ class MovieOrginizer {
         const files = moviesFolder.children.filter(node => node.isFile); // TODO: purge
         const folders = moviesFolder.children.filter(node => node.isFolder);
 
+        const filePurger = this.factory.createFilePurger();
+        filePurger.insertPaths(files.map(x => x.path));
+        filePurger.purge(`${path}/purge`);
+
         folders.forEach(folder => this.orgMovie(folder.path, language));
     }
 
@@ -72,9 +76,9 @@ class MovieOrginizer {
             description: movieData?.plot?.substring(0, 400),
             poster: movieData?.poster?.replace(/public\//, '')
         }).catch(error => {
-            log('----------');
+            log(`----- Error adding ${movieName} to the database -----`);
             log(error);
-            log('----------');
+            log(`-----------------------------------------------------`);
         });
     }
 
@@ -104,7 +108,6 @@ class MovieOrginizer {
      * @param pathToMovie path to the movie folder (ex. public/en/movies/iron_man)
     */
     private moveUpAndRename(pathToMovie: string) {
-        console.log(pathToMovie);
         const moviesFolder = this.factory.createDirTree().treeFrom(pathToMovie, this.GLOBAL_EXCLUDE);
         const fsEditor = this.factory.createFSEditor();
 
