@@ -7,6 +7,7 @@ export interface FileSystemEditor {
     readFile(path: string): string;
     writeToFile(path: string, data: string): void;
     moveFileToLevel(filePath: string, level: number, desiredLevel: number): void;
+    rename(pathToFile: string, newFileName: string): string;
 }
 
 import fs from 'fs';
@@ -104,5 +105,22 @@ export class FSEditor implements FileSystemEditor {
         const dir = pathComponents.truncate(levelsToRemove);
         
         return Path.isAbsolute(path) ? Path.join('/', ...dir) : Path.join(...dir);
+    }
+
+    /**
+    * Renames the file keeping the current extension.
+    * Example path = `a/b/c.mkv`, newName = `episode_1` returns `a/b/episode_1.mkv`.
+    *
+    * `TODO` Move to FSEditor
+    * 
+    * @returns the new path to the file
+    */
+    rename(pathToFile: string, newFileName: string) {
+        const pathData = Path.parse(pathToFile);
+        const newPath = `${pathData.dir}/${newFileName}${pathData.ext}`;
+
+        this.moveAndRename(pathToFile, newPath);
+
+        return newPath;
     }
 }

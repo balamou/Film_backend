@@ -15,13 +15,27 @@ import { download } from '../Adapters/HTTPReq';
 class MovieOrginizer {
     private readonly GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
 
+    private get factory() {
+        return {
+            createFSEditor: () => new FSEditor(),
+            createDirTree: () => new DirTree(),
+            createVideoProcessor: () => new ffmpeg(),
+            createFilePurger: () => new FilePurger(new FSEditor()),
+            createFetcher: (language: string): Fetcher => {
+                if (language === 'ru') return new RussianFetcher();
+                if (language === 'en') return new EnglishFetcher();
+                return new EnglishFetcher();
+            }
+        };
+    }
+
     /**
      * @param path to the movies folder
     */
     orginizeMovies(path: string, language: string) {
         console.log();
         console.log(`Orginizing '${language}' movies`);
-        const moviesFolder = new DirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
+        const moviesFolder = this.factory.createDirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
 
         const files = moviesFolder.children.filter(node => node.isFile); // TODO: purge
         const folders = moviesFolder.children.filter(node => node.isFolder);
@@ -33,8 +47,8 @@ class MovieOrginizer {
      * @param path to the movie folder (ex: public/en/movies/joker)
     */
     private orgMovie(path: string, language: string) {
-        const moviesFolder = new DirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
-        const fsEditor = new FSEditor();
+        const moviesFolder = this.factory.createDirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
+        const fsEditor = this.factory.createFSEditor();
 
         const video = moviesFolder.find(node => node.isVideo);
         if (!video) return console.log(`No videos found in '${path}'`);
@@ -51,16 +65,16 @@ class MovieOrginizer {
             videoPath = newPath;
         }
 
-        videoPath = this.rename(videoPath, 'movie');
+        videoPath = fsEditor.rename(videoPath, 'movie');
         this.purge(path, videoPath);
 
-        const videoProcessor = new ffmpeg();
+        const videoProcessor = this.factory.createVideoProcessor();
         const duration = videoProcessor.getDuration(videoPath);
 
         if (!duration) return console.log(` Error! Duration cannot be extracted from '${videoPath}'. Cancelling '${path}'...`);
 
         // Fetch ----
-        const fetcher = this.getFetcher(language);
+        const fetcher = this.factory.createFetcher(language);
         const movieName = Path.basename(path);
         const movieData = fetcher.fetchMovie(movieName);
         let posterPath: string | undefined = undefined;
@@ -90,19 +104,9 @@ class MovieOrginizer {
         });
     }
 
-    private getFetcher(language: string): Fetcher {
-        if (language === 'ru')
-            return new RussianFetcher();
-
-        if (language === 'en')
-            return new EnglishFetcher();
-
-        return new EnglishFetcher();
-    }
-
     private purge(pathToMovie: string, videoFilePath: string) {
-        const folder = new DirTree().treeFrom(pathToMovie, this.GLOBAL_EXCLUDE);
-        const filePuger = new FilePurger(new FSEditor());
+        const folder = this.factory.createDirTree().treeFrom(pathToMovie, this.GLOBAL_EXCLUDE);
+        const filePuger = this.factory.createFilePurger();
         const videoName = Path.basename(videoFilePath);
 
         const purgableFiles = folder.children.filter(node => node.name !== videoName).map(node => node.path);
@@ -111,21 +115,6 @@ class MovieOrginizer {
         filePuger.purge(`${pathToMovie}/purge`);
     }
 
-    /**
-     * Renames the file keeping the current extension.
-     * Example path = `a/b/c.mkv`, newName = `episode_1` returns `a/b/episode_1.mkv`.
-     * 
-     * `TODO` Move to FSEditor
-    */
-    private rename(path: string, newName: string) {
-        const fsEditor = new FSEditor();
-        const pathData = Path.parse(path);
-        const newPath = `${pathData.dir}/${newName}${pathData.ext}`;
-
-        fsEditor.moveAndRename(path, newPath);
-
-        return newPath;
-    }
 }
 
 export default MovieOrginizer;

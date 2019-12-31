@@ -32,4 +32,8 @@ export default class MockFSEditor implements FileSystemEditor {
     writeToFile(path: string, data: string): void {
         throw new Error("Method not implemented.");
     }
+
+    rename(pathToFile: string, newFileName: string): string {
+        throw new Error("Method not implemented.");
+    }
 }
