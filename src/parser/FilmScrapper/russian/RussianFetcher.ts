@@ -28,6 +28,7 @@ class RussianFetcher implements Fetcher {
     private seriesInfo?: SeriesInfo;
     private seriesName?: string;
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
+    private readonly moviesCacher = new Cacher<Movie>(new FSEditor()); // TODO: inject
     
     /**
      * @param mode `show` or `movie`. Searches for the specific type of content by title.
@@ -89,15 +90,28 @@ class RussianFetcher implements Fetcher {
     }
 
     fetchMovie(movieName: string) {
+        const key = movieName.replace(/\s+/g, '_').toLowerCase();
+        let movieData = this.moviesCacher.retrieveCachedData(key, 'cache/ru/movies');
+        
+        if (movieData) return movieData;
+
+        movieData = this.makeKinopoiskRequestMovie(movieName);
+
+        this.moviesCacher.cacheData(key, movieData, 'cache/ru/movies')
+        
+        return movieData;
+    }
+
+    private makeKinopoiskRequestMovie(movieTitle: string) {
         try {
-            const output = this.execScript(movieName, 'movie');
+            const output = this.execScript(movieTitle, 'movie');
             const movieData = JSON.parse(output) as Movie;
             
             // TODO: Add backup to get the poster image
 
             return movieData;
         } catch {
-            throw new Error(`Movie with title '${movieName}' not found!`);
+            throw new Error(`Movie with title '${movieTitle}' not found!`);
         }
     }
 

@@ -84,6 +84,10 @@ function orgMovie(path: string, language: string) {
         title: movieData?.title ?? Path.basename(path),
         description: movieData?.plot?.substring(0, 400),
         poster: movieData?.poster
+    }).catch(error => {
+        console.log('----------');
+        console.log(error);
+        console.log('----------');
     });
 
     // Get tree
