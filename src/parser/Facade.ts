@@ -6,7 +6,7 @@ import Orginizer from './Orginizer/Orginizer';
 import OrginizerFactory from './Orginizer/Factory';
 import TreeDifference from './Tree/TreeDifference';
 
-import DirSnapshot from './DirSnapshot';
+import DirSnapshot from './Orginizer/DirSnapshot';
 import FilePurger from './Orginizer/DirManager/FilePurger';
 class Facade {
     private static readonly GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;

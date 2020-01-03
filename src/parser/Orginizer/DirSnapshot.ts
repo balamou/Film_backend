@@ -1,6 +1,6 @@
-import { FSEditor } from "./Adapters/FSEditor";
-import { DirTree } from "./Adapters/DirTreeCreator";
-import Tree from "./Tree/Tree";
+import { FSEditor } from "../Adapters/FSEditor";
+import { DirTree } from "../Adapters/DirTreeCreator";
+import Tree from "../Tree/Tree";
 import YAML from 'yaml';
 
 export default class DirSnapshot {
