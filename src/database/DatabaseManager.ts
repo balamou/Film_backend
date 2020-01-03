@@ -77,6 +77,10 @@ class DatabaseManager {
         const query ='DELETE FROM episodes WHERE series_id IN (SELECT id FROM series WHERE folder=$1) AND season_number=$2';
         const result = await this.pool.query(query, [seriesFolder, seasonNumber]);
     }
+
+    async deleteMovie(movieFolder: string) {
+        const result = await this.pool.query('DELETE FROM movies WHERE folder=$1', [movieFolder]);
+    }
 }
 
 export default DatabaseManager;

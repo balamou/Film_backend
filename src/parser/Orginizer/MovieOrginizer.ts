@@ -13,6 +13,7 @@ import { download } from '../Adapters/HTTPReq';
 import Tree from '../Tree/Tree';
 import DirSnapshot from './DirSnapshot';
 import TreeDifference from '../Tree/TreeDifference';
+import DatabaseManager from '../../database/DatabaseManager';
 
 
 class MovieOrginizer {
@@ -24,6 +25,7 @@ class MovieOrginizer {
             createDirTree: () => new DirTree(),
             createVideoProcessor: () => new ffmpeg(),
             createFilePurger: () => new FilePurger(new FSEditor()),
+            createDBManager: () => new DatabaseManager(),
             createFetcher: (language: string): Fetcher => {
                 if (language === 'ru') return new RussianFetcher();
                 if (language === 'en') return new EnglishFetcher();
@@ -48,8 +50,13 @@ class MovieOrginizer {
                 const difference = TreeDifference.difference(beforeDirectory, afterDirectory);
                 
                 const purgeAdded = difference.added.filter(x => x.isFolder && !this.orgMovie(x.path, language));
+                this.purgeFiles(path, purgeAdded);
+
+                const dbManager = this.factory.createDBManager();
+                difference.deleted.forEach(x => dbManager.deleteMovie(x.path));
 
                 difference.print();
+                DirSnapshot.saveDirectoryStateOnDisk(path, this.GLOBAL_EXCLUDE);
             }
         } else {
             console.log();
