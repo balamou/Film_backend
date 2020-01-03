@@ -10,6 +10,7 @@ import { EnglishFetcher } from '../FilmScrapper/omdb';
 import Fetcher from '../FilmScrapper/fetcher';
 import CreationManager from '../../database/CreationManager';
 import { download } from '../Adapters/HTTPReq';
+import Tree from '../Tree/Tree';
 
 
 class MovieOrginizer {
@@ -37,14 +38,18 @@ class MovieOrginizer {
         console.log(`Orginizing '${language}' movies`);
         const moviesFolder = this.factory.createDirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
 
-        const files = moviesFolder.children.filter(node => node.isFile); // TODO: purge
+        const files = moviesFolder.children.filter(node => node.isFile);
         const folders = moviesFolder.children.filter(node => node.isFolder);
 
+        const purgeFolders = folders.filter(folder => !this.orgMovie(folder.path, language));
+
+        this.purgeFiles(path, [...files, ...purgeFolders]);
+    }
+
+    private purgeFiles(pathToMovies: string, files: Tree[]) {
         const filePurger = this.factory.createFilePurger();
         filePurger.insertPaths(files.map(x => x.path));
-        filePurger.purge(`${path}/purge`);
-
-        folders.forEach(folder => this.orgMovie(folder.path, language));
+        filePurger.purge(`${pathToMovies}/purge`);
     }
 
     /**
@@ -55,12 +60,12 @@ class MovieOrginizer {
         const movieName = Path.basename(path);
 
         const { pathToVideo, error } = this.moveUpAndRename(path);
-        if (error) return log(error);
+        if (error) return (log(error), false);
         
         this.purge(path, pathToVideo);
 
         const {duration, error: err } = this.getDuration(pathToVideo);
-        if (err) return log(err);
+        if (err) return (log(err), false);
         
         const { movieData, error: err2 } = this.fetchMovieData(path, movieName, language);
         if (err2) log(err2);
@@ -80,6 +85,8 @@ class MovieOrginizer {
             log(error);
             log(`-----------------------------------------------------`);
         });
+
+        return true;
     }
 
     private fetchMovieData(path: string, movieName: string, language: string) {
