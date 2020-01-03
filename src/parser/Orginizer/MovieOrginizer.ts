@@ -12,6 +12,7 @@ import CreationManager from '../../database/CreationManager';
 import { download } from '../Adapters/HTTPReq';
 import Tree from '../Tree/Tree';
 import DirSnapshot from './DirSnapshot';
+import TreeDifference from '../Tree/TreeDifference';
 
 
 class MovieOrginizer {
@@ -43,6 +44,12 @@ class MovieOrginizer {
                 console.log([`No changes in '${language}' movie directory`]);
             } else {
                 console.log([`'${language}' movie directory changed!`]);
+                
+                const difference = TreeDifference.difference(beforeDirectory, afterDirectory);
+                
+                const purgeAdded = difference.added.filter(x => x.isFolder && !this.orgMovie(x.path, language));
+
+                difference.print();
             }
         } else {
             console.log();
@@ -105,13 +112,21 @@ class MovieOrginizer {
 
     private fetchMovieData(path: string, movieName: string, language: string) {
         const fetcher = this.factory.createFetcher(language);
-        const movieData = fetcher.fetchMovie(movieName);
+        const movieData = this.tryOrUndefined(() => fetcher.fetchMovie(movieName));
         
         if (!movieData) return { movieData: undefined, error: `Error: cannot find information on '${movieName}' movie` };
         
         if (movieData.poster) movieData.poster = download(movieData.poster, `${path}/poster`);
         
         return { movieData: movieData, error: undefined };
+    }
+
+    private tryOrUndefined<T>(callback: () => T) {
+        try {
+            return callback();
+        } catch {
+            return;
+        }
     }
 
     private getDuration(videoPath: string) {
