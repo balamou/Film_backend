@@ -22,7 +22,9 @@ export default class DirSnapshot {
     /**
      * @param path points to the shows/movies directory
     */
-    static loadDirectoryStateFromFile(path: string): Tree | undefined {
+    static loadDirectoryStateFromFile(path: string) {
+        if (!this.didSaveDirState(path)) return;
+
         try {
             const data = this.fsEditor.readFile(`${path}/${this.fileName}`);
             const tree = YAML.parse(data) as Tree;
@@ -30,7 +32,6 @@ export default class DirSnapshot {
             return Tree.appendMissingMethodsTo(tree);
         } catch {
             console.log(`Error loading or decoding '${this.fileName}' file`);
-            return undefined;
         }
     }
 
@@ -38,6 +39,6 @@ export default class DirSnapshot {
      * @param path points to the shows/movies directory
     */
     static didSaveDirState(path: string) {
-        return this.fsEditor.doesFileExist(`${path}/${this.fileName}`)
+        return this.fsEditor.doesFileExist(`${path}/${this.fileName}`);
     }
 }

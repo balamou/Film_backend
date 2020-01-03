@@ -11,6 +11,7 @@ import Fetcher from '../FilmScrapper/fetcher';
 import CreationManager from '../../database/CreationManager';
 import { download } from '../Adapters/HTTPReq';
 import Tree from '../Tree/Tree';
+import DirSnapshot from './DirSnapshot';
 
 
 class MovieOrginizer {
@@ -34,16 +35,24 @@ class MovieOrginizer {
      * @param path to the movies folder
     */
     orginizeMovies(path: string, language: string) {
-        console.log();
-        console.log(`Orginizing '${language}' movies`);
-        const moviesFolder = this.factory.createDirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
+        const beforeDirectory = DirSnapshot.loadDirectoryStateFromFile(path);
 
-        const files = moviesFolder.children.filter(node => node.isFile);
-        const folders = moviesFolder.children.filter(node => node.isFolder);
+        if (beforeDirectory) {
+            console.log([`No changes in '${language}' movie directory`]);
+        } else {
+            console.log();
+            console.log(`Orginizing '${language}' movies`);
+            const moviesFolder = this.factory.createDirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
 
-        const purgeFolders = folders.filter(folder => !this.orgMovie(folder.path, language));
+            const files = moviesFolder.children.filter(node => node.isFile);
+            const folders = moviesFolder.children.filter(node => node.isFolder);
 
-        this.purgeFiles(path, [...files, ...purgeFolders]);
+            const purgeFolders = folders.filter(folder => !this.orgMovie(folder.path, language));
+
+            this.purgeFiles(path, [...files, ...purgeFolders]);
+
+            DirSnapshot.saveDirectoryStateOnDisk(path, this.GLOBAL_EXCLUDE);
+        }
     }
 
     private purgeFiles(pathToMovies: string, files: Tree[]) {
