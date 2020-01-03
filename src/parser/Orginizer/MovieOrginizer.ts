@@ -38,7 +38,12 @@ class MovieOrginizer {
         const beforeDirectory = DirSnapshot.loadDirectoryStateFromFile(path);
 
         if (beforeDirectory) {
-            console.log([`No changes in '${language}' movie directory`]);
+            const afterDirectory = this.factory.createDirTree().treeFrom(path, this.GLOBAL_EXCLUDE);
+            if (beforeDirectory.hash() === afterDirectory.hash()) {
+                console.log([`No changes in '${language}' movie directory`]);
+            } else {
+                console.log([`'${language}' movie directory changed!`]);
+            }
         } else {
             console.log();
             console.log(`Orginizing '${language}' movies`);
@@ -71,10 +76,10 @@ class MovieOrginizer {
         const { pathToVideo, error } = this.moveUpAndRename(path);
         if (error) return (log(error), false);
         
-        this.purge(path, pathToVideo);
-
-        const {duration, error: err } = this.getDuration(pathToVideo);
+        const { duration, error: err } = this.getDuration(pathToVideo);
         if (err) return (log(err), false);
+        
+        this.purge(path, pathToVideo);
         
         const { movieData, error: err2 } = this.fetchMovieData(path, movieName, language);
         if (err2) log(err2);
