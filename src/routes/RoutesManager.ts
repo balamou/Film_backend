@@ -7,6 +7,7 @@ import watched from './watched';
 import show from './show';
 import movie from './movie';
 import episodes from './episodes';
+import next_episode from './next_episode';
 
 import path from 'path';
 
@@ -32,6 +33,7 @@ class RoutesManager {
         this.app.use(episodes);
 
         this.app.use(movie);
+        this.app.use(next_episode);
 
         this.app.get("/", (req, res, next) => {
             res.send("<p>REST API</p>");

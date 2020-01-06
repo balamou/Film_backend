@@ -141,6 +141,38 @@ class DatabaseFetcher extends DatabaseManager {
 
         return undefined;
     }
+
+    async getNextEpisodeFrom(currentEpisodeId: number, userId: number) {
+        type CurrEpisode = { series_id: number, season_number: number, episode_number: number };
+        type Film = {
+            id: number,
+            episode_number: number,
+            season_number: number,
+            video_url: string,
+            duration: number,
+            stopped_at?: number,
+            title?: string
+        };
+        const result = await this.pool.query<CurrEpisode>('SELECT series_id, season_number, episode_number FROM EPISODES WHERE ID = $1', [ currentEpisodeId ]);
+        if (result.rowCount == 0) return;
+        const episode = result.rows[0];
+
+        //get next episode in `THIS` season
+        let query = 'SELECT id, episode_number, season_number, video_url, duration, title FROM episodes WHERE series_id = $1 AND season_number = $2 AND episode_number > $3 LIMIT 1';
+        const result2 = await this.pool.query<Film>(query, [ episode.series_id, episode.season_number, episode.episode_number ]);
+        
+        if (result2.rowCount != 0) {
+            return result2.rows[0];
+        }
+
+        // get next episode in `Next available` season 
+        query = 'SELECT id, episode_number, season_number, video_url, duration, title FROM episodes WHERE series_id = $1 AND season_number > $2 ORDER BY season_number, episode_number LIMIT 1';
+        const result3 = await this.pool.query<Film>(query, [ episode.series_id, episode.season_number ]);
+        
+        if (result3.rowCount != 0) {
+            return result3.rows[0];
+        }
+    }
 }
 
 export default DatabaseFetcher;
