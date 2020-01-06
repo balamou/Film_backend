@@ -48,6 +48,31 @@ class Tree {
         return false;
     };
 
+    /**
+     * Returns the first element in the tree that matches the predicate condition.
+     * Traverses the tree in `Breadth-First Search` manner.
+    */
+    find = (predicate: (node: Tree) => boolean) => {
+        const queue = [this as Tree];
+        let level = 0;
+        while (queue.length > 0) {
+            const size = queue.length;
+
+            for (let i = 0; i < size; i++) {
+                const currNode = queue.shift()!; // `shift` is the same as `dequeue` in a queue
+                
+                if (predicate(currNode))
+                    return [currNode, level] as [Tree, number];
+
+                currNode.children.forEach(node => queue.push(node));
+            }
+
+            level++;
+        }
+
+        return undefined;
+    };
+
     get isFile(): boolean {
         return this.type === this.FILE;
     };

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import FilePurger from '../../src/parser/DirManager/FilePurger';
+import FilePurger from '../../src/parser/Orginizer/DirManager/FilePurger';
 import MockFSEditor from '../stub/MockFSEditor';
 import YAML from 'yaml';
 import { FSEditor } from '../../src/parser/Adapters/FSEditor';
@@ -235,6 +235,7 @@ describe('File purger tests', () => {
             const result: [string, string][] = [];
             mockFSEditor.moveFileToFolder = (from: string, to: string) => {
                 result.push([from, to]);
+                return undefined;
             };
 
             mockFSEditor.makeDirectory = (dirName: string) => {
@@ -259,6 +260,7 @@ describe('File purger tests', () => {
 
             mockFSEditor.moveFileToFolder = (from: string, to: string) => {
                 isMoveCalled = true;
+                return undefined;
             };
 
             mockFSEditor.makeDirectory = (dirName: string) => {
@@ -276,6 +278,7 @@ describe('File purger tests', () => {
             const mockFSEditor = new MockFSEditor();
 
             mockFSEditor.moveFileToFolder = (from: string, to: string) => {
+                return undefined;
             };
 
             mockFSEditor.makeDirectory = (dirName: string) => {

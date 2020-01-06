@@ -2,9 +2,13 @@ import cprocess from 'child_process';
 
 export default class ffmpeg {
 
-    // `destination` has to include the extension
-    // returns path to the thumbnail if successfully extracted, otherwise undefined
-    generateThumbnail(videoPath: string, destination: string, width: string = '600'): string | undefined {
+    /** 
+     * @param videoPath path to the videofile 
+     * @param destination of the thumbnails. It has to include the extension (.png/.jpeg)
+     * @param width of the thumbnail (it keeps the ratio of the original video)
+     * @returns path to the thumbnail if successfully extracted, otherwise `undefined`
+     * */ 
+    generateThumbnail(videoPath: string, destination: string, width: number = 600): string | undefined {
         const args = ['-ss', '00:10:50', '-i', videoPath, '-vframes', '1', '-filter:v', 'scale=' + width + ':-1', destination];
         const process = cprocess.spawnSync('ffmpeg', args, { encoding: 'utf-8' });
         

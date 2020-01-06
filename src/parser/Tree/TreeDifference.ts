@@ -74,8 +74,8 @@ export default class TreeDifference {
     }
     
     private static diff(before: Tree, after: Tree) {
-        const beforeChildren: Tree[] = before.children;
-        const afterChildren: Tree[] = after.children;
+        const beforeChildren = before.children;
+        const afterChildren = after.children;
         
         return {
             deleted: beforeChildren.butNotIn(afterChildren, (l, r) => l.name === r.name),

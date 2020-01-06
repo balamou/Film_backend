@@ -16,18 +16,42 @@ type SeriesInfo = {
     }, 
     seasons: Season[]
 };
+type Movie = {
+    title?: string,
+    year?: string,
+    plot?: string,
+    poster?: string,
+    imdbRating?: string,
+}
 
 class RussianFetcher implements Fetcher {
     private seriesInfo?: SeriesInfo;
     private seriesName?: string;
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
+    private readonly moviesCacher = new Cacher<Movie>(new FSEditor()); // TODO: inject
     
-    private execScript(title: string) {
+    /**
+     * @param mode `show` or `movie`. Searches for the specific type of content by title.
+    */
+    private execScript(title: string, mode: string = 'show') {
         const scriptPath = path.join(__dirname, "main.py");
+        let options = [scriptPath, `"${title}"`];
 
-        const process = cprocess.spawnSync("python3", [scriptPath, `"${title}"`], { encoding: "utf-8" });
+        if (mode === 'movie') {
+            options = [scriptPath, '-m', `"${title}"`];
+        }
 
-        if (process.stderr.length > 0) throw new Error(process.stderr);
+        const process = cprocess.spawnSync("python3", options, { encoding: "utf-8" });
+
+        if (process.stderr.length > 0) {
+            const moduleNotInstalled = process.stderr.match(/(No module named)\s\'(.+)\'/);
+            if (moduleNotInstalled) {
+                const mod = moduleNotInstalled[2];
+                throw new Error(`Python module '${mod}' not installed.\nPlease run: sudo pip3 install ${mod}`);
+            }
+
+            throw new Error(process.stderr);
+        }
 
         return process.stdout;
     }
@@ -65,13 +89,35 @@ class RussianFetcher implements Fetcher {
         };
     }
 
-    fetchMovie(movieName: string): { title?: string | undefined; year?: string | undefined; plot?: string | undefined; poster?: string | undefined; imdbRating?: string | undefined; } {
-        throw new Error("Method not implemented.");
+    fetchMovie(movieName: string) {
+        const key = movieName.replace(/\s+/g, '_').toLowerCase();
+        let movieData = this.moviesCacher.retrieveCachedData(key, 'cache/ru/movies');
+        
+        if (movieData) return movieData;
+
+        movieData = this.makeKinopoiskRequestMovie(movieName);
+
+        this.moviesCacher.cacheData(key, movieData, 'cache/ru/movies');
+        
+        return movieData;
+    }
+
+    private makeKinopoiskRequestMovie(movieTitle: string) {
+        try {
+            const output = this.execScript(movieTitle, 'movie');
+            const movieData = JSON.parse(output) as Movie;
+            
+            // TODO: Add backup to get the poster image
+
+            return movieData;
+        } catch {
+            throw new Error(`Movie with title '${movieTitle}' not found!`);
+        }
     }
 
     private getSeries(title: string) {
         const path = title.trim().replace(/\s+/g, '_').toLocaleLowerCase();
-        let seriesData = this.cacher.retrieveCachedData(path);
+        let seriesData = this.cacher.retrieveCachedData(path, 'cache/ru/series');
         if (seriesData) return seriesData;
 
         // if no cached data make call
@@ -85,7 +131,7 @@ class RussianFetcher implements Fetcher {
         }
 
         // cache data
-        this.cacher.cacheData(path, seriesData);
+        this.cacher.cacheData(path, seriesData, 'cache/ru/series');
 
         return seriesData;
     }

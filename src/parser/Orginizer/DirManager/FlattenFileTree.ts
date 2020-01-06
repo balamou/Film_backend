@@ -1,10 +1,9 @@
-import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
-import { FileSystemEditor, FSEditor } from '../Adapters/FSEditor';
-import Tree from '../Tree/Tree';
+import { DirectoryTreeCreator } from '../../Adapters/DirTreeCreator';
+import { FileSystemEditor, FSEditor } from '../../Adapters/FSEditor';
+import Tree from '../../Tree/Tree';
 import FilePurger from './FilePurger';
-import Path from 'path';
 
-class FlattenFileTree {
+class FlattenFileTree { // TODO: Rename to FileTreeFlattener
     private readonly dirTreeCreator: DirectoryTreeCreator;
     private readonly fileSystemEditor: FileSystemEditor;
     private readonly purger: FilePurger;
@@ -29,10 +28,12 @@ class FlattenFileTree {
      * @param pathToFolder [Relative|Absolute] points to the series folder
      */
     flatten(pathToFolder: string) {
-        const filesToMove = this.findMisplacedFiles(pathToFolder);
+        const { moveup, purge } = this.findMisplacedFiles(pathToFolder);
+        const desiredLevel = 2;
  
-        this.moveFilesToLevel(filesToMove.moveup, 2);
-        this.purger.insertPaths(filesToMove.purge);
+        moveup.forEach(file => this.fileSystemEditor.moveFileToLevel(file.path, file.level, desiredLevel));
+        
+        this.purger.insertPaths(purge);
         this.purger.purge(`${pathToFolder}/${this.purgeFolder}`);
     }
 
@@ -69,35 +70,6 @@ class FlattenFileTree {
             purge: [...purge, ...level1foldersWithNoVideos]
         };
     }
-
-    /**
-     * Moves files to up the directory tree to a desired level
-     * 
-     * @param files [Relative|Absolute] `files.path`
-     * @param desiredLevel is the level desired to move files. It is relative to the `pathToFolder`
-     */
-    private moveFilesToLevel(files: {path: string, level: number}[], desiredLevel: number) {
-        files.forEach(file => {
-            const finalDir = this.removeSubpaths(file.path, file.level - desiredLevel + 1);
-            this.fileSystemEditor.moveFileToFolder(file.path, finalDir);
-        });
-    }
-
-    /**
-     * Removes subpaths from the end of a path.
-     * 
-     * Example the path `a/b/c/d/e` after removing 2 levels becomes `a/b/c`.
-     * This function preserves the type of the path, relative or absolute.
-     * 
-     * @param path relative or absolute path
-    */
-    private removeSubpaths(path: string, levelsToRemove: number) {
-        const pathComponents = path.split('/').filter(x => x !== '');
-        const dir = pathComponents.truncate(levelsToRemove);
-        
-        return Path.isAbsolute(path) ? Path.join('/', ...dir) : Path.join(...dir);
-    }
-
 }
 
 export default FlattenFileTree;

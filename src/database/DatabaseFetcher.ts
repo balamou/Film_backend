@@ -5,14 +5,40 @@ type Episode_Type = {id?: number, series_id: number, season_number: number, epis
 
 class DatabaseFetcher extends DatabaseManager {
 
-    async fetchSeries(start: number, quantity: number, language: string) {
+    async fetchSeries(start: number, quantity: number, language: string) { // TODO: add pagination support
         const result = await this.pool.query<SeriesType>('SELECT * FROM SERIES WHERE language=$1', [ language ]);
+
+        return result.rows;
+    }
+
+    async fetchMovies(start: number, quantity: number, language: string) { // TODO: add pagination support
+        const result = await this.pool.query<{id: number, poster?: string}>('SELECT ID, POSTER FROM MOVIES WHERE language=$1', [ language ]);
 
         return result.rows;
     }
 
     async getSeriesById(seriesId: number) {
         const result = await this.pool.query<SeriesType>('SELECT * FROM SERIES WHERE id=$1', [ seriesId ]);
+
+        return result.rows[0];
+    }
+    
+    /**
+     * Returns movie information with the last watched timestamp if available.
+     * 
+     * @param movieId movie id 
+     * @param userId user id is used to retrieve where last watched
+     */
+    async getMovieById(movieId: number, userId: number) {
+        const query = `SELECT MOVIES.*, T.STOPPED_AT 
+        FROM MOVIES 
+        LEFT JOIN
+            (SELECT *
+            FROM VIEWED_MOVIES as VM
+            WHERE VM.USER_ID = $2) as T
+        ON MOVIES.ID = T.MOVIE_ID
+        WHERE MOVIES.ID = $1;`;
+        const result = await this.pool.query<{id: number, duration: number, video_url: string, title: string, description?: string, poster?: string, stopped_at?: number}>(query, [ movieId, userId ]);
 
         return result.rows[0];
     }

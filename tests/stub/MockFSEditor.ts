@@ -1,6 +1,9 @@
 import { FileSystemEditor } from '../../src/parser/Adapters/FSEditor';
 
 export default class MockFSEditor implements FileSystemEditor {
+    moveFileToLevel(filePath: string, level: number, desiredLevel: number): void {
+        throw new Error("Method not implemented.");
+    }
 
     makeDirectory(dirName: string): void {
         throw new Error("Method not implemented.");
@@ -10,7 +13,7 @@ export default class MockFSEditor implements FileSystemEditor {
         throw new Error("Method not implemented.");
     }
     
-    moveFileToFolder(from: string, to: string): void {
+    moveFileToFolder(from: string, to: string): string | undefined {
         throw new Error("Method not implemented.");
     }
 
@@ -27,6 +30,10 @@ export default class MockFSEditor implements FileSystemEditor {
     }
 
     writeToFile(path: string, data: string): void {
+        throw new Error("Method not implemented.");
+    }
+
+    rename(pathToFile: string, newFileName: string): string {
         throw new Error("Method not implemented.");
     }
 }

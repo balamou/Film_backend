@@ -1,5 +1,5 @@
-import { FileSystemEditor } from '../Adapters/FSEditor';
-import '../Tree/Array';
+import { FileSystemEditor } from '../../Adapters/FSEditor';
+import '../../Tree/Array';
 import Path from 'path';
 
 type Node = { path: string, markedPath: boolean, nestedPaths: Node[] };

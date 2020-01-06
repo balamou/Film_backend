@@ -2,6 +2,8 @@ import DatabaseManager from './DatabaseManager';
 import CreationManager from './CreationManager';
 import DatabaseFetcher from './DatabaseFetcher';
 import main from '../parser/main';
+import { EnglishFetcher } from '../parser/FilmScrapper/omdb';
+import RussianFetcher from '../parser/FilmScrapper/russian/RussianFetcher';
 
 async function resetDatabase() {
     const dbManager = new DatabaseManager();
@@ -78,4 +80,43 @@ async function emptyEpisodesAndSeries() {
 async function completeReset() {
     // await resetDatabase();
     main();
+}
+
+function testEnglishFetcher() {
+    const fetch = new EnglishFetcher();
+
+    console.log(fetch["retrieveSeriesData"]('Rick and morty'));
+    console.log(fetch.fetchEpisode('Rick and morty', 2, 3));
+
+    console.log(_try(() => fetch.fetchEpisode('Friends', 1, 6)));
+
+    console.log(tryMessage(() => fetch.fetchEpisode('Simpsons', 12, 4)));
+    // console.log(tryMessage(() => fetch.fetchSeries('south park')));
+}
+
+function testRussianFetcher() {
+    const fetch = new RussianFetcher();
+
+    console.log(fetch.fetchEpisode('Rick and morty', 2, 3));
+    console.log(_try(() => fetch.fetchEpisode('Friends', 1, 6)));
+    console.log(tryMessage(() => fetch.fetchEpisode('Simpsons', 12, 4)));
+    // console.log(tryMessage(() => fetch.fetchSeries('south park')));
+}
+
+testRussianFetcher();
+
+function _try<T>(callback: () => T) {
+    try {
+        return callback();
+    } catch {
+        return undefined;
+    }
+}
+
+function tryMessage<T>(callback: () => T) {
+    try {
+        return callback();
+    } catch (error) {
+        return (error as Error).message;
+    }
 }

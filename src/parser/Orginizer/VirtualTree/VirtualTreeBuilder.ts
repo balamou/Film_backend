@@ -4,7 +4,7 @@ import { VirtualTree, Episode } from './VirtualTree';
 import { TitleParser } from '../../Adapters/TitleParser';
 import { FileSystemEditor } from '../../Adapters/FSEditor';
 import { DirectoryTreeCreator } from '../../Adapters/DirTreeCreator';
-import FilePurger from '../../DirManager/FilePurger';
+import FilePurger from '../DirManager/FilePurger';
 
 type Options = {exclude?: RegExp, rejected?: string, purge?: string};
 

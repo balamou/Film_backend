@@ -1,4 +1,4 @@
-import FlattenFileTree from '../DirManager/FlattenFileTree';
+import FlattenFileTree from './DirManager/FlattenFileTree';
 import { DirTree, DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
 import { FSEditor } from '../Adapters/FSEditor';
 
@@ -9,7 +9,7 @@ import { VirtualTreeParser } from './VirtualTree/VirtualTreeParser';
 import { EnglishFetcher } from '../FilmScrapper/omdb';
 import RussianFetcher from '../FilmScrapper/russian/RussianFetcher';
 import VirtualTreeDBManager from './VirtualTree/VirtualTreeDBManager';
-import FilePurger from '../DirManager/FilePurger';
+import FilePurger from './DirManager/FilePurger';
 import Fetcher from '../FilmScrapper/fetcher';
 
 export interface AbstractFactory {
