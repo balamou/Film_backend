@@ -7,6 +7,9 @@ DROP TABLE IF EXISTS EPISODES;
 DROP TABLE IF EXISTS SERIES;
 DROP TYPE IF EXISTS language;
 
+DROP TABLE IF EXISTS EPISODE_TIMESTAMPS;
+DROP TYPE IF EXISTS ActionType;
+
 -- -----------------------------------------------------------------------------
 -- USERS
 -- -----------------------------------------------------------------------------
@@ -95,3 +98,22 @@ CREATE TABLE MOVIES(
   DESCRIPTION VARCHAR(400),
   POSTER VARCHAR(200)
 );
+
+-- -----------------------------------------------------------------------------
+-- VIDEO INFO
+-- -----------------------------------------------------------------------------
+CREATE TYPE ActionType AS ENUM ('skip', 'nextEpisode');
+
+  -- {"name":"Skip intro","action":{"type":"skip","to":30,"from":120}}
+  -- {"name":"Next episode","action":{"type":"nextEpisode","from":1230}}
+
+CREATE TABLE EPISODE_TIMESTAMPS(
+  ID SERIAL PRIMARY KEY,
+  EPISODE_ID INT NOT NULL,
+  NAME VARCHAR(200) NOT NULL,
+  TYPE ActionType NOT NULL,
+  FROM_TIME INT NOT NULL, -- corresponds to `from`
+  TO_TIME INT, -- corresponds to `to`
+
+  FOREIGN KEY (EPISODE_ID) REFERENCES EPISODES(ID) ON DELETE CASCADE
+)

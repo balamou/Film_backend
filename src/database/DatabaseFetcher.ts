@@ -173,6 +173,20 @@ class DatabaseFetcher extends DatabaseManager {
             return result3.rows[0];
         }
     }
+
+    async getEpisodeTimestamps(episodeId: number) {
+        type EpisodeTimestamp = {
+            name: string,
+            type: string,
+            from_time: number,
+            to_time?: number,
+        }
+
+        let query = 'SELECT * FROM episode_timestamps WHERE episode_id = $1';
+        const result = await this.pool.query<EpisodeTimestamp>(query, [ episodeId ]);
+        
+        return result.rows;
+    }
 }
 
 export default DatabaseFetcher;
