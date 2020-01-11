@@ -14,10 +14,16 @@ import path from 'path';
 
 class RoutesManager {
     private readonly app = express();
-    readonly PORT_NUMBER: number;
+    get PORT_NUMBER(): number {
+        if (!process.env.PORT) throw new Error('Please speficy the PORT in the .env file');
+        
+        return parseInt(process.env.PORT); // 3000
+    }
 
-    constructor(portNumber: number = 3000) {
-        this.PORT_NUMBER = portNumber;
+    private _port: number;
+
+    constructor(portNumber?: number) {
+        this._port = portNumber ?? this.PORT_NUMBER;
 
         const staticPath = path.join(__dirname, '../../public');
 
@@ -44,7 +50,7 @@ class RoutesManager {
     }
 
     async startServer() {
-        await this.app.listen(this.PORT_NUMBER);
+        await this.app.listen(this._port);
     }
 }
 
