@@ -8,7 +8,13 @@ router.get("/next_episode/:episodeId/:userId", (req, res, next) => {
     const userId = parseInt(req.params.userId);
 
     getNextEpisode(episodeId, userId)
-    .then(film => res.json(film))
+    .then(film => {
+        if (film) {
+            res.json({isLastEpisode: false, film: film});
+        } else {
+            res.json({isLastEpisode: true});
+        }
+    })
     .catch(error => { 
         console.log(error);
         res.json({ error: error });});
@@ -29,16 +35,7 @@ async function getNextEpisode(episodeId: number, userId: number) {
             stoppedAt: film.stopped_at,
             title: `S${film.season_number}:E${film.episode_number} \"${film.title}\"`
         }
-    } // TODO: return 'No more episodes'
-
-    return {
-        id: 3,
-        URL: "en/shows/rick_and_morty/S1/E4.mp4",
-        duration: 1930,
-        type: "show",
-        stoppedAt: 500,
-        title: "Hello!"
-    };
+    } 
 }
 
 export default router;
