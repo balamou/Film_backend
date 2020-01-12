@@ -10,6 +10,7 @@ import episodes from './episodes';
 import next_episode from './next_episode';
 import episode_timestamps from './episode_timestamps';
 import video_url from './videoURL';
+import posters from './posters';
 
 import path from 'path';
 
@@ -28,6 +29,8 @@ class RoutesManager {
 
         const staticPath = path.join(__dirname, '../../public');
 
+        this.app.use(express.json()); 
+
         this.app.use(express.static(staticPath));
 
         this.app.use(login);
@@ -45,6 +48,7 @@ class RoutesManager {
 
         this.app.use(episode_timestamps);
         this.app.use(video_url);
+        this.app.use(posters);
 
         this.app.get("/", (req, res, next) => {
             res.send("<p>REST API</p>");

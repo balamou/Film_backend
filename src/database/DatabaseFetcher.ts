@@ -205,6 +205,20 @@ class DatabaseFetcher extends DatabaseManager {
 
         return result.rows[0];
     }
+
+    async getMoviePosters(movieIDs: number[]) {
+        let query = "SELECT id, poster FROM movies WHERE id = ANY ($1)";
+        const result = await this.pool.query<{id: number, poster: string}>(query, [ movieIDs ]);
+
+        return result.rows;
+    }
+
+    async getShowPosters(showIDs: number[]) {
+        let query = "SELECT id, poster FROM series WHERE id = ANY ($1)";
+        const result = await this.pool.query<{id: number, poster: string}>(query, [ showIDs ]);
+
+        return result.rows;
+    }
 }
 
 export default DatabaseFetcher;
