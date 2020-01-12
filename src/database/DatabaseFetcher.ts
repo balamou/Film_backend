@@ -62,6 +62,15 @@ class DatabaseFetcher extends DatabaseManager {
         });
     }
 
+    async getEpisodesFromSeason(seriesId: number, season: number): Promise<EpisodeType[]> {        
+        const query = "SELECT * FROM episodes WHERE series_id=$1 AND season_number=$2 ORDER BY episode_number";
+        const result = await this.pool.query<Episode_Type>(query, [seriesId, season]);
+
+        return result.rows.map(row => {
+            return this.convertToEpisodeType(row);
+        });
+    }
+
     private convertToEpisodeType(episode: Episode_Type): EpisodeType {
         return {
             id: episode.id,

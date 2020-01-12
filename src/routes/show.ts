@@ -3,38 +3,38 @@ import DatabaseFetcher from "../database/DatabaseFetcher";
 
 const router = Router();
 
-router.get("/show/:showId/:userId", (req, res, next) => {
+router.get("/show/:showId/:season", (req, res, next) => {
     const showId = parseInt(req.params.showId);
-    const userId = parseInt(req.params.userId);
+    const season = parseInt(req.params.season);
 
-    execute(showId, userId)
+    execute(showId, season)
         .then(result => res.json(result))
         .catch(error => res.json({ error: error }));
 });
 
 // TODO:
 // 1. Fetch series info
-// 2. Fetch last viewed episode
+// -----2. Fetch last viewed episode
 // 3. Fetch all episodes from the same season as last viewed
-// 4. if last viewed is nil then fetch season 1
-//    or whichever is the lowest available season
-async function execute(showId: number, userId: number) {
+// -----4. if last viewed is nil then fetch season 1
+// -----or whichever is the lowest available season
+async function execute(showId: number, season: number) {
     const dbFetcher = new DatabaseFetcher();
     const series = await dbFetcher.getSeriesById(showId);
-    const lastWatchedEpisode = await dbFetcher.getLastWatchedEpisode(showId, userId);
-    const episodes = await dbFetcher.getEpisodesFromSeriesIdWithStoppedAt(showId, lastWatchedEpisode.seasonNumber, userId);
     const availableSeasons = await dbFetcher.getAvailableSeasons(showId);
+    
+    const seasonSelected = season > 0 ? season : availableSeasons[0];
+    const episodes = await dbFetcher.getEpisodesFromSeason(showId, seasonSelected);
 
     await dbFetcher.endConnection();
 
     const seriesFix = {
         id: series.id,
         title: series.title,
-        seasonSelected: lastWatchedEpisode.seasonNumber,
+        seasonSelected: seasonSelected,
         totalSeasons: series.seasons,
         description: series.description,
-        posterURL: series.poster,
-        lastWatchedEpisode: lastWatchedEpisode
+        posterURL: series.poster
     };
     const episodesFix = episodes.map(ep => {
         return {
