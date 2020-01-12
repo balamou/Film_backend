@@ -187,6 +187,24 @@ class DatabaseFetcher extends DatabaseManager {
         
         return result.rows;
     }
+
+    async getMovieInformation(movieId: number) {
+        let query = "SELECT id, title, video_url, duration FROM movies WHERE id = $1";
+        const result = await this.pool.query<{id: number, title: string, video_url: string, duration: number}>(query, [ movieId ]);
+
+        return result.rows[0];
+    }
+
+    async getEpisodeInformation(episodeId: number) {
+        type EpisodeInfo = {id: number, series_id: number, title: string, show_title: string, video_url: string, duration: number, season_number: number, episode_number: number};
+
+        let query = `SELECT E.*, T.title as show_title
+        from episodes as E, (SELECT id, title from series) as T
+        WHERE E.series_id = T.id and E.id = $1`;
+        const result = await this.pool.query<EpisodeInfo>(query, [ episodeId ]);
+
+        return result.rows[0];
+    }
 }
 
 export default DatabaseFetcher;

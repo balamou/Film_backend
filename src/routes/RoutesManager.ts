@@ -9,6 +9,7 @@ import movie from './movie';
 import episodes from './episodes';
 import next_episode from './next_episode';
 import episode_timestamps from './episode_timestamps';
+import video_url from './videoURL';
 
 import path from 'path';
 
@@ -43,6 +44,7 @@ class RoutesManager {
         this.app.use(next_episode);
 
         this.app.use(episode_timestamps);
+        this.app.use(video_url);
 
         this.app.get("/", (req, res, next) => {
             res.send("<p>REST API</p>");
