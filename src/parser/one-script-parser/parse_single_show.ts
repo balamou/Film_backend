@@ -5,7 +5,9 @@ import Path, { basename } from 'path';
 import OrginizerFactory from '../Orginizer/Factory';
 import chalk from 'chalk';
 import { table } from 'table';
-   
+
+import EnglishFetcherPrompt from './english_fetcher';
+
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
     protected readonly DATABASE_ENABLED = true;
@@ -135,8 +137,17 @@ class ShowOrginizer {
 function parseSingleShow(language: string, pathToShow: string) {
     const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
     const showOrginizer = new ShowOrginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
-    
-    const prompt = require('prompt-sync')({sigint: true});
+
+    const prompt = require('prompt-sync')({ sigint: true });
+
+    const fetcher = new EnglishFetcherPrompt();
+    const seriesName = prompt('Enter the name of the show: ') as string;
+    const searchResults = fetcher.searchResults(seriesName);
+
+    if (!searchResults) return;
+
+    console.log(table(searchResults));
+
 
     showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
         if (stage === 'Enter show name') {

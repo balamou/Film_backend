@@ -19,11 +19,13 @@ export class Omdb {
     private static seasonEndPoint = (seriesName: string, season: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}`;
     private static episodeEndPoint = (seriesName: string, season: number, episode: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${seriesName}&plot=full&type=series&Season=${season}&Episode=${episode}`;
     private static movieEndPoint = (movieName: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&t=${movieName}&plot=full&type=movie`;
+    private static searchEndPoint = (title: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&s=${title}`;
 
     static fetchSeries = (seriesName: string) => httpGet(Omdb.seriesEndPoint(seriesName));
     static fetchSeason = (seriesName: string, season: number) => httpGet(Omdb.seasonEndPoint(seriesName, season));
     static fetchEpisode = (seriesName: string, season: number, episode: number) => httpGet(Omdb.episodeEndPoint(seriesName, season, episode));
     static fetchMovie = (movieName: string) => httpGet(Omdb.movieEndPoint(movieName));
+    static fetchSearchResults = (title: string) => httpGet(Omdb.searchEndPoint(title));
 
     // Error respose:
     // { "Response": "False", "Error": "Series or episode not found!" }
