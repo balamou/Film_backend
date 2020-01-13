@@ -75,6 +75,7 @@ class ShowOrginizer {
     }
     
     private buildVirtualTree(path: string, shouldContinue: (stage: string, example: string) => boolean) {
+        const log = console.log;
         const { folders, files } = this.separateFoldersFromFiles(path);
         
         const vtBuilder = this.factory.createVirtualTreeBuilderPrompt();
@@ -93,16 +94,16 @@ class ShowOrginizer {
         const renameTable = vtBuilder.renameTable(path);
         const rejectTable = vtBuilder.rejectedList();
         
-        console.log(table(renameTable));
-        console.log(table(rejectTable));
+        log(table(renameTable));
+        log(table(rejectTable));
         
         if (!shouldContinue('Rename files', '')) return;
         
         vtBuilder.commit(path);
 
-        console.log();
-        console.log(chalk.bold('Committing virtual tree to the file system (renaming episodes and matching season folders)...'));
-        console.log();
+        log();
+        log(chalk.bold('Committing virtual tree to the file system (renaming episodes and matching season folders)...'));
+        log();
         
         return vtBuilder.virtualTree;
     }
@@ -136,7 +137,6 @@ function parseSingleShow(language: string, pathToShow: string) {
     const showOrginizer = new ShowOrginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
     
     const prompt = require('prompt-sync')({sigint: true});
-    const log = console.log;
 
     showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
         if (stage === 'Enter show name') {
@@ -147,32 +147,36 @@ function parseSingleShow(language: string, pathToShow: string) {
         }
 
         return;
-    }, (stage: string, example: string) => {
-        if (stage === 'Parsing files') {
-            log();
-            log(chalk.greenBright('Parsing files'));
-            log(`${example}`);
-            log();
-            log('Those changes have not been commited to the filesystem.');
-            return yesNoQuestion('Do you want to continue? [Y/N]: ');
-        }
+    }, shouldContinue);
+}
 
-        if (stage === 'Parsing folders') {
-            log();
-            log(chalk.greenBright('Parsing folders'));
-            log(`${example}`);
-            log();
-            log('Those changes have not been commited to the filesystem.');
-            return yesNoQuestion('Do you want to continue? [Y/N]: ');
-        }
+function shouldContinue(stage: string, example: string) {
+    const log = console.log;
 
-        if (stage === 'Rename files') {
-            log('The table above shows the new names of each file. Those changes are not commited on the filesystem yet.');
-            return yesNoQuestion('Do you want to commit them? [Y/N]: ');
-        }
+    if (stage === 'Parsing files') {
+        log();
+        log(chalk.greenBright('Parsing files'));
+        log(`${example}`);
+        log();
+        log('Those changes have not been commited to the filesystem.');
+        return yesNoQuestion('Do you want to continue? [Y/N]: ');
+    }
 
-        return false;
-    });
+    if (stage === 'Parsing folders') {
+        log();
+        log(chalk.greenBright('Parsing folders'));
+        log(`${example}`);
+        log();
+        log('Those changes have not been commited to the filesystem.');
+        return yesNoQuestion('Do you want to continue? [Y/N]: ');
+    }
+
+    if (stage === 'Rename files') {
+        log('The table above shows the new names of each file. Those changes are not commited on the filesystem yet.');
+        return yesNoQuestion('Do you want to commit them? [Y/N]: ');
+    }
+
+    return false;
 }
 
 function yesNoQuestion(question: string) {
