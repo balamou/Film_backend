@@ -32,7 +32,7 @@ class ShowOrginizer {
      * @param path to the series
      * @param seriesName optional series name (could be entered by the user)
     */
-    public orginizeSeriesFolder(path: string, enter: (stage: string) => any, shouldContinue: (stage: string, example: string) => boolean) {
+    public orginizeSeriesFolder(path: string, enter: (stage: string) => string | undefined, shouldContinue: (stage: string, example: string) => boolean) {
         const log = console.log;
         const basename = Path.basename(path);
 
@@ -49,19 +49,23 @@ class ShowOrginizer {
 
         if (!virtualTree) return;
         
-        if (1===1) return;
-        
         log(chalk.bold('Generating thumbnails...'));
         vtParser.generateThumbnails(virtualTree);
         
+        let seriesName = enter('Enter show name');
+        seriesName = seriesName === undefined ? basename : seriesName;
+        log(seriesName);
+
+        if (1===1) return;
+
         if (this.NETWORK_ENABLED) {
-            log(`Fetching ${basename} information`);
-            const seriesInfo = vtParser.getSeriesInformation(path, basename, virtualTree);
+            log(`Fetching ${seriesName} information`);
+            const seriesInfo = vtParser.getSeriesInformation(path, seriesName, virtualTree);
             
             if (this.DATABASE_ENABLED) {
-                log(`Adding ${basename} to the database`);
+                log(`Adding ${seriesName} to the database`);
                 try {
-                    dbManager.commitToDB(path, basename, seriesInfo);
+                    dbManager.commitToDB(path, seriesName, seriesInfo);
                 } catch (error) {
                     log(error);
                 }
@@ -93,8 +97,12 @@ class ShowOrginizer {
         console.log(table(rejectTable));
         
         if (!shouldContinue('Rename files', '')) return;
+        
         vtBuilder.commit(path);
+
+        console.log();
         console.log(chalk.bold('Committing virtual tree to the file system (renaming episodes and matching season folders)...'));
+        console.log();
         
         return vtBuilder.virtualTree;
     }
@@ -126,14 +134,19 @@ class ShowOrginizer {
 function parseSingleShow(language: string, pathToShow: string) {
     const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
     const showOrginizer = new ShowOrginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
+    
     const prompt = require('prompt-sync')({sigint: true});
     const log = console.log;
 
     showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
-        if (stage === 'enter show name') {
-            const name = prompt('Enter the name of the show: ');
+        if (stage === 'Enter show name') {
+            const name = prompt('Enter the name of the show: ') as string;
+            if (name.length == 0) return;
+
             return name;
         }
+
+        return;
     }, (stage: string, example: string) => {
         if (stage === 'Parsing files') {
             log();
