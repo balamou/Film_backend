@@ -97,7 +97,7 @@ export class VirtualTreeBuilder {
         this.cleanup(path);
     }
     
-    private cleanup(path: string) {
+    protected cleanup(path: string) {
         this.cleanRejectFolder(path, this.options.rejected);
         const tree = this.dirTree.treeFrom(path, this.options.exclude);
         this.rejected = tree.children.filter(child => child.isFolder && !child.contains(node => node.isVideo));

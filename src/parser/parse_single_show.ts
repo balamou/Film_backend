@@ -4,7 +4,8 @@ import { DirectoryTreeCreator } from './Adapters/DirTreeCreator';
 import Path, { basename } from 'path';
 import OrginizerFactory from './Orginizer/Factory';
 import chalk from 'chalk';
-
+import { table } from 'table';
+   
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
     protected readonly DATABASE_ENABLED = true;
@@ -45,6 +46,7 @@ class ShowOrginizer {
         flatten.flatten(path);
         log(chalk.bold('Building a virtual tree...'));
         const virtualTree = this.buildVirtualTree(path, shouldContinue);
+
         if (!virtualTree) return;
         
         if (1===1) return;
@@ -84,7 +86,15 @@ class ShowOrginizer {
         vtBuilder.buildVirtualTreeFromFoldersPrompt(folders, wrapper);
         if (keepGoing === false) return;
         
+        const renameTable = vtBuilder.renameTable(path);
+        const rejectTable = vtBuilder.rejectedList();
+        
+        console.log(table(renameTable));
+        console.log(table(rejectTable));
+        
+        if (!shouldContinue('Rename files', '')) return;
         vtBuilder.commit(path);
+        console.log(chalk.bold('Committing virtual tree to the file system (renaming episodes and matching season folders)...'));
         
         return vtBuilder.virtualTree;
     }
@@ -142,6 +152,12 @@ function parseSingleShow(language: string, pathToShow: string) {
             log('Those changes have not been commited to the filesystem.');
             return yesNoQuestion('Do you want to continue? [Y/N]: ');
         }
+
+        if (stage === 'Rename files') {
+            log('The table above shows the new names of each file. Those changes are not commited on the filesystem yet.');
+            return yesNoQuestion('Do you want to commit them? [Y/N]: ');
+        }
+
         return false;
     });
 }

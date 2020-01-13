@@ -36,7 +36,7 @@ class VirtualTreeBuilderPrompt extends VirtualTreeBuilder {
 
     buildVirtualTreeFromFoldersPrompt(folders: Tree[], shouldContinue: (stage: string, example: string) => boolean) {
         let shouldKeepGoing: boolean | undefined = undefined;
-
+        
         this.traverseFilesIn(folders, (folder, file) => {
             const { season, episode: episodeNumber } = this.titleParser.parse(file.name);
             const seasonNumber = season ?? this.titleParser.parseSeasonFrom(folder.name);
@@ -67,6 +67,41 @@ class VirtualTreeBuilderPrompt extends VirtualTreeBuilder {
                 this.rejected.push(file);
             }
         });
+    }
+
+
+    renameTable(path: string): string[][] {
+        let result: string[][] = [[chalk.bold('Old name'), chalk.bold('New name')]];
+        let seasonTracker = -1;
+
+        this.virtualTree.forEach( (season, episode) => {
+            if (seasonTracker !== season.seasonNum) {
+                result.push([chalk.red.bold(`Season ${season.seasonNum}`), '']);
+                seasonTracker = season.seasonNum;
+            }
+
+            const newFolder = `S${season.seasonNum}`;
+            const newEpisode = `E${episode.episodeNum}${episode.file.extension}`;
+            
+            const from = episode.file.path;
+            const to = `${path}/${newFolder}/${newEpisode}`;
+
+            result.push([from, to]);
+        });
+        
+        return result;
+    }
+
+    rejectedList(): string[][] {
+        let header = chalk.bold.yellow(`Unable to parse Season number and Episode number.\n`);
+        header += `Will be moved to a ${chalk.red('rejected')} folder.`;
+        let result: string[][] = [[header]];
+
+        this.rejected.forEach(item => {
+            result.push([item.path]);
+        });
+
+        return result;
     }
 }
 

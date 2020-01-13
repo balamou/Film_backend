@@ -11,7 +11,7 @@ import RussianFetcher from '../FilmScrapper/russian/RussianFetcher';
 import VirtualTreeDBManager from './VirtualTree/VirtualTreeDBManager';
 import FilePurger from './DirManager/FilePurger';
 import Fetcher from '../FilmScrapper/fetcher';
-import VirtualTreeBuilderPrompt from '../BuildVirtualTreePrompt';
+import VirtualTreeBuilderPrompt from '../VirtualTreeBuilderPrompt';
 
 export interface AbstractFactory {
     createDirTreeCreator(): DirectoryTreeCreator;
