@@ -1,5 +1,5 @@
-import parseSingleMovie from './parse_single_movie';
-import parseSingleShow from './parse_single_show';
+import parseSingleMovie from './one-script-parser/parse_single_movie';
+import parseSingleShow from './one-script-parser/parse_single_show';
 
 function validate(args: string[]) {
     if (args.length !== 5) {

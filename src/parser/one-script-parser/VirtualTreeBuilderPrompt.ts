@@ -1,6 +1,6 @@
-import { VirtualTreeBuilder } from './Orginizer/VirtualTree/VirtualTreeBuilder';
-import Tree from './Tree/Tree';
-import { Episode } from './Orginizer/VirtualTree/VirtualTree';
+import { VirtualTreeBuilder } from '../Orginizer/VirtualTree/VirtualTreeBuilder';
+import Tree from '../Tree/Tree';
+import { Episode } from '../Orginizer/VirtualTree/VirtualTree';
 import chalk from 'chalk';
 
 class VirtualTreeBuilderPrompt extends VirtualTreeBuilder {

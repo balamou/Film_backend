@@ -1,8 +1,8 @@
-import Tree from './Tree/Tree';
-import Factory from './Orginizer/Factory';
-import { DirectoryTreeCreator } from './Adapters/DirTreeCreator';
+import Tree from '../Tree/Tree';
+import Factory from '../Orginizer/Factory';
+import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
 import Path, { basename } from 'path';
-import OrginizerFactory from './Orginizer/Factory';
+import OrginizerFactory from '../Orginizer/Factory';
 import chalk from 'chalk';
 import { table } from 'table';
    
@@ -51,7 +51,7 @@ class ShowOrginizer {
         
         if (1===1) return;
         
-        log('Generating thumbnails.');
+        log(chalk.bold('Generating thumbnails...'));
         vtParser.generateThumbnails(virtualTree);
         
         if (this.NETWORK_ENABLED) {
