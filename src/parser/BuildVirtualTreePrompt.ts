@@ -1,7 +1,7 @@
 import { VirtualTreeBuilder } from './Orginizer/VirtualTree/VirtualTreeBuilder';
 import Tree from './Tree/Tree';
 import { Episode } from './Orginizer/VirtualTree/VirtualTree';
-
+import chalk from 'chalk';
 
 class VirtualTreeBuilderPrompt extends VirtualTreeBuilder {
 
@@ -15,7 +15,11 @@ class VirtualTreeBuilderPrompt extends VirtualTreeBuilder {
             
             if (season && episode) {
                 if (shouldKeepGoing === undefined) {
-                    shouldKeepGoing = shouldContinue('Parsing files', `'S${season}E${episode}' extracted from '${file.name}'`);
+                    let seasonEpisodeText = chalk.red(`S${season}E${episode}`);
+
+                    let example = `${seasonEpisodeText} extracted from ${chalk.blue(file.name)}`;
+
+                    shouldKeepGoing = shouldContinue('Parsing files', example);
                     if (shouldKeepGoing === false) return;
                 }
 
@@ -41,8 +45,14 @@ class VirtualTreeBuilderPrompt extends VirtualTreeBuilder {
 
             if (episodeNumber && seasonNumber) {
                 if (shouldKeepGoing === undefined) {
-                    let conversion = `\t'S${seasonNumber}E${episodeNumber}' extracted from '${file.name}'\n\t`;
-                    conversion += `Season ${seasonNumber} extracted from ${folder.name}`;
+                    let seasonEpisodeText = season === undefined ? chalk.red(`E${episodeNumber}`) : chalk.red(`S${seasonNumber}E${episodeNumber}`);
+                    let seasonNumberText = chalk.red(`S${seasonNumber}`);
+
+                    let conversion = '\t';
+                    conversion += `${seasonEpisodeText} extracted from file ${chalk.blue(file.path)}\n\t`;
+
+                    if (!season) conversion += `${seasonNumberText} extracted from folder ${chalk.blue(folder.path)}`;
+                    
                     shouldKeepGoing = shouldContinue('Parsing folders', conversion);
 
                     if (shouldKeepGoing === false) return;

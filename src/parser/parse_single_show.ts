@@ -3,6 +3,7 @@ import Factory from './Orginizer/Factory';
 import { DirectoryTreeCreator } from './Adapters/DirTreeCreator';
 import Path, { basename } from 'path';
 import OrginizerFactory from './Orginizer/Factory';
+import chalk from 'chalk';
 
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
@@ -40,9 +41,9 @@ class ShowOrginizer {
         const vtParser = this.factory.createVirtualTreeParser(this.language);
         const dbManager = this.factory.createDatabaseManager(this.language); 
         
-        log('Flattening the file directory.');
+        log(chalk.bold('Flattening the file directory...'));
         flatten.flatten(path);
-        log('Building a virtual tree.');
+        log(chalk.bold('Building a virtual tree...'));
         const virtualTree = this.buildVirtualTree(path, shouldContinue);
         if (!virtualTree) return;
         
@@ -111,10 +112,12 @@ class ShowOrginizer {
     }
 }
 
+
 function parseSingleShow(language: string, pathToShow: string) {
     const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
     const showOrginizer = new ShowOrginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
     const prompt = require('prompt-sync')({sigint: true});
+    const log = console.log;
 
     showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
         if (stage === 'enter show name') {
@@ -123,18 +126,20 @@ function parseSingleShow(language: string, pathToShow: string) {
         }
     }, (stage: string, example: string) => {
         if (stage === 'Parsing files') {
-            console.log();
-            console.log('Parsing files');
-            console.log(`${example}`);
-            console.log();
+            log();
+            log(chalk.greenBright('Parsing files'));
+            log(`${example}`);
+            log();
+            log('Those changes have not been commited to the filesystem.');
             return yesNoQuestion('Do you want to continue? [Y/N]: ');
         }
 
         if (stage === 'Parsing folders') {
-            console.log();
-            console.log('Parsing folders');
-            console.log(`${example}`);
-            console.log();
+            log();
+            log(chalk.greenBright('Parsing folders'));
+            log(`${example}`);
+            log();
+            log('Those changes have not been commited to the filesystem.');
             return yesNoQuestion('Do you want to continue? [Y/N]: ');
         }
         return false;
