@@ -174,11 +174,13 @@ function shouldContinue(stage: string, example: string) {
     }
 
     if (stage === 'Rename files') {
+        const linkToPythonScript = 'https://gist.github.com/balamou/41f4493d7e25d0b7bce33ab2736cd4cc';
+
         log('The table above shows the new names of each file.');
         log(`Those changes are ${chalk.red.bold('NOT')} commited on the filesystem yet.`);
         log();
-        log('If you are not satisfied with the parsing results you can');
-        log('manually rename them using https://gist.github.com/balamou/41f4493d7e25d0b7bce33ab2736cd4cc');
+        log('If you are not satisfied with the parsing results you can manually rename');
+        log(`them using ${chalk.bgBlue.black(linkToPythonScript)}`);
         log();
         return yesNoQuestion('Do you want to commit them? [Y/N]: ', false);
     }
