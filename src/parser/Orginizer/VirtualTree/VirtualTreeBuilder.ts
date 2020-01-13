@@ -9,12 +9,12 @@ import FilePurger from '../DirManager/FilePurger';
 type Options = {exclude?: RegExp, rejected?: string, purge?: string};
 
 export class VirtualTreeBuilder {
-    private titleParser: TitleParser;
-    private fileSystemEditor: FileSystemEditor;
-    private dirTree: DirectoryTreeCreator;
-    private purger: FilePurger;
+    protected titleParser: TitleParser;
+    protected fileSystemEditor: FileSystemEditor;
+    protected dirTree: DirectoryTreeCreator;
+    protected purger: FilePurger;
     
-    private rejected: Tree[] = [];
+    protected rejected: Tree[] = [];
     readonly virtualTree = new VirtualTree();
 
     private options: {exclude: RegExp, rejected: string, purge: string};
@@ -116,7 +116,7 @@ export class VirtualTreeBuilder {
     // --------------------------------------------------------------------------------
     // Mark: Utility methods
     // --------------------------------------------------------------------------------
-    private traverseFilesIn(folders: Tree[], apply: (folder: Tree, file: Tree) => void) {
+    protected traverseFilesIn(folders: Tree[], apply: (folder: Tree, file: Tree) => void) {
         folders.forEach(folder => {
             folder.children.forEach(node => { 
                 if (node.isFile) {

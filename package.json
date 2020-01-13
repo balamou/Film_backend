@@ -8,12 +8,13 @@
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "generate": "ts-node tests/ExampleTrees/generate.ts",
     "parse-shows": "ts-node src/scripts/RunOrginizer.ts",
-    "reset-database" : "ts-node src/scripts/ResetDatabase.ts",
+    "parse": "ts-node src/parser/parser.ts",
+    "reset-database": "ts-node src/scripts/ResetDatabase.ts",
     "start": "ts-node ./src/app.ts"
   },
   "nyc": {
     "include": "src",
-    "exclude": "tests/**/*.test.ts" 
+    "exclude": "tests/**/*.test.ts"
   },
   "author": "Michel Balamou",
   "license": "ISC",
@@ -43,6 +44,7 @@
     "parse-torrent-title": "^1.2.0",
     "pg": "^7.15.1",
     "pg-hstore": "^2.3.3",
+    "prompt-sync": "^4.2.0",
     "request": "^2.88.0",
     "sync-request": "^6.1.0",
     "synchronized-promise": "^0.2.0",

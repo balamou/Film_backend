@@ -11,6 +11,7 @@ import RussianFetcher from '../FilmScrapper/russian/RussianFetcher';
 import VirtualTreeDBManager from './VirtualTree/VirtualTreeDBManager';
 import FilePurger from './DirManager/FilePurger';
 import Fetcher from '../FilmScrapper/fetcher';
+import VirtualTreeBuilderPrompt from '../BuildVirtualTreePrompt';
 
 export interface AbstractFactory {
     createDirTreeCreator(): DirectoryTreeCreator;
@@ -37,6 +38,10 @@ export default class OrginizerFactory implements AbstractFactory {
 
     createVirtualTreeBuilder(): VirtualTreeBuilder {
         return new VirtualTreeBuilder(new TitleParserAdapter(), new FSEditor(), new DirTree());
+    }
+
+    createVirtualTreeBuilderPrompt(): VirtualTreeBuilderPrompt {
+        return new VirtualTreeBuilderPrompt(new TitleParserAdapter(), new FSEditor(), new DirTree());
     }
 
     createVirtualTreeParser(language: string): VirtualTreeParser {
