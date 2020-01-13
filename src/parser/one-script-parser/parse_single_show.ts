@@ -159,6 +159,7 @@ function shouldContinue(stage: string, example: string) {
         log(`${example}`);
         log();
         log('Those changes have not been commited to the filesystem.');
+        log('The next step is parsing folder names.\n');
         return yesNoQuestion('Do you want to continue? [Y/N]: ');
     }
 
@@ -168,27 +169,37 @@ function shouldContinue(stage: string, example: string) {
         log(`${example}`);
         log();
         log('Those changes have not been commited to the filesystem.');
+        log('Next step is showing video file names before and after.\n');
         return yesNoQuestion('Do you want to continue? [Y/N]: ');
     }
 
     if (stage === 'Rename files') {
-        log('The table above shows the new names of each file. Those changes are not commited on the filesystem yet.');
-        return yesNoQuestion('Do you want to commit them? [Y/N]: ');
+        log('The table above shows the new names of each file.');
+        log(`Those changes are ${chalk.red.bold('NOT')} commited on the filesystem yet.`);
+        log();
+        log('If you are not satisfied with the parsing results you can');
+        log('manually rename them using https://gist.github.com/balamou/41f4493d7e25d0b7bce33ab2736cd4cc');
+        log();
+        return yesNoQuestion('Do you want to commit them? [Y/N]: ', false);
     }
 
     return false;
 }
 
-function yesNoQuestion(question: string) {
+function yesNoQuestion(question: string, enableEnterAsYes: boolean = true) {
     const prompt = require('prompt-sync')({sigint: true});
 
     let answer = prompt(question) as string;
     answer = answer.toLowerCase();
     
+    if (answer.length === 0 && enableEnterAsYes === true) return true;
+
     while (!(answer === 'y' || answer === 'n')) {
         console.log("Please answer Y (yes) or N (no)");
         answer = prompt(question) as string;
         answer = answer.toLowerCase();
+
+        if (answer.length === 0 && enableEnterAsYes === true) return true;
     }
 
     if (answer === 'y') {
