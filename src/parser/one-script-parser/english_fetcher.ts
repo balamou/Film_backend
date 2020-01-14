@@ -34,10 +34,10 @@ class EnglishFetcherPrompt {
         
         const results = searchResults.Search as SearchType[];
 
-        return this.orginizeSearchResults(results);
+        return results;
     } 
 
-    private orginizeSearchResults(results: SearchType[]) {
+    orginizeSearchResults(results: SearchType[]) {
         let table = [['#', 'Title', 'Year', 'Type']];
         let count = 0;
 
@@ -50,6 +50,23 @@ class EnglishFetcherPrompt {
         });
 
         return table;
+    }
+
+    orginizeSeriesInfo(info: SeriesInfo) {
+        let result = [['Episode #', 'Title', 'Plot']];
+
+        info.seasons.forEach(season => {
+            let seasonNum = chalk.bgRedBright.black(`Season ${season.seasonNumber}`);
+            result.push([seasonNum, '', '']);
+
+            season.episodes.forEach(episode => {
+                let no_title = chalk.bgRed.black('no title');
+                let no_plot = chalk.bgRed.black('no plot');
+                result.push([`${episode.episodeNumber}`, episode.title ?? no_title, episode.plot ?? no_plot]);
+            });
+        });
+
+        return result;
     }
 
     retrieveSeriesData(imdbID: string) {

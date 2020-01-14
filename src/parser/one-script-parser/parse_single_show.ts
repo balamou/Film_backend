@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { table } from 'table';
 
 import EnglishFetcherPrompt from './english_fetcher';
+import { SeriesData } from '../Orginizer/VirtualTree/VirtualTreeParser';
 
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
@@ -140,14 +141,31 @@ function parseSingleShow(language: string, pathToShow: string) {
 
     const prompt = require('prompt-sync')({ sigint: true });
 
+    ////
     const fetcher = new EnglishFetcherPrompt();
     const seriesName = prompt('Enter the name of the show: ') as string;
     const searchResults = fetcher.searchResults(seriesName);
-    
+
     if (!searchResults) return;
 
-    console.log(table(searchResults));
+    const searchTable = fetcher.orginizeSearchResults(searchResults);
+    console.log(table(searchTable));
 
+    const validation = (num: number) => num >= 0 && num < searchResults.length;
+    const msg = `Please enter a number between 0 and ${searchResults.length - 1}: `;
+    const rowSelected = enterNumber(msg, validation, msg);
+
+    const imdbId = searchResults[rowSelected].imdbID;
+
+    const seriesData = fetcher.retrieveSeriesData(imdbId);
+    
+    if (seriesData) {
+        let config = { columns: { 1: { width: 30 }, 2: { width: 55 } } };
+
+        const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
+        console.log(table(seriesInfoTable, config));
+    }
+    ////
 
     showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
         if (stage === 'Enter show name') {
@@ -221,5 +239,32 @@ function yesNoQuestion(question: string, enableEnterAsYes: boolean = true) {
 
     return false;
 }
+
+function enterNumber(message: string, validation?: (num: number) => boolean, validationMessage?: string) {
+    const prompt = require('prompt-sync')({sigint: true});
+
+    let integer = _parseInt(prompt(message));
+    const isValid = validation ?? (() => true);
+
+    while(integer === undefined || !isValid(integer)) {
+        if (integer === undefined) {
+            console.log('Please enter a valid integer');
+        } else if (!isValid(integer) && validationMessage) {
+            console.log(validationMessage);
+        }
+
+        integer = _parseInt(prompt(message));
+    }
+
+    return integer;
+}
+
+function _parseInt(s: string) {
+    let num = parseInt(s);
+
+    if (!isNaN(num)) 
+        return num;
+}
+
 
 export default parseSingleShow;
