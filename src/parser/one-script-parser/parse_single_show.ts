@@ -143,7 +143,7 @@ function parseSingleShow(language: string, pathToShow: string) {
     const fetcher = new EnglishFetcherPrompt();
     const seriesName = prompt('Enter the name of the show: ') as string;
     const searchResults = fetcher.searchResults(seriesName);
-
+    
     if (!searchResults) return;
 
     console.log(table(searchResults));
