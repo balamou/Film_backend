@@ -45,7 +45,7 @@ class ShowOrginizer {
         
         const flatten = this.factory.createFlattenFileTree();
         const vtParser = this.factory.createVirtualTreeParserPrompt();
-        const dbManager = this.factory.createDatabaseManager(this.language); 
+        const dbManager = this.factory.createDatabaseManagerPrompt(this.language); 
         
         log(chalk.bold('Flattening the file directory...'));
         flatten.flatten(path);
@@ -66,19 +66,15 @@ class ShowOrginizer {
             seriesData = vtParser.attachSeriesInfoToVT(path, seriesInfo, virtualTree);
         }
 
-        if (1===1) return;
+        // DATABASE
+        const seriesName = seriesInfo?.seriesInfo?.title ?? basename;
 
-        if (this.DATABASE_ENABLED) {
-            const seriesName = seriesInfo?.seriesInfo?.title ?? basename;
-
-            log(`Adding ${seriesName} to the database`);
-            try {
-                dbManager.commitToDB(path, seriesName, seriesData);
-            } catch (error) {
-                log(error);
-            }
+        log(`Adding ${seriesName} to the database`);
+        dbManager.commitToDB(path, seriesName, seriesData)
+        .catch(error => log(error))
+        .then(() => {
             log(`Done adding to the database`);
-        }
+        });
     }
     
     private buildVirtualTree(path: string, shouldContinue: (stage: string, example: string) => boolean) {

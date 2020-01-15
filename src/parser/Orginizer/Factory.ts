@@ -13,6 +13,7 @@ import FilePurger from './DirManager/FilePurger';
 import Fetcher from '../FilmScrapper/fetcher';
 import VirtualTreeBuilderPrompt from '../one-script-parser/VirtualTreeBuilderPrompt';
 import VirtualTreeParserPrompt from '../one-script-parser/VirtualTreeParserPrompt';
+import VirtualTreeDBManagerPrompt from '../one-script-parser/VirtualTreeDBManagerPrompt';
 
 export interface AbstractFactory {
     createDirTreeCreator(): DirectoryTreeCreator;
@@ -22,6 +23,7 @@ export interface AbstractFactory {
     createDatabaseManager(language: string): VirtualTreeDBManager;
     createFilePurger(): FilePurger;
     createVirtualTreeParserPrompt(): VirtualTreeParserPrompt;
+    createDatabaseManagerPrompt(language: string): VirtualTreeDBManagerPrompt;
 }
 
 export default class OrginizerFactory implements AbstractFactory {
@@ -70,4 +72,7 @@ export default class OrginizerFactory implements AbstractFactory {
         return new VirtualTreeParserPrompt(new FSEditor(), fetcher);
     }
 
+    createDatabaseManagerPrompt(language: string): VirtualTreeDBManagerPrompt {
+        return new VirtualTreeDBManagerPrompt(language);
+    }
 }

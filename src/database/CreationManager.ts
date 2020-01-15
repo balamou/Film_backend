@@ -45,6 +45,21 @@ class CreationManager extends DatabaseManager {
 
         return result.rows[0];
     }
+
+    async createOrUpdateSeries(series: SeriesType) {
+        const query = `INSERT INTO series (language, folder, title, seasons, description, poster) 
+        VALUES ($1,$2,$3,$4,$5,$6)
+        ON CONFLICT (folder) DO UPDATE 
+        SET title = excluded.title,
+        seasons = excluded.seasons,
+        description = excluded.description,
+        poster = excluded.poster RETURNING *`;
+        const result = await this.pool.query<SeriesType>(query,
+        [series.language, series.folder, series.title, series.seasons, series.description?.substring(0, this.VARCHAR_LIMIT), series.poster]
+        );
+
+        return result.rows[0];
+    }
 }
 
 export default CreationManager;
