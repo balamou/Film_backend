@@ -37,7 +37,7 @@ class ShowOrginizer {
      * @param path to the series
      * @param seriesName optional series name (could be entered by the user)
     */
-    public orginizeSeriesFolder(path: string, enter: (stage: string) => string | undefined, shouldContinue: (stage: string, example: string) => boolean) {
+    public orginizeSeriesFolder(path: string, shouldContinue: (stage: string, example: string) => boolean) {
         const log = console.log;
         const basename = Path.basename(path);
 
@@ -57,20 +57,24 @@ class ShowOrginizer {
         log(chalk.bold('Generating thumbnails...'));
         vtParser.generateThumbnails(virtualTree);
         
-        let seriesName = enter('Enter show name');
-        seriesName = seriesName === undefined ? basename : seriesName;
-        log(seriesName);
+        let seriesInfo = this.selectShowFromIMDB();
 
-        if (1===1) return;
+        if (!seriesInfo) {
+            const keepGoing = shouldContinue('No imdb information', '');
+            if (!keepGoing) return;
+        }
+
+        if (1===1) return; // TODO: REMOVE
 
         if (this.NETWORK_ENABLED) {
+            const seriesName = seriesInfo?.seriesInfo?.title ?? basename;
             log(`Fetching ${seriesName} information`);
-            const seriesInfo = vtParser.getSeriesInformation(path, seriesName, virtualTree);
-            
+            const seriesData = vtParser.getSeriesInformation(path, seriesName, virtualTree);
+        
             if (this.DATABASE_ENABLED) {
                 log(`Adding ${seriesName} to the database`);
                 try {
-                    dbManager.commitToDB(path, seriesName, seriesInfo);
+                    dbManager.commitToDB(path, seriesName, seriesData);
                 } catch (error) {
                     log(error);
                 }
@@ -134,67 +138,56 @@ class ShowOrginizer {
             files: files
         };
     }
+
+    private selectShowFromIMDB() {
+        const prompt = new Prompt();
+        const fetcher = new EnglishFetcherPrompt();
+
+        const seriesName = prompt.ask('Enter the name of the show: ');
+
+        const spinner = ora(`Searching for tv-shows matching ${chalk.red(seriesName)}...`).start();
+        const searchResults = fetcher.searchResults(seriesName);
+        spinner.stop();
+
+        if (!searchResults) {
+            console.log(`No shows matching ${chalk.red(seriesName)} found`);
+            return;
+        }
+
+        const searchTable = fetcher.orginizeSearchResults(searchResults);
+        console.log(table(searchTable));
+
+        // SHOW EPISODES -------
+        const validation = (num: number) => num >= 0 && num < searchResults.length;
+        const msg = `Please enter a number between 0 and ${searchResults.length - 1}: `;
+        const rowSelected = prompt.enterNumber(msg, validation, msg);
+
+        const imdbId = searchResults[rowSelected].imdbID;
+
+        spinner.text = `Retrieving ${chalk.red(seriesName)} episodes information...`;
+        spinner.start();
+        const seriesData = fetcher.retrieveSeriesData(imdbId);
+        spinner.stop();
+
+        if (!seriesData) {
+            console.log(`No show information found about ${chalk.red(seriesName)}`);
+            return;
+        }
+
+        let config = { columns: { 1: { width: 30 }, 2: { width: 55 } } };
+
+        const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
+        console.log(table(seriesInfoTable, config));
+
+        return seriesData;
+    }
 }
 
 function parseSingleShow(language: string, pathToShow: string) {
     const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
     const showOrginizer = new ShowOrginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
-    const prompt = new Prompt();
 
-    selectShowFromIMDB();
-
-    showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
-        if (stage === 'Enter show name') {
-            const name = prompt.ask('Enter the name of the show: ') as string;
-            if (name.length == 0) return;
-
-            return name;
-        }
-
-        return;
-    }, shouldContinue);
-}
-
-function selectShowFromIMDB() {
-    const prompt = new Prompt();
-    const fetcher = new EnglishFetcherPrompt();
-
-    const seriesName = prompt.ask('Enter the name of the show: ');
-
-    const spinner = ora(`Searching for tv-shows matching ${chalk.red(seriesName)}...`).start();
-    const searchResults = fetcher.searchResults(seriesName);
-    spinner.stop();
-
-    if (!searchResults) {
-        // TODO: No shows with ${seriesName} found
-        // Do you want to add this show without imdb information?
-        return;
-    }
-
-    const searchTable = fetcher.orginizeSearchResults(searchResults);
-    console.log(table(searchTable));
-
-    // SHOW EPISODES -------
-    const validation = (num: number) => num >= 0 && num < searchResults.length;
-    const msg = `Please enter a number between 0 and ${searchResults.length - 1}: `;
-    const rowSelected = prompt.enterNumber(msg, validation, msg);
-
-    const imdbId = searchResults[rowSelected].imdbID;
-
-    spinner.text = `Retrieving ${chalk.red(seriesName)} episodes information...`;
-    spinner.start();
-    const seriesData = fetcher.retrieveSeriesData(imdbId);
-    spinner.stop();
-
-    if (!seriesData) { 
-        // TODO: no shows episodes found
-        return; 
-    }
-
-    let config = { columns: { 1: { width: 30 }, 2: { width: 55 } } };
-
-    const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
-    console.log(table(seriesInfoTable, config));
+    showOrginizer.orginizeSeriesFolder(pathToShow, shouldContinue);
 }
 
 function shouldContinue(stage: string, example: string) {
@@ -231,6 +224,10 @@ function shouldContinue(stage: string, example: string) {
         log(`them using ${chalk.bgBlue.black(linkToPythonScript)}`);
         log();
         return prompt.yesNoQuestion('Do you want to commit them? [Y/N]: ', false);
+    }
+
+    if (stage === 'No imdb information') {
+        return prompt.yesNoQuestion('Do you want to add this show to the database without imdb information? [Y/N]: ', false);
     }
 
     return false;
