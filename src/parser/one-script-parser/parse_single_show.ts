@@ -8,6 +8,7 @@ import { table } from 'table';
 
 import EnglishFetcherPrompt from './english_fetcher';
 import { SeriesData } from '../Orginizer/VirtualTree/VirtualTreeParser';
+import Prompt from './prompt';
 
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
@@ -134,18 +135,16 @@ class ShowOrginizer {
     }
 }
 
-
 function parseSingleShow(language: string, pathToShow: string) {
     const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
     const showOrginizer = new ShowOrginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
-
-    const prompt = require('prompt-sync')({ sigint: true });
+    const prompt = new Prompt();
 
     selectShowFromIMDB();
 
     showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
         if (stage === 'Enter show name') {
-            const name = prompt('Enter the name of the show: ') as string;
+            const name = prompt.ask('Enter the name of the show: ') as string;
             if (name.length == 0) return;
 
             return name;
@@ -156,10 +155,10 @@ function parseSingleShow(language: string, pathToShow: string) {
 }
 
 function selectShowFromIMDB() {
-    const prompt = require('prompt-sync')({ sigint: true });
+    const prompt = new Prompt();
 
     const fetcher = new EnglishFetcherPrompt();
-    const seriesName = prompt('Enter the name of the show: ') as string;
+    const seriesName = prompt.ask('Enter the name of the show: ') as string;
     const searchResults = fetcher.searchResults(seriesName);
 
     if (!searchResults) return;
@@ -169,7 +168,7 @@ function selectShowFromIMDB() {
 
     const validation = (num: number) => num >= 0 && num < searchResults.length;
     const msg = `Please enter a number between 0 and ${searchResults.length - 1}: `;
-    const rowSelected = enterNumber(msg, validation, msg);
+    const rowSelected = prompt.enterNumber(msg, validation, msg);
 
     const imdbId = searchResults[rowSelected].imdbID;
 
@@ -181,10 +180,12 @@ function selectShowFromIMDB() {
         const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
         console.log(table(seriesInfoTable, config));
     }
+
 }
 
 function shouldContinue(stage: string, example: string) {
     const log = console.log;
+    const prompt = new Prompt();
 
     if (stage === 'Parsing files') {
         log();
@@ -193,7 +194,7 @@ function shouldContinue(stage: string, example: string) {
         log();
         log('Those changes have not been commited to the filesystem.');
         log('The next step is parsing folder names.\n');
-        return yesNoQuestion('Do you want to continue? [Y/N]: ');
+        return prompt.yesNoQuestion('Do you want to continue? [Y/N]: ');
     }
 
     if (stage === 'Parsing folders') {
@@ -203,7 +204,7 @@ function shouldContinue(stage: string, example: string) {
         log();
         log('Those changes have not been commited to the filesystem.');
         log('Next step is showing video file names before and after.\n');
-        return yesNoQuestion('Do you want to continue? [Y/N]: ');
+        return prompt.yesNoQuestion('Do you want to continue? [Y/N]: ');
     }
 
     if (stage === 'Rename files') {
@@ -215,60 +216,12 @@ function shouldContinue(stage: string, example: string) {
         log('If you are not satisfied with the parsing results you can manually rename');
         log(`them using ${chalk.bgBlue.black(linkToPythonScript)}`);
         log();
-        return yesNoQuestion('Do you want to commit them? [Y/N]: ', false);
+        return prompt.yesNoQuestion('Do you want to commit them? [Y/N]: ', false);
     }
 
     return false;
 }
 
-function yesNoQuestion(question: string, enableEnterAsYes: boolean = true) {
-    const prompt = require('prompt-sync')({sigint: true});
-
-    let answer = prompt(question) as string;
-    answer = answer.toLowerCase();
-    
-    if (answer.length === 0 && enableEnterAsYes === true) return true;
-
-    while (!(answer === 'y' || answer === 'n')) {
-        console.log("Please answer Y (yes) or N (no)");
-        answer = prompt(question) as string;
-        answer = answer.toLowerCase();
-
-        if (answer.length === 0 && enableEnterAsYes === true) return true;
-    }
-
-    if (answer === 'y') {
-        return true;
-    }
-
-    return false;
-}
-
-function enterNumber(message: string, validation?: (num: number) => boolean, validationMessage?: string) {
-    const prompt = require('prompt-sync')({sigint: true});
-
-    let integer = _parseInt(prompt(message));
-    const isValid = validation ?? (() => true);
-
-    while(integer === undefined || !isValid(integer)) {
-        if (integer === undefined) {
-            console.log('Please enter a valid integer');
-        } else if (!isValid(integer) && validationMessage) {
-            console.log(validationMessage);
-        }
-
-        integer = _parseInt(prompt(message));
-    }
-
-    return integer;
-}
-
-function _parseInt(s: string) {
-    let num = parseInt(s);
-
-    if (!isNaN(num)) 
-        return num;
-}
 
 
 export default parseSingleShow;
