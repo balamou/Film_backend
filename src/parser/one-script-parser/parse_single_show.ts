@@ -21,6 +21,7 @@ class ShowOrginizer {
     private readonly dirTree: DirectoryTreeCreator;
 
     protected readonly purgeFolder: string = 'purge';
+    private readonly prompt = new Prompt();
 
     constructor(language: string, factory: Factory, exclude: RegExp) {
         this.exclude = exclude;
@@ -140,11 +141,10 @@ class ShowOrginizer {
     }
 
     private selectShowFromIMDB() {
-        const prompt = new Prompt();
         const fetcher = new EnglishFetcherPrompt();
         const log = console.log;
 
-        const seriesName = prompt.ask('Enter the name of the show: ');
+        const seriesName = this.prompt.ask('Enter the name of the show: ');
 
         const spinner = ora(`Searching for tv-shows matching ${chalk.red(seriesName)}...`).start();
         const searchResults = fetcher.searchResults(seriesName);
@@ -159,10 +159,7 @@ class ShowOrginizer {
         log(table(searchTable));
 
         // SHOW EPISODES -------
-        const validation = (num: number) => num >= 0 && num < searchResults.length;
-        const msg = `Please enter a number between 0 and ${searchResults.length - 1}: `;
-        const rowSelected = prompt.enterNumber(msg, validation, msg);
-
+        const rowSelected = this.selectNumber(0, searchResults.length);
         const imdbId = searchResults[rowSelected].imdbID;
 
         spinner.text = `Retrieving ${chalk.red(seriesName)} episodes information...`;
@@ -181,6 +178,12 @@ class ShowOrginizer {
         log(table(seriesInfoTable, config));
 
         return seriesData;
+    }
+
+    private selectNumber(a: number, b: number) {
+        const validation = (num: number) => num >= a && num <= b;
+        const msg = `Please select a row between ${a} and ${b}: `;
+        return this.prompt.enterNumber(msg, validation, `The number has to be between ${a} and ${b}`);
     }
 }
 
