@@ -141,7 +141,23 @@ function parseSingleShow(language: string, pathToShow: string) {
 
     const prompt = require('prompt-sync')({ sigint: true });
 
-    ////
+    selectShowFromIMDB();
+
+    showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
+        if (stage === 'Enter show name') {
+            const name = prompt('Enter the name of the show: ') as string;
+            if (name.length == 0) return;
+
+            return name;
+        }
+
+        return;
+    }, shouldContinue);
+}
+
+function selectShowFromIMDB() {
+    const prompt = require('prompt-sync')({ sigint: true });
+
     const fetcher = new EnglishFetcherPrompt();
     const seriesName = prompt('Enter the name of the show: ') as string;
     const searchResults = fetcher.searchResults(seriesName);
@@ -165,18 +181,6 @@ function parseSingleShow(language: string, pathToShow: string) {
         const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
         console.log(table(seriesInfoTable, config));
     }
-    ////
-
-    showOrginizer.orginizeSeriesFolder(pathToShow, (stage: string) => {
-        if (stage === 'Enter show name') {
-            const name = prompt('Enter the name of the show: ') as string;
-            if (name.length == 0) return;
-
-            return name;
-        }
-
-        return;
-    }, shouldContinue);
 }
 
 function shouldContinue(stage: string, example: string) {
