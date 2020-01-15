@@ -1,13 +1,12 @@
 import Tree from '../Tree/Tree';
 import Factory from '../Orginizer/Factory';
 import { DirectoryTreeCreator } from '../Adapters/DirTreeCreator';
-import Path, { basename } from 'path';
+import Path from 'path';
 import OrginizerFactory from '../Orginizer/Factory';
 import chalk from 'chalk';
 import { table } from 'table';
 
 import EnglishFetcherPrompt from './english_fetcher';
-import { SeriesData } from '../Orginizer/VirtualTree/VirtualTreeParser';
 import Prompt from './prompt';
 import ora from 'ora';
 

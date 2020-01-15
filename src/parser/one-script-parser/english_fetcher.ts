@@ -5,7 +5,7 @@ import chalk from 'chalk';
 
 type Episode = {episodeNumber: number, title?: string, plot?: string};
 type Season = {seasonNumber: number, episodes: Episode[]};
-type SeriesInfo = {
+export type SeriesInfo = {
     seriesInfo: {
         title?: string;
         year?: string;

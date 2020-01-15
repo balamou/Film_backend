@@ -1,4 +1,5 @@
 import promptSync from 'prompt-sync';
+import '../Tree/Array';
 
 class Prompt {
     private prompt = promptSync({ sigint: true });
@@ -43,6 +44,17 @@ class Prompt {
         }
 
         return integer;
+    }
+
+    askWithOptions(question: string, options: string[]) {
+        let answer = this.prompt(question);
+
+        while (!options.doesInclude(answer, (lhs, rhs) => lhs === rhs)) {
+            console.log("Please enter one of the following options: ", options);
+            answer = this.prompt(question);
+        }
+
+        return answer;
     }
 
     private _parseInt(s: string) {
