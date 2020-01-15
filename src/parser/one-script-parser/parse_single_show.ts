@@ -44,7 +44,7 @@ class ShowOrginizer {
         // TODO: do base check if a folder has videos -> if not return
         
         const flatten = this.factory.createFlattenFileTree();
-        const vtParser = this.factory.createVirtualTreeParser(this.language);
+        const vtParser = this.factory.createVirtualTreeParserPrompt();
         const dbManager = this.factory.createDatabaseManager(this.language); 
         
         log(chalk.bold('Flattening the file directory...'));
@@ -58,28 +58,26 @@ class ShowOrginizer {
         vtParser.generateThumbnails(virtualTree);
         
         let seriesInfo = this.selectShowFromIMDB();
+        let seriesData = vtParser.seriesData;
 
         if (!seriesInfo) {
-            const keepGoing = shouldContinue('No imdb information', '');
-            if (!keepGoing) return;
+            if (!shouldContinue('No imdb information', '')) return; // Exit
+        } else {
+            seriesData = vtParser.attachSeriesInfoToVT(path, seriesInfo, virtualTree);
         }
 
-        if (1===1) return; // TODO: REMOVE
+        if (1===1) return;
 
-        if (this.NETWORK_ENABLED) {
+        if (this.DATABASE_ENABLED) {
             const seriesName = seriesInfo?.seriesInfo?.title ?? basename;
-            log(`Fetching ${seriesName} information`);
-            const seriesData = vtParser.getSeriesInformation(path, seriesName, virtualTree);
-        
-            if (this.DATABASE_ENABLED) {
-                log(`Adding ${seriesName} to the database`);
-                try {
-                    dbManager.commitToDB(path, seriesName, seriesData);
-                } catch (error) {
-                    log(error);
-                }
-                log(`Done adding to the database`);
+
+            log(`Adding ${seriesName} to the database`);
+            try {
+                dbManager.commitToDB(path, seriesName, seriesData);
+            } catch (error) {
+                log(error);
             }
+            log(`Done adding to the database`);
         }
     }
     
