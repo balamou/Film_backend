@@ -40,4 +40,4 @@ function parse() {
     }
 }
 
-parse()
+parse();

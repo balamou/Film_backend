@@ -9,6 +9,7 @@ import { table } from 'table';
 import EnglishFetcherPrompt from './english_fetcher';
 import { SeriesData } from '../Orginizer/VirtualTree/VirtualTreeParser';
 import Prompt from './prompt';
+import ora from 'ora';
 
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
@@ -156,31 +157,44 @@ function parseSingleShow(language: string, pathToShow: string) {
 
 function selectShowFromIMDB() {
     const prompt = new Prompt();
-
     const fetcher = new EnglishFetcherPrompt();
-    const seriesName = prompt.ask('Enter the name of the show: ') as string;
-    const searchResults = fetcher.searchResults(seriesName);
 
-    if (!searchResults) return;
+    const seriesName = prompt.ask('Enter the name of the show: ');
+
+    const spinner = ora(`Searching for tv-shows matching ${chalk.red(seriesName)}...`).start();
+    const searchResults = fetcher.searchResults(seriesName);
+    spinner.stop();
+
+    if (!searchResults) {
+        // TODO: No shows with ${seriesName} found
+        // Do you want to add this show without imdb information?
+        return;
+    }
 
     const searchTable = fetcher.orginizeSearchResults(searchResults);
     console.log(table(searchTable));
 
+    // SHOW EPISODES -------
     const validation = (num: number) => num >= 0 && num < searchResults.length;
     const msg = `Please enter a number between 0 and ${searchResults.length - 1}: `;
     const rowSelected = prompt.enterNumber(msg, validation, msg);
 
     const imdbId = searchResults[rowSelected].imdbID;
 
+    spinner.text = `Retrieving ${chalk.red(seriesName)} episodes information...`;
+    spinner.start();
     const seriesData = fetcher.retrieveSeriesData(imdbId);
-    
-    if (seriesData) {
-        let config = { columns: { 1: { width: 30 }, 2: { width: 55 } } };
+    spinner.stop();
 
-        const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
-        console.log(table(seriesInfoTable, config));
+    if (!seriesData) { 
+        // TODO: no shows episodes found
+        return; 
     }
 
+    let config = { columns: { 1: { width: 30 }, 2: { width: 55 } } };
+
+    const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
+    console.log(table(seriesInfoTable, config));
 }
 
 function shouldContinue(stage: string, example: string) {
