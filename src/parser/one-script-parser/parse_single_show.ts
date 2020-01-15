@@ -142,6 +142,7 @@ class ShowOrginizer {
     private selectShowFromIMDB() {
         const prompt = new Prompt();
         const fetcher = new EnglishFetcherPrompt();
+        const log = console.log;
 
         const seriesName = prompt.ask('Enter the name of the show: ');
 
@@ -150,12 +151,12 @@ class ShowOrginizer {
         spinner.stop();
 
         if (!searchResults) {
-            console.log(`No shows matching ${chalk.red(seriesName)} found`);
+            log(`No shows matching ${chalk.red(seriesName)} found`);
             return;
         }
 
         const searchTable = fetcher.orginizeSearchResults(searchResults);
-        console.log(table(searchTable));
+        log(table(searchTable));
 
         // SHOW EPISODES -------
         const validation = (num: number) => num >= 0 && num < searchResults.length;
@@ -170,14 +171,14 @@ class ShowOrginizer {
         spinner.stop();
 
         if (!seriesData) {
-            console.log(`No show information found about ${chalk.red(seriesName)}`);
+            log(`No show information found about ${chalk.red(seriesName)}`);
             return;
         }
 
         let config = { columns: { 1: { width: 30 }, 2: { width: 55 } } };
 
         const seriesInfoTable = fetcher.orginizeSeriesInfo(seriesData);
-        console.log(table(seriesInfoTable, config));
+        log(table(seriesInfoTable, config));
 
         return seriesData;
     }
