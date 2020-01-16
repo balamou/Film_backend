@@ -208,7 +208,7 @@ class ShowOrginizer {
 }
 
 function parseSingleShow(language: string, pathToShow: string) {
-    const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected/;
+    const GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|(\._.+)/;
     const showOrginizer = new ShowOrginizer(language, new OrginizerFactory(), GLOBAL_EXCLUDE);
 
     showOrginizer.orginizeSeriesFolder(pathToShow, shouldContinue);
