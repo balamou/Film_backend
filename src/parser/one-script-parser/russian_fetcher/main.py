@@ -14,7 +14,7 @@ def format_search_results(search):
 
     for item in search:
         content_type = 'series' if item.series == True else 'movie'
-        searchRow = {"Title": item.title, "Title_en": item.title_en, "Poster": "N/A", 
+        searchRow = {"Title": item.title.strip(), "Title_en": item.title_en, "Poster": "N/A", 
                      "Year": item.year, "imdbID": item.id, 'Type': content_type}
         result.append(searchRow)
 
@@ -62,19 +62,14 @@ def parse_episodes(movie):
 
     return seasons
 
-def get_episode_data(title):
-    movies = find_movies_matching(title)
-    if len(movies) == 0:
-        raise Exception("No shows found with title '%s'" % title) # ERROR
-    
-    time.sleep(12)
-    movie = Movie(id = movies[0].id)
+def get_episode_data(imdbID):
+    movie = Movie(id = imdbID)
     time.sleep(2)
     seriesInfo = get_film_info(movie)
     time.sleep(8)
     episode_data = parse_episodes(movie)
     
-    seriesInfo["title"] = movies[0].title.strip() # override title (to avoid brackets)
+    seriesInfo["title"] = movie.title.strip() # override title (to avoid brackets)
     return { "seriesInfo": seriesInfo, "seasons" :episode_data }
 
 def json_stringify(data):
@@ -96,10 +91,8 @@ def get_movie(title):
     return json_stringify(movieInfo)
 
 def main():
-    title = sys.argv[1]
-
     if sys.argv[1] == '-s': # return search results
-        title = sys.argv[2]
+        title = sys.argv[2] # TODO: add into a try catch block (like below)
         search_results = find_movies_matching(title)
         formatted_results = format_search_results(search_results)
         json_search_results = json_stringify(formatted_results)
@@ -114,8 +107,9 @@ def main():
         except Exception as e:
             sys.stderr.write(e)
 
-    try:
-        episode_data = get_episode_data(title)
+    try: # this block for shows
+        imdbID = int(sys.argv[1])
+        episode_data = get_episode_data(imdbID)
         print(json_stringify(episode_data))
     except Exception as e:
         sys.stderr.write(e)

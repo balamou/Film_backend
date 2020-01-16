@@ -56,7 +56,7 @@ class EnglishFetcherPrompt {
         let result = [['Episode #', 'Title', 'Plot']];
 
         info.seasons.forEach(season => {
-            let seasonNum = chalk.bgRedBright.black(`Season ${season.seasonNumber}`);
+            let seasonNum = chalk.bgBlueBright.black(`Season ${season.seasonNumber}`);
             result.push([seasonNum, '', '']);
 
             season.episodes.forEach(episode => {

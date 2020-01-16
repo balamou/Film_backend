@@ -6,7 +6,7 @@ import chalk from "chalk";
 import { table } from "table";
 
 
-type Episode = {episodeNumber: number, title?: string};
+type Episode = {episodeNumber: number, title?: string, plot?: string};
 type Season = {seasonNumber: number, episodes: Episode[]};
 type SeriesInfo = {
     seriesInfo: {
@@ -27,7 +27,7 @@ type Movie = {
 
 type SearchType = { Title: string, Year: string, imdbID: string, Type: string, Poster: string };
 
-class RussianFetcher {
+class RussianFetcherPrompt {
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor());
     private readonly cacheFolder = 'cache/ru/series';
     
@@ -36,7 +36,7 @@ class RussianFetcher {
     */
     private execScript(title: string, mode: string = 'show') {
         const scriptPath = path.join(__dirname, "main.py");
-        let options = [scriptPath, `"${title}"`];
+        let options = [scriptPath, `${title}`];
 
         if (mode === 'movie') {
             options = [scriptPath, '-m', `"${title}"`];
@@ -72,20 +72,6 @@ class RussianFetcher {
         }
     }
 
-    retrieveSeriesData(imdbID: string) {
-        let seriesData = this.cacher.retrieveCachedData(imdbID, this.cacheFolder);
-        if (seriesData) return seriesData;
-
-        // if no cached data make call
-        const output = this.execScript(imdbID);
-        seriesData = JSON.parse(output) as SeriesInfo;
-        
-        // cache data
-        this.cacher.cacheData(imdbID, seriesData, this.cacheFolder);
-
-        return seriesData;
-    }
-
     orginizeSearchResults(results: SearchType[]) {
         let table = [['#', 'Title', 'Year', 'Type']];
         let count = 0;
@@ -100,13 +86,48 @@ class RussianFetcher {
 
         return table;
     }
+
+    retrieveSeriesData(imdbID: string) {
+        let seriesData = this.cacher.retrieveCachedData(imdbID, this.cacheFolder);
+        if (seriesData) return seriesData;
+
+        // if no cached data make call
+        const output = this.execScript(imdbID);
+        seriesData = JSON.parse(output) as SeriesInfo;
+        
+        // cache data
+        this.cacher.cacheData(imdbID, seriesData, this.cacheFolder);
+
+        return seriesData;
+    }
+
+    orginizeSeriesInfo(info: SeriesInfo) {
+        let result = [['Episode #', 'Title', 'Plot']];
+
+        info.seasons.forEach(season => {
+            let seasonNum = chalk.bgBlueBright.black(`Season ${season.seasonNumber}`);
+            result.push([seasonNum, '', '']);
+
+            season.episodes.forEach(episode => {
+                let no_title = chalk.bgRed.black('no title');
+                let no_plot = chalk.bgRed.black('no plot');
+                result.push([`${episode.episodeNumber}`, episode.title ?? no_title, episode.plot ?? no_plot]);
+            });
+        });
+
+        return result;
+    }
 }
 
-export default RussianFetcher;
+export default RussianFetcherPrompt;
 
-const fetcher = new RussianFetcher();
-const searchResults = fetcher.searchResults('Breaking bad');
-if (searchResults) {
-    const abc = fetcher.orginizeSearchResults(searchResults);
-    console.log(table(abc));
-}
+// const fetcher = new RussianFetcherPrompt();
+// // const searchResults = fetcher.searchResults('Breaking bad');
+// // if (searchResults) {
+// //     const abc = fetcher.orginizeSearchResults(searchResults);
+// //     console.log(table(abc));
+// // }
+
+// const seriesInfo = fetcher.retrieveSeriesData('404900');
+// const abc = fetcher.orginizeSeriesInfo(seriesInfo);
+// console.log(table(abc));
