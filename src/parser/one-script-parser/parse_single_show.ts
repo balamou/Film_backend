@@ -11,6 +11,7 @@ import Prompt from './prompt';
 import ora from 'ora';
 import FetcherProtocol from './FetcherProtocol';
 import RussianFetcherPrompt from './russian_fetcher/russian_fetcher';
+import { FSEditor } from '../Adapters/FSEditor';
 
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
@@ -109,7 +110,9 @@ class ShowOrginizer {
         
         log(table(renameTable));
         log(table(rejectTable));
-        
+        const fsEditor = new FSEditor();
+        fsEditor.writeToFile(`${path}/old_video_names.txt`, table(renameTable));
+
         if (!shouldContinue('Rename files', '')) return;
         
         vtBuilder.commit(path);
