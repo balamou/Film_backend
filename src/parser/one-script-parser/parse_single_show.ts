@@ -108,10 +108,13 @@ class ShowOrginizer {
         const renameTable = vtBuilder.renameTable(path);
         const rejectTable = vtBuilder.rejectedList();
         
-        log(table(renameTable));
+        let config = { columns: { 0: { width: 40 }, 1: { width: 40 } } };
+        
+        log(table(renameTable, config));
         log(table(rejectTable));
         const fsEditor = new FSEditor();
-        fsEditor.writeToFile(`${path}/old_video_names.txt`, table(renameTable));
+
+        fsEditor.writeToFile(`${path}/old_video_names.txt`, table(renameTable, config));
 
         if (!shouldContinue('Rename files', '')) return;
         
