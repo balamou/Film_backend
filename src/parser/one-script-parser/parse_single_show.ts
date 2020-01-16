@@ -9,6 +9,8 @@ import { table } from 'table';
 import EnglishFetcherPrompt from './english_fetcher';
 import Prompt from './prompt';
 import ora from 'ora';
+import FetcherProtocol from './FetcherProtocol';
+import RussianFetcherPrompt from './russian_fetcher/russian_fetcher';
 
 class ShowOrginizer {
     protected readonly NETWORK_ENABLED = true;
@@ -57,7 +59,7 @@ class ShowOrginizer {
         log(chalk.bold('Generating thumbnails...'));
         vtParser.generateThumbnails(virtualTree);
         
-        let seriesInfo = this.selectShowFromIMDB();
+        let seriesInfo = this.selectShowFromIMDB(this.language);
         let seriesData = vtParser.seriesData;
 
         if (!seriesInfo) {
@@ -141,8 +143,19 @@ class ShowOrginizer {
         };
     }
 
-    private selectShowFromIMDB() {
-        const fetcher = new EnglishFetcherPrompt();
+    private createFetcherProtocol(language: string): FetcherProtocol {
+        switch(language) {
+            case 'en':
+                return new EnglishFetcherPrompt();
+            case 'ru':
+                return new RussianFetcherPrompt();
+        }
+
+        return new EnglishFetcherPrompt();
+    }
+
+    private selectShowFromIMDB(language: string) {
+        const fetcher = this.createFetcherProtocol(language);
         const log = console.log;
 
         const seriesName = this.prompt.ask('Enter the name of the show: ');

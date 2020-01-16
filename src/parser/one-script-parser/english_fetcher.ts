@@ -2,29 +2,30 @@ import Cacher from '../FilmScrapper/russian/Cacher';
 import { Omdb } from '../FilmScrapper/omdb';
 import { FSEditor } from '../Adapters/FSEditor';
 import chalk from 'chalk';
+import FetcherProtocol, { SeriesInfo, SearchType, Season } from "./FetcherProtocol";
 
-type Episode = {episodeNumber: number, title?: string, plot?: string};
-type Season = {seasonNumber: number, episodes: Episode[]};
-export type SeriesInfo = {
-    seriesInfo: {
-        title?: string;
-        year?: string;
-        plot?: string;
-        poster?: string;
-    }, 
-    seasons: Season[]
-};
-type Movie = {
-    title?: string,
-    year?: string,
-    plot?: string,
-    poster?: string,
-    imdbRating?: string
-};
+// type Episode = {episodeNumber: number, title?: string, plot?: string};
+// type Season = {seasonNumber: number, episodes: Episode[]};
+// export type SeriesInfo = {
+//     seriesInfo: {
+//         title?: string;
+//         year?: string;
+//         plot?: string;
+//         poster?: string;
+//     }, 
+//     seasons: Season[]
+// };
+// type Movie = {
+//     title?: string,
+//     year?: string,
+//     plot?: string,
+//     poster?: string,
+//     imdbRating?: string
+// };
 
-type SearchType = { Title: string, Year: string, imdbID: string, Type: string, Poster: string };
+// type SearchType = { Title: string, Year: string, imdbID: string, Type: string, Poster: string };
 
-class EnglishFetcherPrompt {
+class EnglishFetcherPrompt implements FetcherProtocol {
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
   
     searchResults(title: string) {

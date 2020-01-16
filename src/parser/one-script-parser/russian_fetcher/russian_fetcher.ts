@@ -3,31 +3,9 @@ import path from "path";
 import { FSEditor } from "../../Adapters/FSEditor";
 import Cacher from '../../FilmScrapper/russian/Cacher';
 import chalk from "chalk";
-import { table } from "table";
+import FetcherProtocol, { SeriesInfo, SearchType } from "../FetcherProtocol";
 
-
-type Episode = {episodeNumber: number, title?: string, plot?: string};
-type Season = {seasonNumber: number, episodes: Episode[]};
-type SeriesInfo = {
-    seriesInfo: {
-        title: string;
-        year?: string;
-        plot: string;
-        poster?: string;
-    }, 
-    seasons: Season[]
-};
-type Movie = {
-    title?: string,
-    year?: string,
-    plot?: string,
-    poster?: string,
-    imdbRating?: string,
-}
-
-type SearchType = { Title: string, Year: string, imdbID: string, Type: string, Poster: string };
-
-class RussianFetcherPrompt {
+class RussianFetcherPrompt implements FetcherProtocol {
     private readonly cacher = new Cacher<SeriesInfo>(new FSEditor());
     private readonly cacheFolder = 'cache/ru/series';
     
@@ -91,9 +69,13 @@ class RussianFetcherPrompt {
         let seriesData = this.cacher.retrieveCachedData(imdbID, this.cacheFolder);
         if (seriesData) return seriesData;
 
-        // if no cached data make call
-        const output = this.execScript(imdbID);
-        seriesData = JSON.parse(output) as SeriesInfo;
+        try {
+            // if no cached data make call
+            const output = this.execScript(imdbID);
+            seriesData = JSON.parse(output) as SeriesInfo;
+        } catch {
+            return;
+        }
         
         // cache data
         this.cacher.cacheData(imdbID, seriesData, this.cacheFolder);

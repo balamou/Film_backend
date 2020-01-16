@@ -1,6 +1,6 @@
 import { VirtualTreeParser, SeriesData } from "../Orginizer/VirtualTree/VirtualTreeParser";
 import { VirtualTree } from "../Orginizer/VirtualTree/VirtualTree";
-import { SeriesInfo } from "./english_fetcher";
+import { SeriesInfo } from "./FetcherProtocol";
 import { download } from "../Adapters/HTTPReq";
 import Prompt from "./prompt";
 
