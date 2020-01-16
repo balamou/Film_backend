@@ -50,7 +50,8 @@ class CreationManager extends DatabaseManager {
         const query = `INSERT INTO series (language, folder, title, seasons, description, poster) 
         VALUES ($1,$2,$3,$4,$5,$6)
         ON CONFLICT (folder) DO UPDATE 
-        SET title = excluded.title,
+        SET language = excluded.language,
+        title = excluded.title,
         seasons = excluded.seasons,
         description = excluded.description,
         poster = excluded.poster RETURNING *`;

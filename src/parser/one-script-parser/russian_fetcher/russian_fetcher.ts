@@ -102,14 +102,3 @@ class RussianFetcherPrompt implements FetcherProtocol {
 }
 
 export default RussianFetcherPrompt;
-
-// const fetcher = new RussianFetcherPrompt();
-// // const searchResults = fetcher.searchResults('Breaking bad');
-// // if (searchResults) {
-// //     const abc = fetcher.orginizeSearchResults(searchResults);
-// //     console.log(table(abc));
-// // }
-
-// const seriesInfo = fetcher.retrieveSeriesData('404900');
-// const abc = fetcher.orginizeSeriesInfo(seriesInfo);
-// console.log(table(abc));
