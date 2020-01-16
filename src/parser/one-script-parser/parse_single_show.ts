@@ -69,11 +69,19 @@ class ShowOrginizer {
         // DATABASE
         const seriesName = seriesInfo?.seriesInfo?.title ?? basename;
 
-        log(`Adding ${seriesName} to the database`);
+        log();
+        log(`Everything ready to be added to the database.`);
+        if (!this.prompt.yesNoQuestion(`Do you want to commit data to the database? [Y/N]: `)) {
+            return; // Exit
+        }
+
+        const spinner = ora(`dding ${chalk.red(seriesName)} to the database...`).start();
         dbManager.commitToDB(path, seriesName, seriesData)
         .catch(error => log(error))
         .then(() => {
-            log(`Done adding to the database`);
+            spinner.text = 'Done adding to the database';
+        }).finally(() => {
+            spinner.stop();
         });
     }
     
