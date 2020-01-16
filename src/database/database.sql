@@ -55,6 +55,21 @@ CREATE TABLE IF NOT EXISTS EPISODES(
 );
 
 -- -----------------------------------------------------------------------------
+-- MOVIES
+-- -----------------------------------------------------------------------------
+CREATE TABLE MOVIES(
+  ID SERIAL PRIMARY KEY,
+  LANGUAGE language NOT NULL DEFAULT 'en',
+  DURATION INT NOT NULL,
+  VIDEO_URL VARCHAR(200) NOT NULL,
+  FOLDER VARCHAR(200) NOT NULL,
+  TITLE VARCHAR(50) NOT NULL, -- get from IMDB, default to folder name
+
+  DESCRIPTION VARCHAR(400),
+  POSTER VARCHAR(200)
+);
+
+-- -----------------------------------------------------------------------------
 -- VIEWED
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS VIEWED_EPISODES(
@@ -84,21 +99,6 @@ CREATE TABLE VIEWED_MOVIES(
 );
 
 -- INSERT INTO VIEWED_MOVIES(MOVIE_ID, USER_ID, STOPPED_AT, DATE_VIEWED) VALUES (2, 1, 540, TIMESTAMP '12-30-2019 11:47:05');
-
--- -----------------------------------------------------------------------------
--- MOVIES
--- -----------------------------------------------------------------------------
-CREATE TABLE MOVIES(
-  ID SERIAL PRIMARY KEY,
-  LANGUAGE language NOT NULL DEFAULT 'en',
-  DURATION INT NOT NULL,
-  VIDEO_URL VARCHAR(200) NOT NULL,
-  FOLDER VARCHAR(200) NOT NULL,
-  TITLE VARCHAR(50) NOT NULL, -- get from IMDB, default to folder name
-
-  DESCRIPTION VARCHAR(400),
-  POSTER VARCHAR(200)
-);
 
 -- -----------------------------------------------------------------------------
 -- VIDEO INFO
