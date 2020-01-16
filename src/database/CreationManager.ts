@@ -60,6 +60,73 @@ class CreationManager extends DatabaseManager {
 
         return result.rows[0];
     }
+
+    async createOrUpdateEpisode(episode: EpisodeType) {
+        const query = `INSERT INTO EPISODES(SERIES_ID, SEASON_NUMBER, EPISODE_NUMBER, VIDEO_URL, DURATION, THUMBNAIL_URL, TITLE, PLOT) 
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8) 
+        ON CONFLICT (SERIES_ID, SEASON_NUMBER, EPISODE_NUMBER) DO UPDATE 
+        SET VIDEO_URL = excluded.VIDEO_URL,
+        DURATION = excluded.DURATION,
+        THUMBNAIL_URL = excluded.THUMBNAIL_URL,
+        TITLE = excluded.TITLE,
+        PLOT = excluded.PLOT RETURNING *`;
+        const result = await this.pool.query<EpisodeType>(query, [
+            episode.seriesId, episode.seasonNumber, episode.episodeNumber, episode.videoURL, episode.duration, episode.thumbnailURL, episode.title, episode.plot?.substring(0, this.VARCHAR_LIMIT)
+        ]);
+
+        return result.rows[0];
+    }
+
+    async createOrUpdateEpisodes(episodes: EpisodeType[]) {
+        const {seriesIds, seasonNumbers, episodeNumbers, videoURLs, durations, thumbnailURLs, titles, plots} = this.destructureEpisodes(episodes);
+        
+        const query = `INSERT INTO EPISODES(SERIES_ID, SEASON_NUMBER, EPISODE_NUMBER, VIDEO_URL, DURATION, THUMBNAIL_URL, TITLE, PLOT) 
+        SELECT * FROM UNNEST ($1::int[], $2::int[], $3::int[], $4::text[], $5::int[], $6::text[], $7::text[], $8::text[]) 
+        ON CONFLICT (SERIES_ID, SEASON_NUMBER, EPISODE_NUMBER) DO UPDATE 
+        SET VIDEO_URL = excluded.VIDEO_URL,
+        DURATION = excluded.DURATION,
+        THUMBNAIL_URL = excluded.THUMBNAIL_URL,
+        TITLE = excluded.TITLE,
+        PLOT = excluded.PLOT RETURNING *`;
+        const result = await this.pool.query<EpisodeType>(query, [
+            seriesIds, seasonNumbers, episodeNumbers, videoURLs, durations, thumbnailURLs, titles, plots
+        ]);
+
+        return result.rows[0];
+    }
+
+    private destructureEpisodes(episodes: EpisodeType[]) {
+        const seriesIds: number[] = [];
+        const seasonNumbers: number[] = [];
+        const episodeNumbers: number[] = [];
+        const videoURLs: string[] = [];
+        const durations: number[] = [];
+        const thumbnailURLs: (string | undefined)[] = [];
+        const titles: (string | undefined)[] = [];
+        const plots: (string | undefined)[] = [];
+
+        episodes.forEach(ep => {
+            seriesIds.push(ep.seriesId);
+            seasonNumbers.push(ep.seasonNumber);
+            episodeNumbers.push(ep.episodeNumber);
+            videoURLs.push(ep.videoURL);
+            durations.push(ep.duration);
+            thumbnailURLs.push(ep.thumbnailURL);
+            titles.push(ep.title);
+            plots.push(ep.plot?.substring(0, this.VARCHAR_LIMIT));
+        });
+
+        return {
+            seriesIds: seriesIds,
+            seasonNumbers: seasonNumbers,
+            episodeNumbers: episodeNumbers,
+            videoURLs: videoURLs,
+            durations: durations,
+            thumbnailURLs: thumbnailURLs,
+            titles: titles,
+            plots: plots
+        };
+    }
 }
 
 export default CreationManager;

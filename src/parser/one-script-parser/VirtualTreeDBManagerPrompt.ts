@@ -1,5 +1,6 @@
-import CreationManager from '../../database/CreationManager';
+import CreationManager, { EpisodeType } from '../../database/CreationManager';
 import { SeriesData } from '../Orginizer/VirtualTree/VirtualTreeParser';
+import { EpisodeInfo } from '../Orginizer/VirtualTree/VirtualTreeParser';
 
 class VirtualTreeDBManagerPrompt {
     private readonly language: string; // 'en' or 'ru'
@@ -24,7 +25,30 @@ class VirtualTreeDBManagerPrompt {
             poster: seriesInfo?.poster?.replace(this.staticDirectory, '')
         });
 
+        const processed = this.processEpisodes(seriesId!, episodesInfo);
+        await cManager.createOrUpdateEpisodes(processed);
         await cManager.endConnection();
+    }
+
+    private processEpisodes(seriesId: number, episodesInfo: EpisodeInfo[]) {
+        const processed: EpisodeType[] = [];
+
+        episodesInfo.forEach(item => {
+            if (!item.duration) return; // filter out invalid episodes
+
+            processed.push({
+                seriesId: seriesId,
+                seasonNumber: item.season,
+                episodeNumber: item.episode,
+                videoURL: item.videoPath.replace(this.staticDirectory, ''),
+                duration: item.duration,
+                thumbnailURL: item.thumbnail?.replace(this.staticDirectory, ''),
+                title: item.title,
+                plot: item.plot?.substring(0, this.episodePlotLength)
+            });
+        });
+
+        return processed;
     }
 }
 

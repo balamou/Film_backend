@@ -5,7 +5,7 @@ import { FileSystemEditor } from '../../Adapters/FSEditor';
 import ffmpeg from '../../Adapters/ffmpeg';
 import { download } from '../../Adapters/HTTPReq';
 
-class EpisodeInfo{
+export class EpisodeInfo{
     constructor(public season: number,
         public episode: number,
         public videoPath: string,
