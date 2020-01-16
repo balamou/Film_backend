@@ -75,7 +75,7 @@ class ShowOrginizer {
             return; // Exit
         }
 
-        const spinner = ora(`dding ${chalk.red(seriesName)} to the database...`).start();
+        const spinner = ora(`Adding ${chalk.red(seriesName)} to the database...`).start();
         dbManager.commitToDB(path, seriesName, seriesData)
         .catch(error => log(error))
         .then(() => {
