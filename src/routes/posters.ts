@@ -10,8 +10,14 @@ router.post("/posters", (req, res, next) => {
     const showIDs = body.filter(item => item.type === 'show').map(item => item.id);
 
     getPosters(movieIDs, showIDs)
-        .then(posters => res.json(posters))
-        .catch(error => res.json({ error: error }));
+        .then(posters => {
+            res.json(posters);
+            console.log(posters);
+        })
+        .catch(error => {
+            res.json({ error: error });
+            console.log(error);
+        });
 });
 
 
@@ -32,7 +38,7 @@ async function getMoviePosters(movieIDs: number[]) {
         return {
             type: "movie",
             id: movie.id,
-            posterURL: movie.poster
+            posterURL: movie.poster ?? "N/A"
         };
     });
 }
@@ -47,7 +53,7 @@ async function getShowPosters(showIDs: number[]) {
         return {
             type: "show",
             id: show.id,
-            posterURL: show.poster
+            posterURL: show.poster ?? "N/A"
         };
     });
 }
