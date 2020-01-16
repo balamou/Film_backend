@@ -6,12 +6,14 @@ class DatabaseManager {
     private readonly DB_NAME: string;
     private readonly DB_USER: string;
     private readonly DB_HOST: string;
+    private readonly DB_PASSWORD: string;
     protected pool: Pool;
 
     constructor() {
         this.DB_NAME = process.env.DB_NAME as string;
         this.DB_USER = process.env.DB_USER as string;
         this.DB_HOST = process.env.DB_HOST as string;
+        this.DB_PASSWORD = process.env.DB_PASSWORD as string;
         this.pool = this.createPool();
     }
 
@@ -24,6 +26,7 @@ class DatabaseManager {
             user: this.DB_USER,
             host: this.DB_HOST,
             database: this.DB_NAME,
+            password: this.DB_PASSWORD,
             port: 5432
         });
     }
