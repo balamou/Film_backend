@@ -228,6 +228,13 @@ class DatabaseFetcher extends DatabaseManager {
 
         return result.rows;
     }
+
+    async getFolderFromSeriesId(seriesId: number) {
+        let query = "SELECT folder FROM series WHERE id = $1";
+        const result = await this.pool.query<{folder: string}>(query, [ seriesId ]);
+
+        return result.rows[0];
+    }
 }
 
 export default DatabaseFetcher;

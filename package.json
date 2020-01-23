@@ -51,6 +51,7 @@
     "pg-hstore": "^2.3.3",
     "prompt-sync": "^4.2.0",
     "request": "^2.88.0",
+    "subtitles-parser-vtt": "0.0.5",
     "sync-request": "^6.1.0",
     "synchronized-promise": "^0.2.0",
     "table": "^5.4.6",
