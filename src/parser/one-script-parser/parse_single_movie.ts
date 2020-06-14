@@ -41,23 +41,20 @@ class MovieOrginizer {
      * inputs from the user or output data from the function
     */
     orgMovie(path: string, language: string, context?: Context) {
-        const log = console.log;
-        const logErr = (error: string) => console.log(chalk.red(error));
-
         const movieName = Path.basename(path);
 
-        const { pathToVideo, error } = this.moveUpAndRename(path);
-        if (error) return (logErr(error), false);
+        const { pathToVideo, error: err1 } = this.moveUpAndRename(path);
+        if (err1 && context) context('error', err1);
         if (context) context('path to video', pathToVideo);
 
-        const { duration, error: err } = this.getDuration(pathToVideo);
-        if (err) return (logErr(err), false);
+        const { duration, error: err2 } = this.getDuration(pathToVideo);
+        if (err2 && context) context('error', err2);
         if (context) context('duration', duration);
         
         this.purge(path, pathToVideo, context);
         
-        const { movieData, error: err2 } = this.fetchMovieData(path, movieName, language, context);
-        if (err2) logErr(err2);
+        const { movieData, error: err3 } = this.fetchMovieData(path, movieName, language, context);
+        if (err3 && context) context('error', err3);
       
         if (context) context("database", undefined);
 
@@ -173,6 +170,15 @@ function secondsToHms(seconds: number) {
 function contextExecution(stage: string, data: any) {
     const prompt = new Prompt();
     const log = console.log;
+
+    if (stage == 'error') {
+        log();
+        log(chalk.red(data));
+        log();
+
+        const shouldContinue = prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
+        if (!shouldContinue) exit();
+    }
 
     if (stage == 'path to video') {
         log(`The path to the movie is ${chalk.bgBlue.black(data)}`);
