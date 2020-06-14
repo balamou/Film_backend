@@ -42,22 +42,25 @@ class MovieOrginizer {
     */
     orgMovie(path: string, language: string, context?: Context) {
         const log = console.log;
+        const logErr = (error: string) => console.log(chalk.red(error));
+
         const movieName = Path.basename(path);
 
         const { pathToVideo, error } = this.moveUpAndRename(path);
-        if (error) return (log(error), false);
+        if (error) return (logErr(error), false);
         if (context) context('path to video', pathToVideo);
 
         const { duration, error: err } = this.getDuration(pathToVideo);
-        if (err) return (log(err), false);
+        if (err) return (logErr(err), false);
         if (context) context('duration', duration);
         
         this.purge(path, pathToVideo, context);
         
         const { movieData, error: err2 } = this.fetchMovieData(path, movieName, language, context);
-        if (err2) log(err2);
+        if (err2) logErr(err2);
       
-        log('Adding to database...');
+        if (context) context("database", undefined);
+
         const cManager = new CreationManager();
         cManager.createMovie({
             language: language,
@@ -68,9 +71,7 @@ class MovieOrginizer {
             description: movieData?.plot?.substring(0, 400),
             poster: movieData?.poster?.replace(/public\//, '')
         }).catch(error => {
-            log(`----- Error adding ${chalk.red(movieName)} to the database -----`);
-            log(error);
-            log(`-----------------------------------------------------`);
+           if (context) context("db error", error);
         });
 
         return true;
@@ -83,6 +84,8 @@ class MovieOrginizer {
         
         if (!movieData) return { movieData: undefined, error: `Error: cannot find information on '${selectedMovieName}' movie` };
         
+        if (context) context("movie info", movieData);
+
         if (movieData.poster && movieData.poster != "N/A") {
             const posterURL = movieData.poster;
             movieData.poster = download(movieData.poster, `${path}/poster`);
@@ -195,7 +198,7 @@ function contextExecution(stage: string, data: any) {
         if (data.length > 0 ) {
             log("The following files are due to be purged:");
             log(data);
-
+            log();
             const shouldContinue = prompt.yesNoQuestion("Do you want to purge them? [Y/n] ");
 
             if (!shouldContinue) exit();
@@ -218,10 +221,33 @@ function contextExecution(stage: string, data: any) {
         return movieName.replace(/(\s)+/g, " ").trim();
     }
 
+    if (stage == 'movie info') {
+        log();
+        log('Movie info extracted: ');
+        log(data);
+    }
+
     if (stage == 'poster') {
         log();
         log(data)
     } 
+
+    if (stage == 'database') {
+        log();
+
+        const shouldContinue = prompt.yesNoQuestion("Do you want to commit to the database? [y/n] ", false);
+
+        if (!shouldContinue) exit();
+
+        log();
+        log("Adding to the database...");
+    }
+
+    if (stage == 'db error') {
+        log(`----- ${chalk.red("Error adding to the database")} -----`);
+        log(data);
+        log(`----------------------------------------`);
+    }
 }
 
 function exit() {
