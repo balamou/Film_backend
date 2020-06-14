@@ -10,13 +10,12 @@ import { EnglishFetcher } from '../FilmScrapper/omdb';
 import Fetcher from '../FilmScrapper/fetcher';
 import CreationManager from '../../database/CreationManager';
 import { download } from '../Adapters/HTTPReq';
-// import Tree from '../Tree/Tree';
-// import DirSnapshot from '../Orginizer/DirSnapshot';
-// import TreeDifference from '../Tree/TreeDifference';
 import DatabaseManager from '../../database/DatabaseManager';
 import Prompt from './prompt';
 
-type Context = ((stage: string, data: any) => void);
+import chalk from 'chalk';
+
+type Context = ((stage: string, data: any) => any);
 
 class MovieOrginizer {
     private readonly GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
@@ -51,10 +50,11 @@ class MovieOrginizer {
 
         const { duration, error: err } = this.getDuration(pathToVideo);
         if (err) return (log(err), false);
+        if (context) context('duration', duration);
         
         this.purge(path, pathToVideo, context);
         
-        const { movieData, error: err2 } = this.fetchMovieData(path, movieName, language);
+        const { movieData, error: err2 } = this.fetchMovieData(path, movieName, language, context);
         if (err2) log(err2);
       
         log('Adding to database...');
@@ -68,7 +68,7 @@ class MovieOrginizer {
             description: movieData?.plot?.substring(0, 400),
             poster: movieData?.poster?.replace(/public\//, '')
         }).catch(error => {
-            log(`----- Error adding ${movieName} to the database -----`);
+            log(`----- Error adding ${chalk.red(movieName)} to the database -----`);
             log(error);
             log(`-----------------------------------------------------`);
         });
@@ -76,13 +76,21 @@ class MovieOrginizer {
         return true;
     }
 
-    private fetchMovieData(path: string, movieName: string, language: string) {
+    private fetchMovieData(path: string, movieName: string, language: string, context?: Context) {
         const fetcher = this.factory.createFetcher(language);
-        const movieData = this.tryOrUndefined(() => fetcher.fetchMovie(movieName));
+        const selectedMovieName = context ? context('pick movie name', movieName) as string: movieName;
+        const movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
         
-        if (!movieData) return { movieData: undefined, error: `Error: cannot find information on '${movieName}' movie` };
+        if (!movieData) return { movieData: undefined, error: `Error: cannot find information on '${selectedMovieName}' movie` };
         
-        if (movieData.poster) movieData.poster = download(movieData.poster, `${path}/poster`);
+        if (movieData.poster && movieData.poster != "N/A") {
+            const posterURL = movieData.poster;
+            movieData.poster = download(movieData.poster, `${path}/poster`);
+
+            if (context) context("poster", `Movie poster found at ${chalk.green(posterURL)}`);
+        } else {
+            if (context) context("poster", chalk.bgRed.black("Movie poster not found"));
+        }
         
         return { movieData: movieData, error: undefined };
     }
@@ -147,26 +155,73 @@ class MovieOrginizer {
 
 }
 
+function secondsToHms(seconds: number) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor(seconds % 3600 / 60);
+    const s = Math.floor(seconds % 3600 % 60);
+
+    const hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
+    const mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
+    const sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+
+    return hDisplay + mDisplay + sDisplay; 
+}
+
 function contextExecution(stage: string, data: any) {
     const prompt = new Prompt();
     const log = console.log;
 
     if (stage == 'path to video') {
-        log(`The path to the movie is ${data}`);
+        log(`The path to the movie is ${chalk.bgBlue.black(data)}`);
 
         const shouldContinue = prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
 
         if (!shouldContinue) exit();
     }
 
-    if (stage == 'purging') {
-        log("The following files are due to be purged:");
-        log(data);
-
-        const shouldContinue = prompt.yesNoQuestion("Do you want to purge them? [Y/n] ");
+    if (stage == 'duration') {
+        log();
+        const duration = data as number;
+        log(`Calculated movie duration is ${chalk.green(secondsToHms(duration))}`);
+        log();
+        const shouldContinue = prompt.yesNoQuestion("Do you want to continue with this duration? [Y/n] ");
 
         if (!shouldContinue) exit();
     }
+
+    if (stage == 'purging') {
+        log();
+
+        if (data.length > 0 ) {
+            log("The following files are due to be purged:");
+            log(data);
+
+            const shouldContinue = prompt.yesNoQuestion("Do you want to purge them? [Y/n] ");
+
+            if (!shouldContinue) exit();
+        } else {
+            log("No files found to purge.");
+            log(chalk.green("Continuing..."));
+        }
+    }
+
+    if (stage == 'pick movie name') {
+        log();
+        log(`The movie name extracted form the folder name is ${chalk.blue(data)}`);
+        const shouldContinue = prompt.yesNoQuestion(`Do you want continue with ${chalk.blue(data)}? [Y/n] `);
+        
+        if (shouldContinue) return data;
+
+        log();
+        const movieName = prompt.ask("Please enter the movie name: ");
+        
+        return movieName.replace(/(\s)+/g, " ").trim();
+    }
+
+    if (stage == 'poster') {
+        log();
+        log(data)
+    } 
 }
 
 function exit() {
@@ -177,8 +232,11 @@ function parseSingleMovie(language: string, pathToMovie: string) {
     try {
         const movieOrginizer = new MovieOrginizer();
         movieOrginizer.orgMovie(pathToMovie, language, contextExecution);
-    } catch {
-        console.log("Stopping...");
+    } catch(e) {
+        if (e.message == "Stop flow execution")
+            console.log("Stopping...");
+        else 
+            console.log(e);
     }
 }
 

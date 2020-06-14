@@ -2,6 +2,7 @@ import { httpGet } from '../Adapters/HTTPReq';
 import Fetcher from './fetcher';
 import Cacher from './russian/Cacher';
 import { FSEditor } from '../Adapters/FSEditor';
+import { underline } from 'chalk';
 require("dotenv").config();
 
 export class Omdb {
