@@ -37,26 +37,28 @@ class MovieOrginizer {
 
     /**
      * @param path to the movie folder (ex: public/en/movies/joker)
-     * @param context the context is sent to know about which stage the method is in and send in 
+     * @param _context the context is sent to know about which stage the method is in and send in 
      * inputs from the user or output data from the function
     */
-    orgMovie(path: string, language: string, context?: Context) {
+    orgMovie(path: string, language: string, _context?: Context) {
         const movieName = Path.basename(path);
+        const context = (stage: string, data: any) => { if (_context) _context(stage, data); }; // unwrap the context (same as context?(...) in swift)
+        const reportError = (error?: string) => { if (error) context('error', error)};
 
         const { pathToVideo, error: err1 } = this.moveUpAndRename(path);
-        if (err1 && context) context('error', err1);
-        if (context) context('path to video', pathToVideo);
+        reportError(err1);
+        context('path to video', pathToVideo);
 
         const { duration, error: err2 } = this.getDuration(pathToVideo);
-        if (err2 && context) context('error', err2);
-        if (context) context('duration', duration);
+        reportError(err2);
+        context('duration', duration);
         
         this.purge(path, pathToVideo, context);
         
-        const { movieData, error: err3 } = this.fetchMovieData(path, movieName, language, context);
-        if (err3 && context) context('error', err3);
+        const { movieData, error: err3 } = this.fetchMovieData(path, movieName, language, _context);
+        reportError(err3);
       
-        if (context) context("database", undefined);
+        context("database", undefined);
 
         const cManager = new CreationManager();
         cManager.createMovie({
@@ -68,7 +70,7 @@ class MovieOrginizer {
             description: movieData?.plot?.substring(0, 400),
             poster: movieData?.poster?.replace(/public\//, '')
         }).catch(error => {
-           if (context) context("db error", error);
+           context("db error", error);
         });
 
         return true;
