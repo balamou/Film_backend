@@ -15,8 +15,7 @@ import Prompt from './prompt';
 
 import chalk from 'chalk';
 import { table } from 'table';
-
-type Context = ((stage: string, data: any) => any);
+import GeneralContext from './GeneralContext';
 
 class MovieOrginizer {
     private readonly GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
@@ -36,27 +35,34 @@ class MovieOrginizer {
         };
     }
 
+    private context?: MovieContext;
+
+    /**
+     * @param context the context has methods that correspond to stages in the function. 
+     * Those stages allow to transfer inputs in and out of the function as well as interupt 
+     * the flow of the function. It is an optional dependency.
+     */
+    constructor(context?: MovieContext) {
+        this.context = context;
+    }
+
     /**
      * @param path to the movie folder (ex: public/en/movies/joker)
-     * @param _context the context is sent to know about which stage the method is in and send in 
-     * inputs from the user or output data from the function
     */
-    orgMovie(path: string, language: string, _context?: Context) {
+    orgMovie(path: string, language: string) {
         const movieName = Path.basename(path);
-        const context = (stage: string, data: any) => { if (_context) _context(stage, data); }; // unwrap the context (same as context?(...) in swift)
-        const reportError = (error?: string) => { if (error) context('error', error)};
 
         const { pathToVideo, error: err1 } = this.moveUpAndRename(path);
-        reportError(err1);
-        context('path to video', pathToVideo);
+        this.context?.error(err1);
+        this.context?.pathToVideo(pathToVideo);
 
         const { duration, error: err2 } = this.getDuration(pathToVideo);
-        reportError(err2);
-        context('duration', duration);
+        this.context?.error(err2);
+        this.context?.duration(duration);
         
-        this.purge(path, pathToVideo, context);
+        this.purge(path, pathToVideo);
         
-        const movieData = this.fetchMovieData(path, movieName, language, _context);
+        const movieData = this.fetchMovieData(path, movieName, language);
       
         const databaseEntry = {
             language: language,
@@ -68,7 +74,7 @@ class MovieOrginizer {
             poster: movieData?.poster?.replace(/public\//, '')
         };
 
-        context("database", databaseEntry);
+        this.context?.database(databaseEntry);
 
         const cManager = new CreationManager();
         cManager.createMovie(databaseEntry).catch(error => {
@@ -78,30 +84,29 @@ class MovieOrginizer {
         return true;
     }
 
-    private fetchMovieData(path: string, movieName: string, language: string, _context?: Context) {
-        const context = (stage: string, data: any): any => { if (_context) return _context(stage, data); }; // unwrap the context (same as context?(...) in swift)
+    private fetchMovieData(path: string, movieName: string, language: string) {
         const fetcher = this.factory.createFetcher(language);
 
-        let selectedMovieName = _context ? _context('pick movie name', movieName) as string: movieName;
+        let selectedMovieName = this.context?.pickMovieName(movieName) ?? movieName;
         let movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
 
         while (!movieData) {
-            context('log', `Unable to find data for ${chalk.red(selectedMovieName)}`);
-            const shouldContinue = context('ask', 'Do you want to enter a different name? [Y/n] ') as boolean;
+            this.context?.logg(`Unable to find data for ${chalk.red(selectedMovieName)}`);
+            const shouldContinue = this.context?.ask('Do you want to enter a different name? [Y/n] ');
 
             if (!shouldContinue) return undefined;
 
-            selectedMovieName = context('pick another movie name', undefined) as string;
+            selectedMovieName = this.context?.pickAnotherMovieName() ?? movieName;
 
             movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
         }
         
-        context("movie info", movieData);
+        this.context?.movieInfo(movieData);
 
         if (movieData.poster && movieData.poster != "N/A")
             movieData.poster = download(movieData.poster, `${path}/poster`);
         else
-            context("log", chalk.bgRed.black("Movie poster not found"));
+            this.context?.logg(chalk.bgRed.black("Movie poster not found"));
         
         return movieData;
     }
@@ -151,14 +156,14 @@ class MovieOrginizer {
         return { pathToVideo: videoPath, error: undefined };
     }
 
-    private purge(pathToMovie: string, videoFilePath: string, context?: Context) {
+    private purge(pathToMovie: string, videoFilePath: string) {
         const folder = this.factory.createDirTree().treeFrom(pathToMovie, this.GLOBAL_EXCLUDE);
         const filePuger = this.factory.createFilePurger();
         const videoName = Path.basename(videoFilePath);
 
         const purgableFiles = folder.children.filter(node => node.name !== videoName).map(node => node.path);
 
-        if (context) context('purging', purgableFiles);
+        this.context?.purging(purgableFiles);
 
         filePuger.insertPaths(purgableFiles);
         filePuger.purge(`${pathToMovie}/purge`);
@@ -166,129 +171,112 @@ class MovieOrginizer {
 
 }
 
-function secondsToHms(seconds: number) {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor(seconds % 3600 / 60);
-    const s = Math.floor(seconds % 3600 % 60);
 
-    const hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
-    const mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
-    const sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+class MovieContext extends GeneralContext {
 
-    return hDisplay + mDisplay + sDisplay; 
-}
-
-function contextExecution(stage: string, data: any) {
-    const prompt = new Prompt();
-    const log = console.log;
-
-    if (stage === 'error') {
-        log();
-        log(chalk.red(data));
-        log();
-
-        const shouldContinue = prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
-        if (!shouldContinue) exit();
-    }
-
-    if (stage === 'log') {
-        log(data);
-    }
-
-    if (stage === 'ask') {
-        return prompt.yesNoQuestion(data);
-    }
-
-    if (stage === 'pick another movie name') {
-        log();
-        const movieName = prompt.ask("Please enter another movie name: ");
+    public pickAnotherMovieName() {
+        this.log();
+        const movieName = this.prompt.ask("Please enter another movie name: ");
         
-        return movieName.replace(/(\s)+/g, " ").trim();
+        return this.removeWhiteSpaces(movieName);
+    }    
+
+    public pathToVideo(pathToMovie: string) {
+        this.log(`The path to the movie is ${chalk.bgBlue.black(pathToMovie)}`);
+
+        const shouldContinue = this.prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
+
+        if (!shouldContinue) this.exit();
     }
 
-    if (stage === 'path to video') {
-        log(`The path to the movie is ${chalk.bgBlue.black(data)}`);
+    public duration(duration: number) {
+        this.log();
+        this.log(`Calculated movie duration is ${chalk.green(this.secondsToHms(duration))}`);
+        this.log();
+        const shouldContinue = this.prompt.yesNoQuestion("Do you want to continue with this duration? [Y/n] ");
 
-        const shouldContinue = prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
-
-        if (!shouldContinue) exit();
+        if (!shouldContinue) this.exit();
     }
 
-    if (stage === 'duration') {
-        log();
-        const duration = data as number;
-        log(`Calculated movie duration is ${chalk.green(secondsToHms(duration))}`);
-        log();
-        const shouldContinue = prompt.yesNoQuestion("Do you want to continue with this duration? [Y/n] ");
+    public purging(files: string[]) {
+        this.log();
 
-        if (!shouldContinue) exit();
-    }
+        if (files.length > 0 ) {
+            this.log("The following files are due to be purged:");
+            this.log(files);
+            this.log();
+            const shouldContinue = this.prompt.yesNoQuestion("Do you want to purge them? [Y/n] ");
 
-    if (stage === 'purging') {
-        log();
-
-        if (data.length > 0 ) {
-            log("The following files are due to be purged:");
-            log(data);
-            log();
-            const shouldContinue = prompt.yesNoQuestion("Do you want to purge them? [Y/n] ");
-
-            if (!shouldContinue) exit();
+            if (!shouldContinue) this.exit();
         } else {
-            log("No files found to purge.");
-            log(chalk.green("Continuing..."));
+            this.log("No files found to purge.");
+            this.log(chalk.green("Continuing..."));
         }
     }
 
-    if (stage === 'pick movie name') {
-        log();
-        log(`The movie name extracted form the folder name is ${chalk.blue(data)}`);
-        const shouldContinue = prompt.yesNoQuestion(`Do you want continue with ${chalk.blue(data)}? [Y/n] `);
+    public pickMovieName(movieFromFolder: string) {
+        this.log();
+        this.log(`The movie name extracted form the folder name is ${chalk.blue(movieFromFolder)}`);
+        const shouldContinue = this.prompt.yesNoQuestion(`Do you want continue with ${chalk.blue(movieFromFolder)}? [Y/n] `);
         
-        if (shouldContinue) return data;
+        if (shouldContinue) return movieFromFolder;
 
-        log();
-        const movieName = prompt.ask("Please enter the movie name: ");
+        this.log();
+        const movieName = this.prompt.ask("Please enter the movie name: ");
         
-        return movieName.replace(/(\s)+/g, " ").trim();
+        return this.removeWhiteSpaces(movieName);
     }
 
-    if (stage === 'movie info') {
-        log();
-        log('Movie info extracted: ');
-        log(data);
+    public movieInfo(movieInfo: any) {
+        this.log();
+        this.log('Movie info extracted: ');
+        this.log(movieInfo);
     }
 
-    if (stage === 'database') {
+    // HELPERS
+
+    private removeWhiteSpaces(str: string) {
+        return str.replace(/(\s)+/g, " ").trim();
+    }
+
+    private secondsToHms(seconds: number) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor(seconds % 3600 / 60);
+        const s = Math.floor(seconds % 3600 % 60);
+    
+        const hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
+        const mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
+        const sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    
+        return hDisplay + mDisplay + sDisplay; 
+    }
+
+    public database(data: any) {
         let config = { columns: { 0: { width: 20 }, 1: { width: 50 } } };
         const dbEntriesTable = Object.entries(data).map(([key, value]) => [key, value]);
         
-        log();
-        log(table(dbEntriesTable, config));
+        this.log();
+        this.log(table(dbEntriesTable, config));
 
-        const shouldContinue = prompt.yesNoQuestion("Do you want to commit to the database? [y/n] ", false);
+        const shouldContinue = this.prompt.yesNoQuestion("Do you want to commit to the database? [y/n] ", false);
 
-        if (!shouldContinue) exit();
+        if (!shouldContinue) this.exit();
 
-        log();
-        log("Adding to the database...");
+        this.log();
+        this.log("Adding to the database...");
     }
 
-    if (stage === 'db error') {
-        log(`----- ${chalk.red("Error adding to the database")} -----`);
-        log(data);
-        log(`----------------------------------------`);
+    public dbError(error: string) {
+        this.log(`----- ${chalk.red("Error adding to the database")} -----`);
+        this.log(error);
+        this.log(`----------------------------------------`);
     }
-}
-
-function exit() {
-    throw new Error("Stop flow execution");    
 }
 
 function parseSingleMovie(language: string, pathToMovie: string) {
     try {
-        const movieOrginizer = new MovieOrginizer();
-        movieOrginizer.orgMovie(pathToMovie, language, contextExecution);
+        const movieOrginizer = new MovieOrginizer(new MovieContext());
+        movieOrginizer.orgMovie(pathToMovie, language);
     } catch(e) {
         if (e.message == "Stop flow execution")
             console.log("Stopping...");
