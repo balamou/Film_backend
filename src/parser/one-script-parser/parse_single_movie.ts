@@ -1,38 +1,15 @@
 import Path from 'path';
 
-import { DirTree } from '../Adapters/DirTreeCreator';
-import { FSEditor } from '../Adapters/FSEditor';
-import FilePurger from '../Orginizer/DirManager/FilePurger';
-import ffmpeg from '../Adapters/ffmpeg';
-
-import RussianFetcher from '../FilmScrapper/russian/RussianFetcher';
-import { EnglishFetcher } from '../FilmScrapper/omdb';
-import Fetcher from '../FilmScrapper/fetcher';
+import MovieOrginizerFactory from './MovieOrginizerFactory';
 import CreationManager from '../../database/CreationManager';
 import { download } from '../Adapters/HTTPReq';
-import DatabaseManager from '../../database/DatabaseManager';
 
 import chalk from 'chalk';
 import MovieContext from './MovieContext';
 
 class MovieOrginizer {
     private readonly GLOBAL_EXCLUDE = /.DS_Store|purge|rejected|dirSnapshot.yaml/;
-
-    private get factory() {
-        return {
-            createFSEditor: () => new FSEditor(),
-            createDirTree: () => new DirTree(),
-            createVideoProcessor: () => new ffmpeg(),
-            createFilePurger: () => new FilePurger(new FSEditor()),
-            createDBManager: () => new DatabaseManager(),
-            createFetcher: (language: string): Fetcher => {
-                if (language === 'ru') return new RussianFetcher();
-                if (language === 'en') return new EnglishFetcher();
-                return new EnglishFetcher();
-            }
-        };
-    }
-
+    private factory: MovieOrginizerFactory;
     private context?: MovieContext;
 
     /**
@@ -40,7 +17,8 @@ class MovieOrginizer {
      * Those stages allow to transfer inputs in and out of the function as well as interupt 
      * the flow of the function. It is an optional dependency.
      */
-    constructor(context?: MovieContext) {
+    constructor(factory: MovieOrginizerFactory, context?: MovieContext) {
+        this.factory = factory;
         this.context = context;
     }
 
@@ -169,11 +147,9 @@ class MovieOrginizer {
 
 }
 
-
-
 function parseSingleMovie(language: string, pathToMovie: string) {
     try {
-        const movieOrginizer = new MovieOrginizer(new MovieContext());
+        const movieOrginizer = new MovieOrginizer(new MovieOrginizerFactory(), new MovieContext());
         movieOrginizer.orgMovie(pathToMovie, language);
     } catch(e) {
         if (e.message == "Stop flow execution")
