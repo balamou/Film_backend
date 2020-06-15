@@ -23,8 +23,7 @@ export default class GeneralContext {
         this.log(chalk.red(error));
         this.log();
 
-        const shouldContinue = this.prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
-        if (!shouldContinue) this.exit();
+        this.continueOrExit("Do you want to continue? [Y/n] ");
     }
 
     /**
@@ -35,16 +34,19 @@ export default class GeneralContext {
     }
 
     /**
-     * Asks a yes or no question. Returns true if yes, and false if no.
-     */
-    public ask(question: string) {
-        return this.prompt.yesNoQuestion(question);
-    }
-
-    /**
      * Abruptly exits the flow of execution. 
      */
     protected exit() {
         throw new Error("Stop flow execution");    
+    }
+
+    /**
+     * Ask a YES/NO question. If yes, nothing happens and the flow of control continues. 
+     * If no, then abrubptly exits the flow of execution via an exception.
+    */
+    protected continueOrExit(message: string, enableEnterAsYes: boolean = true) {
+        const shouldContinue = this.prompt.yesNoQuestion(message, enableEnterAsYes);
+
+        if (!shouldContinue) this.exit();
     }
 }

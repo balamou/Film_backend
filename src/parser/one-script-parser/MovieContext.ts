@@ -1,7 +1,6 @@
 import GeneralContext from "./GeneralContext";
 import chalk from "chalk";
 import { table } from "table";
-import { SearchType } from "./FetcherProtocol";
 
 export default class MovieContext extends GeneralContext {
 
@@ -15,18 +14,14 @@ export default class MovieContext extends GeneralContext {
     public pathToVideo(pathToMovie: string) {
         this.log(`The path to the movie is ${chalk.bgBlue.black(pathToMovie)}`);
 
-        const shouldContinue = this.prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
-
-        if (!shouldContinue) this.exit();
+        this.continueOrExit("Do you want to continue? [Y/n] ");
     }
 
     public duration(duration: number) {
         this.log();
         this.log(`Calculated movie duration is ${chalk.green(this.secondsToHms(duration))}`);
         this.log();
-        const shouldContinue = this.prompt.yesNoQuestion("Do you want to continue with this duration? [Y/n] ");
-
-        if (!shouldContinue) this.exit();
+        this.continueOrExit("Do you want to continue with this duration? [Y/n] ");
     }
 
     public purging(files: string[]) {
@@ -36,9 +31,7 @@ export default class MovieContext extends GeneralContext {
             this.log("The following files are due to be purged:");
             this.log(files);
             this.log();
-            const shouldContinue = this.prompt.yesNoQuestion("Do you want to purge them? [Y/n] ");
-
-            if (!shouldContinue) this.exit();
+            this.continueOrExit("Do you want to purge them? [Y/n] ");
         } else {
             this.log("No files found to purge.");
             this.log(chalk.green("Continuing..."));
@@ -63,9 +56,7 @@ export default class MovieContext extends GeneralContext {
         this.log('Movie info extracted: ');
         this.log(movieInfo);
 
-        const shouldContinue = this.prompt.yesNoQuestion("Do you want to continue with this information? [Y/n] ");
-
-        if (!shouldContinue) this.exit();
+        this.continueOrExit("Do you want to continue with this information? [Y/n] ");
     }
     
     public database(data: any) {
@@ -75,9 +66,7 @@ export default class MovieContext extends GeneralContext {
         this.log();
         this.log(table(dbEntriesTable, config));
         
-        const shouldContinue = this.prompt.yesNoQuestion("Do you want to commit to the database? [y/n] ", false);
-        
-        if (!shouldContinue) this.exit();
+        this.continueOrExit("Do you want to commit to the database? [y/n] ", false);
         
         this.log();
         this.log("Adding to the database...");
