@@ -79,6 +79,8 @@ class MovieOrginizer {
 
         if (!movieData) return;
 
+        movieData.poster = movieData.poster?.replace("@.", "%40%2E");
+        movieData.poster = movieData.poster?.replace(/@/g, '%40');
         this.context?.movieInfo(movieData);
 
         if (movieData.poster && movieData.poster != "N/A")
