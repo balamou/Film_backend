@@ -115,7 +115,7 @@ class MovieOrginizer {
         const moviesFolder = this.factory.createDirTree().treeFrom(pathToMovie, this.GLOBAL_EXCLUDE);
         const fsEditor = this.factory.createFSEditor();
 
-        const video = moviesFolder.find(node => node.isVideo);
+        const video = moviesFolder.find(node => node.isVideo && node.name[0] !== '.');
         
         if (!video) return { pathToVideo: 'undefined', error: `No videos found in '${pathToMovie}'`};
 
