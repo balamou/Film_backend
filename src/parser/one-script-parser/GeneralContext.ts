@@ -1,7 +1,7 @@
 import Prompt from './prompt';
 import chalk from 'chalk';
 
-class GeneralContext {
+export default class GeneralContext {
     protected prompt: Prompt;
     protected log: (...data: any[]) => void;
 
@@ -48,5 +48,3 @@ class GeneralContext {
         throw new Error("Stop flow execution");    
     }
 }
-
-export default GeneralContext;
