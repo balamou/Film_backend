@@ -14,6 +14,7 @@ import DatabaseManager from '../../database/DatabaseManager';
 import Prompt from './prompt';
 
 import chalk from 'chalk';
+import { table } from 'table';
 
 type Context = ((stage: string, data: any) => any);
 
@@ -55,13 +56,9 @@ class MovieOrginizer {
         
         this.purge(path, pathToVideo, context);
         
-        const { movieData, error: err3 } = this.fetchMovieData(path, movieName, language, _context);
-        reportError(err3);
+        const movieData = this.fetchMovieData(path, movieName, language, _context);
       
-        context("database", undefined);
-
-        const cManager = new CreationManager();
-        cManager.createMovie({
+        const databaseEntry = {
             language: language,
             duration: duration,
             videoURL: pathToVideo.replace(/public\//, ''),
@@ -69,32 +66,44 @@ class MovieOrginizer {
             title: movieData?.title ?? movieName,
             description: movieData?.plot?.substring(0, 400),
             poster: movieData?.poster?.replace(/public\//, '')
-        }).catch(error => {
+        };
+
+        context("database", databaseEntry);
+
+        const cManager = new CreationManager();
+        cManager.createMovie(databaseEntry).catch(error => {
            context("db error", error);
         });
 
         return true;
     }
 
-    private fetchMovieData(path: string, movieName: string, language: string, context?: Context) {
+    private fetchMovieData(path: string, movieName: string, language: string, _context?: Context) {
+        const context = (stage: string, data: any): any => { if (_context) return _context(stage, data); }; // unwrap the context (same as context?(...) in swift)
         const fetcher = this.factory.createFetcher(language);
-        const selectedMovieName = context ? context('pick movie name', movieName) as string: movieName;
-        const movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
-        
-        if (!movieData) return { movieData: undefined, error: `Error: cannot find information on '${selectedMovieName}' movie` };
-        
-        if (context) context("movie info", movieData);
 
-        if (movieData.poster && movieData.poster != "N/A") {
-            const posterURL = movieData.poster;
-            movieData.poster = download(movieData.poster, `${path}/poster`);
+        let selectedMovieName = _context ? _context('pick movie name', movieName) as string: movieName;
+        let movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
 
-            if (context) context("poster", `Movie poster found at ${chalk.green(posterURL)}`);
-        } else {
-            if (context) context("poster", chalk.bgRed.black("Movie poster not found"));
+        while (!movieData) {
+            context('log', `Unable to find data for ${chalk.red(selectedMovieName)}`);
+            const shouldContinue = context('ask', 'Do you want to enter a different name? [Y/n] ') as boolean;
+
+            if (!shouldContinue) return undefined;
+
+            selectedMovieName = context('pick another movie name', undefined) as string;
+
+            movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
         }
         
-        return { movieData: movieData, error: undefined };
+        context("movie info", movieData);
+
+        if (movieData.poster && movieData.poster != "N/A")
+            movieData.poster = download(movieData.poster, `${path}/poster`);
+        else
+            context("log", chalk.bgRed.black("Movie poster not found"));
+        
+        return movieData;
     }
 
     private tryOrUndefined<T>(callback: () => T) {
@@ -173,7 +182,7 @@ function contextExecution(stage: string, data: any) {
     const prompt = new Prompt();
     const log = console.log;
 
-    if (stage == 'error') {
+    if (stage === 'error') {
         log();
         log(chalk.red(data));
         log();
@@ -182,7 +191,22 @@ function contextExecution(stage: string, data: any) {
         if (!shouldContinue) exit();
     }
 
-    if (stage == 'path to video') {
+    if (stage === 'log') {
+        log(data);
+    }
+
+    if (stage === 'ask') {
+        return prompt.yesNoQuestion(data);
+    }
+
+    if (stage === 'pick another movie name') {
+        log();
+        const movieName = prompt.ask("Please enter another movie name: ");
+        
+        return movieName.replace(/(\s)+/g, " ").trim();
+    }
+
+    if (stage === 'path to video') {
         log(`The path to the movie is ${chalk.bgBlue.black(data)}`);
 
         const shouldContinue = prompt.yesNoQuestion("Do you want to continue? [Y/n] ");
@@ -190,7 +214,7 @@ function contextExecution(stage: string, data: any) {
         if (!shouldContinue) exit();
     }
 
-    if (stage == 'duration') {
+    if (stage === 'duration') {
         log();
         const duration = data as number;
         log(`Calculated movie duration is ${chalk.green(secondsToHms(duration))}`);
@@ -200,7 +224,7 @@ function contextExecution(stage: string, data: any) {
         if (!shouldContinue) exit();
     }
 
-    if (stage == 'purging') {
+    if (stage === 'purging') {
         log();
 
         if (data.length > 0 ) {
@@ -216,7 +240,7 @@ function contextExecution(stage: string, data: any) {
         }
     }
 
-    if (stage == 'pick movie name') {
+    if (stage === 'pick movie name') {
         log();
         log(`The movie name extracted form the folder name is ${chalk.blue(data)}`);
         const shouldContinue = prompt.yesNoQuestion(`Do you want continue with ${chalk.blue(data)}? [Y/n] `);
@@ -229,19 +253,18 @@ function contextExecution(stage: string, data: any) {
         return movieName.replace(/(\s)+/g, " ").trim();
     }
 
-    if (stage == 'movie info') {
+    if (stage === 'movie info') {
         log();
         log('Movie info extracted: ');
         log(data);
     }
 
-    if (stage == 'poster') {
+    if (stage === 'database') {
+        let config = { columns: { 0: { width: 20 }, 1: { width: 50 } } };
+        const dbEntriesTable = Object.entries(data).map(([key, value]) => [key, value]);
+        
         log();
-        log(data)
-    } 
-
-    if (stage == 'database') {
-        log();
+        log(table(dbEntriesTable, config));
 
         const shouldContinue = prompt.yesNoQuestion("Do you want to commit to the database? [y/n] ", false);
 
@@ -251,7 +274,7 @@ function contextExecution(stage: string, data: any) {
         log("Adding to the database...");
     }
 
-    if (stage == 'db error') {
+    if (stage === 'db error') {
         log(`----- ${chalk.red("Error adding to the database")} -----`);
         log(data);
         log(`----------------------------------------`);
