@@ -30,7 +30,6 @@ class MovieOrginizer {
 
         const { pathToVideo, error: err1 } = this.moveUpAndRename(path);
         this.context?.error(err1);
-        this.context?.pathToVideo(pathToVideo);
 
         const { duration, error: err2 } = this.getDuration(pathToVideo);
         this.context?.error(err2);
@@ -56,8 +55,6 @@ class MovieOrginizer {
         cManager.createMovie(databaseEntry).catch(error => {
            context("db error", error);
         });
-
-        return true;
     }
 
     private fetchMovieData(path: string, movieName: string, language: string) {
@@ -133,6 +130,7 @@ class MovieOrginizer {
             videoPath = newPath;
         }
 
+        this.context?.pathToVideo(videoPath);
         videoPath = fsEditor.rename(videoPath, 'movie');
         return { pathToVideo: videoPath, error: undefined };
     }
