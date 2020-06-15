@@ -1,6 +1,7 @@
 import GeneralContext from "./GeneralContext";
 import chalk from "chalk";
 import { table } from "table";
+import { SearchType } from "./FetcherProtocol";
 
 export default class MovieContext extends GeneralContext {
 
@@ -61,6 +62,10 @@ export default class MovieContext extends GeneralContext {
         this.log();
         this.log('Movie info extracted: ');
         this.log(movieInfo);
+
+        const shouldContinue = this.prompt.yesNoQuestion("Do you want to continue with this information? [Y/n] ");
+
+        if (!shouldContinue) this.exit();
     }
     
     public database(data: any) {
@@ -88,6 +93,15 @@ export default class MovieContext extends GeneralContext {
         this.log(`Unable to find data for ${chalk.red(selectedMovieName)}`);
 
         return this.prompt.yesNoQuestion('Do you want to enter a different name? [Y/n] ');            
+    }
+
+    public selectSearch(searchTable: string[][], from: number, to: number) {
+        this.log(table(searchTable));
+    
+        this.log();
+        const validation = (num: number) => from <= num && num <= to;
+
+        return this.prompt.enterNumber(`Please enter a number between ${from} and ${to}: `, validation);
     }
  
     // HELPERS

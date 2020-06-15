@@ -2,31 +2,10 @@ import Cacher from '../FilmScrapper/russian/Cacher';
 import { Omdb } from '../FilmScrapper/omdb';
 import { FSEditor } from '../Adapters/FSEditor';
 import chalk from 'chalk';
-import FetcherProtocol, { SeriesInfo, SearchType, Season } from "./FetcherProtocol";
-
-// type Episode = {episodeNumber: number, title?: string, plot?: string};
-// type Season = {seasonNumber: number, episodes: Episode[]};
-// export type SeriesInfo = {
-//     seriesInfo: {
-//         title?: string;
-//         year?: string;
-//         plot?: string;
-//         poster?: string;
-//     }, 
-//     seasons: Season[]
-// };
-// type Movie = {
-//     title?: string,
-//     year?: string,
-//     plot?: string,
-//     poster?: string,
-//     imdbRating?: string
-// };
-
-// type SearchType = { Title: string, Year: string, imdbID: string, Type: string, Poster: string };
+import FetcherProtocol, { SeriesInfo, SearchType, Season, Movie, MovieFetcherProtocol } from "./FetcherProtocol";
 
 class EnglishFetcherPrompt implements FetcherProtocol {
-    private readonly cacher = new Cacher<SeriesInfo>(new FSEditor()); // TODO: inject
+    private readonly cacher = new Cacher<SeriesInfo>(new FSEditor());
   
     searchResults(title: string) {
         let searchResults = Omdb.fetchSearchResults(title.replace(/\s+/, '+'));
@@ -160,5 +139,41 @@ class EnglishFetcherPrompt implements FetcherProtocol {
         };
     }
 }
+
+export class EnglishMovieFetcherPrompt extends EnglishFetcherPrompt implements MovieFetcherProtocol {
+    private readonly moviesCacher = new Cacher<Movie>(new FSEditor());
+
+    fetchMovie(imdbID: string) { 
+        const key = imdbID.replace(/\s+/g, '_').toLowerCase();
+        let movieData = this.moviesCacher.retrieveCachedData(key, 'cache/en/movies');
+
+        if (movieData) return movieData;
+
+        movieData = this._fetchMovie(imdbID);
+
+        this.moviesCacher.cacheData(key, movieData, 'cache/en/movies');
+
+        return movieData;
+    }
+
+    private _fetchMovie(imdbID: string) {
+        const movieInfo = Omdb.fetchMovieByImdbId(imdbID);
+
+        if (movieInfo.Error)
+            throw new Error(movieInfo.Error);
+
+        const { Title, Year, Plot, Poster, imdbRating } = movieInfo as { Title?: string, Year?: string, Plot?: string, Poster?: string, imdbRating?: string };
+
+        return {
+            title: Title,
+            year: Year,
+            plot: Plot,
+            poster: Poster,
+            imdbRating: imdbRating
+        };
+    }
+
+}
+
 
 export default EnglishFetcherPrompt;

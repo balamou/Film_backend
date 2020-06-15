@@ -64,18 +64,24 @@ class MovieOrginizer {
         const fetcher = this.factory.createFetcher(language);
 
         let selectedMovieName = this.context?.pickMovieName(movieName) ?? movieName;
-        let movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
+        let searchResults = this.tryOrUndefined(() => fetcher.searchResults(selectedMovieName));
 
-        while (!movieData) {
+        while (!searchResults) {
             const shouldContinue = this.context?.shouldSelectDifferentName(selectedMovieName);
 
-            if (!shouldContinue) return undefined;
+            if (!shouldContinue) return;
 
             selectedMovieName = this.context?.pickAnotherMovieName() ?? movieName;
 
-            movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
+            searchResults = this.tryOrUndefined(() => fetcher.searchResults(selectedMovieName));
         }
-        
+
+        const selectedRow = this.context?.selectSearch(fetcher.orginizeSearchResults(searchResults), 0, searchResults.length - 1) ?? 0;
+        const imdbID = searchResults[selectedRow].imdbID;
+        const movieData = this.tryOrUndefined(() => fetcher.fetchMovie(imdbID));
+
+        if (!movieData) return;
+
         this.context?.movieInfo(movieData);
 
         if (movieData.poster && movieData.poster != "N/A")

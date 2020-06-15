@@ -27,4 +27,8 @@ interface FetcherProtocol {
     orginizeSeriesInfo(info: SeriesInfo): string[][];
 }
 
+export interface MovieFetcherProtocol extends FetcherProtocol {
+    fetchMovie(imdbID: string): Movie;
+}
+
 export default FetcherProtocol;

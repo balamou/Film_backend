@@ -31,10 +31,12 @@ export class Omdb {
     private static seriesEndPointImdbId = (imdbId: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&i=${imdbId}&plot=full&type=series`;
     private static seasonEndPointImdbId = (imdbId: string, season: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&i=${imdbId}&plot=full&type=series&Season=${season}`;
     private static episodeEndPointImdbId = (imdbId: string, season: number, episode: number) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&i=${imdbId}&plot=full&type=series&Season=${season}&Episode=${episode}`;
+    private static movieEndPointImdbId = (imdbId: string) => `http://www.omdbapi.com/?apikey=${Omdb.API_KEY}&i=${imdbId}&plot=full&type=movie`;
    
     static fetchSeriesByImdbId = (imdbId: string) => httpGet(Omdb.seriesEndPointImdbId(imdbId));
     static fetchSeasonByImdbId = (imdbId: string, season: number) => httpGet(Omdb.seasonEndPointImdbId(imdbId, season));
     static fetchEpisodeByImdbId = (imdbId: string, season: number, episode: number) => httpGet(Omdb.episodeEndPointImdbId(imdbId, season, episode));
+    static fetchMovieByImdbId = (imdbId: string) => httpGet(Omdb.movieEndPointImdbId(imdbId));
     
     // Error respose:
     // { "Response": "False", "Error": "Series or episode not found!" }
