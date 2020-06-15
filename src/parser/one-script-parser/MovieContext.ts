@@ -62,7 +62,34 @@ export default class MovieContext extends GeneralContext {
         this.log('Movie info extracted: ');
         this.log(movieInfo);
     }
+    
+    public database(data: any) {
+        let config = { columns: { 0: { width: 20 }, 1: { width: 50 } } };
+        const dbEntriesTable = Object.entries(data).map(([key, value]) => [key, value]);
+        
+        this.log();
+        this.log(table(dbEntriesTable, config));
+        
+        const shouldContinue = this.prompt.yesNoQuestion("Do you want to commit to the database? [y/n] ", false);
+        
+        if (!shouldContinue) this.exit();
+        
+        this.log();
+        this.log("Adding to the database...");
+    }
+    
+    public dbError(error: string) {
+        this.log(`----- ${chalk.red("Error adding to the database")} -----`);
+        this.log(error);
+        this.log(`----------------------------------------`);
+    }
 
+    public shouldSelectDifferentName(selectedMovieName: string) {
+        this.log(`Unable to find data for ${chalk.red(selectedMovieName)}`);
+
+        return this.prompt.yesNoQuestion('Do you want to enter a different name? [Y/n] ');            
+    }
+ 
     // HELPERS
 
     private removeWhiteSpaces(str: string) {
@@ -79,26 +106,5 @@ export default class MovieContext extends GeneralContext {
         const sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
     
         return hDisplay + mDisplay + sDisplay; 
-    }
-
-    public database(data: any) {
-        let config = { columns: { 0: { width: 20 }, 1: { width: 50 } } };
-        const dbEntriesTable = Object.entries(data).map(([key, value]) => [key, value]);
-        
-        this.log();
-        this.log(table(dbEntriesTable, config));
-
-        const shouldContinue = this.prompt.yesNoQuestion("Do you want to commit to the database? [y/n] ", false);
-
-        if (!shouldContinue) this.exit();
-
-        this.log();
-        this.log("Adding to the database...");
-    }
-
-    public dbError(error: string) {
-        this.log(`----- ${chalk.red("Error adding to the database")} -----`);
-        this.log(error);
-        this.log(`----------------------------------------`);
     }
 }

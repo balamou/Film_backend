@@ -67,8 +67,7 @@ class MovieOrginizer {
         let movieData = this.tryOrUndefined(() => fetcher.fetchMovie(selectedMovieName));
 
         while (!movieData) {
-            this.context?.logg(`Unable to find data for ${chalk.red(selectedMovieName)}`);
-            const shouldContinue = this.context?.ask('Do you want to enter a different name? [Y/n] ');
+            const shouldContinue = this.context?.shouldSelectDifferentName(selectedMovieName);
 
             if (!shouldContinue) return undefined;
 
